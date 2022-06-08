@@ -1,11 +1,11 @@
-function [ correctedImage ] = fun_calibrate_depth_data(cameraParams, rows, cols)
+function [ correctedImage ] = fun_undistort_depth_data(cameraParams, rows, cols)
 
-	fprintf("\nBEGIN: fun_calibrate_depth_data");
+	fprintf("\nBEGIN: fun_undistort_depth_data");
 
 	%depthFile = fullfile('d:\', 'work', 'sample_depth_data.txt'); %sprintf('rgb%d.png', i));
 	depthFile = fullfile('sample_depth_data.txt'); %sprintf('rgb%d.png', i));
 	depthData = importdata(depthFile);
-    [sz_rows, sz_cols] = size(depthData);
+	[sz_rows, sz_cols] = size(depthData);
 	fprintf("%s file is imported, sizes are %d %d \n", depthFile, sz_rows, sz_cols);
 
     colIndex = 3;
@@ -47,9 +47,9 @@ function [ correctedImage ] = fun_calibrate_depth_data(cameraParams, rows, cols)
     end
     %imshow(dimg_mat, []);
 
-    fclose(fileID);
-    fprintf("\ngenerated undistorted depth data");
+	fclose(fileID);
+	fprintf("\ngenerated undistorted depth data");
 
-    fprintf("\nEND: fun_calibrate_depth_data");
+	fprintf("\nEND: fun_undistort_depth_data");
 	return;
 end
