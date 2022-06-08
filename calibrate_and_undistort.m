@@ -1,6 +1,6 @@
 function [ cameraParams ] = fun_detect_camera_params()
 
-	fprintf("\nBEGIN: fun_detect_camera_params\n");
+    fprintf("\nBEGIN: fun_detect_camera_params\n");
 
     images = imageDatastore({'im1_upd.png', 'im2_upd.png', 'im3_upd.png', 'im4_upd.png'});
     
