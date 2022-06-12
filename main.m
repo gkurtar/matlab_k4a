@@ -4,24 +4,13 @@
 % K4A Depth Camera Calibration and error analysis is done
 % 10 Haziran 2020
 %
-% INPUT:
-%
-%   argRgbImages	-> an array of RGB images of a planar checkerboard pattern
-%						(RGB camera calibration params are to be estimated)
-%   argIrImages		-> an array of IR images of a planar checkerboard pattern
-%						(IR camera calibration params are to be estimated)
-%
-%   argMeasurements -> a table where each row contains info for a specific distance
-%							Col 1: Sampling Distance in cm
-%							Col 2: IR Image (Average)
-%							Col 3: Point Cloud (Average)
-%
-% OUTPUT: 
-%  
-%
+% reads input files and store them in related data structures.
+% calls fun_k4a_calibration after this step to determine error related types.
+% returned objects from this function are written to the disk and shown in various figures 
+% 
 % **********************************************************
 
-fprintf("\nBEGIN: k4a_calibration operation\n");
+fprintf("\nBEGIN: k4a depth camera calibration script\n");
 
 	%constants
 	RGB_PATH = 'c:\tmp\cal\RGB';
@@ -83,13 +72,14 @@ fprintf("\nBEGIN: k4a_calibration operation\n");
 		seq_pbe_point_clouds = [seq_pbe_point_clouds, string(pbe_ir_files_dir(i).name)];
 	end
 	
-	tmp_struct.dists = distances;
-	tmp_struct.irs = seq_pbe_ir_images;
-	tmp_struct.pcs = seq_pbe_point_clouds;
-	cal_data_table = struct2table(tmp_struct);
+	st_measurement.dists = distances;
+	st_measurement.irs = seq_pbe_ir_images;
+	st_measurement.pcs = seq_pbe_point_clouds;
+	tbl_cal_data = struct2table(st_measurement);
 
 	fprintf("\nRead Data for probability based evaluation into a table:\n");
-	%disp(cal_data_table);
-	disp(tmp_struct);
+	disp(st_measurement);
+	
+	fun_k4a_calibration(seq_rgb_images, seq_ir_images, tbl_cal_data);
 
-fprintf("\nEND: k4a_calibration operation\n");
+fprintf("\nEND: k4a depth camera calibration script\n");
