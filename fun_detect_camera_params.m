@@ -56,13 +56,15 @@ function [ cameraParams ] = fun_detect_camera_params(argFiles, argSquareSize)
 	I = imgds.readimage(1);
 	J1 = undistortImage(I, cameraParams);
 
-	imshow(I);
+	%{
 	figure;
+	imshow(I);
 	title('Original');
+	hold on;
+	figure;
 	imshow(J1);
 	title('Corrected');
-	%figure; imshowpair(I, J1, image);
-	%title('Original vs Corrected');
+	%}
 	disp(cameraParams);
 
 	fprintf("\nEND: fun_detect_camera_params\n");
