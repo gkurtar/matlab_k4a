@@ -17,6 +17,7 @@ fprintf("\nBEGIN: k4a depth camera calibration script\n");
 	IR_PATH = 'c:\tmp\cal\IR';
 	PBCAL_DATA_PATH = 'c:\tmp\CAL\AVG';
 	distances = [50, 100, 150]; %, 200, 250, 300, 350, 400, 450, 500];
+	depthDataMatrixSize = [480, 640];
 
 	fprintf("\nStartig RGB camera calibration\n");
 
@@ -76,6 +77,7 @@ fprintf("\nBEGIN: k4a depth camera calibration script\n");
 	st_measurement.dists = distances;
 	st_measurement.irs = seq_pbe_ir_images;
 	st_measurement.pcs = seq_pbe_point_clouds;
+	st_measurement.matsize = depthDataMatrixSize;
 	tbl_cal_data = struct2table(st_measurement);
 
 	fprintf("\nRead Data for probability based evaluation into a table:\n");
