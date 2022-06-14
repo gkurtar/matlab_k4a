@@ -73,7 +73,7 @@ function [ correctedImage ] = fun_undistort_depth_data(argDepthData, argRowCount
 		end
 	end
 	
-	%imshow(seqDepthImage, []);
+	imshow(correctedImage, []);
 	
 	fclose(fileID);
 	fprintf("\ngenerated undistorted depth data");
