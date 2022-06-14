@@ -1,10 +1,25 @@
+% ************************************************************************************
+% 
+% fun_detect_camera_params function
+% camera Params are estimated by this method
+%
+% INPUT:
+%
+%   argFiles		-> an array of strings where each element represents an image file that is going to be used for calibration
+%   argSquareSize	-> size of the checkerboard pattern squares in milimeters
+%
+% OUTPUT: 
+%   cameraParams	-> estimated Camera Params
+%
+% **********************************************************
+
 function [ cameraParams ] = fun_detect_camera_params(argFiles, argSquareSize)
 
 	fprintf("\nBEGIN: fun_detect_camera_params\n");
 	
 	%arguments
 	%	argFiles string
-    %    argSquareSize  double {mustBeNumeric, mustBeReal, mustBePositive}
+	%    argSquareSize  double {mustBeNumeric, mustBeReal, mustBePositive}
 	%end
 	
 	fprintf("\nBEGIN: fun_detect_camera_params 2\n");
