@@ -16,8 +16,9 @@ fprintf("\nBEGIN: k4a depth camera calibration script\n");
 	RGB_PATH = 'c:\tmp\cal\RGB';
 	IR_PATH = 'c:\tmp\cal\IR';
 	PBCAL_DATA_PATH = 'c:\tmp\CAL\AVG';
-	distances = [50, 100, 150]; %, 200, 250, 300, 350, 400, 450, 500];
+	distances = [50; 100; 150]; %, 200, 250, 300, 350, 400, 450, 500];
 	depthDataMatrixSize = [480, 640];
+	seqDepthDataMatrixSizes = {};
 
 	fprintf("\nStartig RGB camera calibration\n");
 
@@ -65,24 +66,32 @@ fprintf("\nBEGIN: k4a depth camera calibration script\n");
 	for i = 1 : numel(pbe_ir_files_dir)
 		filepath = fullfile(pbe_ir_files_dir(i).folder, pbe_ir_files_dir(i).name);
 		%seq_pbe_ir_images = [seq_pbe_ir_images, imread(filepath)];
-		seq_pbe_ir_images = [seq_pbe_ir_images, string(filepath)];
+		seq_pbe_ir_images = [seq_pbe_ir_images; string(filepath)];
 	end
 	
 	for i = 1 : numel(pbe_point_cloud_files_dir)
 		filepath = fullfile(pbe_point_cloud_files_dir(i).folder, pbe_point_cloud_files_dir(i).name);
 		%seq_pbe_point_clouds = [seq_pbe_point_clouds, importdata(filepath)];
-		seq_pbe_point_clouds = [seq_pbe_point_clouds, string(filepath)];
+		seq_pbe_point_clouds = [seq_pbe_point_clouds; string(filepath)];
+		seqDepthDataMatrixSizes = [seqDepthDataMatrixSizes; depthDataMatrixSize];
 	end
 	
-	st_measurement.dists = distances;
-	st_measurement.irs = seq_pbe_ir_images;
-	st_measurement.pcs = seq_pbe_point_clouds;
-	st_measurement.matsize = depthDataMatrixSize;
-	tbl_cal_data = struct2table(st_measurement);
+	%disp(seqDepthDataMatrixSize(1));
+	%datas = cell2struct(seqDepthDataMatrixSize, {'shortname', 'longname'}, 2);
+	%disp(datas);
+	
+	stcMeasurement.ranges = distances;
+	stcMeasurement.irFilePaths = seq_pbe_ir_images;
+	stcMeasurement.pcFilePaths = seq_pbe_point_clouds;
+	%stcMeasurement.matsize = depthDataMatrixSize;%stcMeasurement.matsize = datas;
+	stcMeasurement.depthDataSizes = seqDepthDataMatrixSizes;
+	tblCalData = struct2table(stcMeasurement);
 
 	fprintf("\nRead Data for probability based evaluation into a table:\n");
-	disp(st_measurement);
+	disp(stcMeasurement);
+	fprintf("\nTable:\n");
+	disp(tblCalData);
 	
-	fun_k4a_calibration(seq_rgb_images, 25, seq_ir_images, 25, tbl_cal_data);
+	fun_k4a_calibration(seq_rgb_images, 25, seq_ir_images, 25, tblCalData);
 
 fprintf("\nEND: k4a depth camera calibration script\n");
