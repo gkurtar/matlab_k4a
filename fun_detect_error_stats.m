@@ -10,9 +10,9 @@
 %    SDEV ->  standard deviation
 %
 % **********************************************************
-function [RMSE, SDEV] = fun_detect_errors(argMeasuredDepthValues, argRealDepthValues)
+function [RMSE, SDEV] = fun_detect_error_stats(argMeasuredDepthValues, argRealDepthValues)
 
-   fprintf("\nBEGIN: fun_detect_errors\n");
+   fprintf("\nBEGIN: fun_detect_error_stats\n");
    
 
    if (~isvector(argMeasuredDepthValues) || ~isvector(argRealDepthValues))
@@ -50,7 +50,7 @@ function [RMSE, SDEV] = fun_detect_errors(argMeasuredDepthValues, argRealDepthVa
    fprintf(" %d ", argRealDepthValues.' );
    
   
-   fprintf("\nEND: fun_detect_errors\n");
+   fprintf("\nEND: fun_detect_error_stats\n");
    return;
 
 end
