@@ -16,6 +16,8 @@ fprintf("\nBEGIN: k4a depth camera calibration script\n");
 	RGB_PATH = 'c:\tmp\cal\RGB';
 	IR_PATH = 'c:\tmp\cal\IR';
 	PBCAL_DATA_PATH = 'c:\tmp\CAL\AVG';
+	DEPTH_DATA_PATH = 'c:\tmp\cal\depth';
+	
 	distances = [50; 100; 150]; %, 200, 250, 300, 350, 400, 450, 500];
 	depthDataMatrixSize = [480, 640];
 	seqDepthDataMatrixSizes = {};
@@ -58,10 +60,12 @@ fprintf("\nBEGIN: k4a depth camera calibration script\n");
 	fprintf("PBCAL_DATA_PATH %s, IR: %d, PC: %d, DIST: %d\n", PBCAL_DATA_PATH,  ...
 		numel(pbe_ir_files_dir), numel(pbe_point_cloud_files_dir), numel(distances));
 	
+	%{
 	if (numel(pbe_ir_files_dir) ~= numel(pbe_point_cloud_files_dir) ...
 		|| numel(pbe_ir_files_dir) ~= numel(distances))
 		   error('Error. \nInput files count should be eq to %d.\n', numel(distances));
 	end
+	%}
 
 	for i = 1 : numel(pbe_ir_files_dir)
 		filepath = fullfile(pbe_ir_files_dir(i).folder, pbe_ir_files_dir(i).name);
@@ -69,10 +73,42 @@ fprintf("\nBEGIN: k4a depth camera calibration script\n");
 		seq_pbe_ir_images = [seq_pbe_ir_images; string(filepath)];
 	end
 	
+	%{
 	for i = 1 : numel(pbe_point_cloud_files_dir)
 		filepath = fullfile(pbe_point_cloud_files_dir(i).folder, pbe_point_cloud_files_dir(i).name);
 		%seq_pbe_point_clouds = [seq_pbe_point_clouds, importdata(filepath)];
 		seq_pbe_point_clouds = [seq_pbe_point_clouds; string(filepath)];
+		seqDepthDataMatrixSizes = [seqDepthDataMatrixSizes; depthDataMatrixSize];
+	end
+	%}
+	
+	seq_avg_point_clouds = {};
+	seqPointClouds = {};
+	seqPointCloudsForSpecificDistance = {};
+	
+	%read in depth data
+	for i = 1 : numel(distances)
+		strMatchPattern = sprintf("*_%d.txt", distances(i));
+		point_cloud_files_dir = dir(fullfile(DEPTH_DATA_PATH, strMatchPattern));
+		fprintf("\nnum of matched files for %d : %d\n", distances(i), numel(point_cloud_files_dir));
+		seqPointClouds = {};
+		for j = 1 : numel(point_cloud_files_dir)
+			filepath = fullfile(point_cloud_files_dir(j).folder, point_cloud_files_dir(j).name);
+			
+			disp(filepath);
+			if (contains(point_cloud_files_dir(j).name, 'avg'))
+				seq_avg_point_clouds = [seq_avg_point_clouds; string(filepath)];
+				disp(strcat("found ", point_cloud_files_dir(j).name));
+			else
+				seqPointClouds = [seqPointClouds, string(filepath)];
+			end
+			disp("sdf #");
+			seqPointClouds
+			disp("sdf $");
+		end
+		
+		seqPointCloudsForSpecificDistance = [seqPointCloudsForSpecificDistance; seqPointClouds];
+		
 		seqDepthDataMatrixSizes = [seqDepthDataMatrixSizes; depthDataMatrixSize];
 	end
 	
@@ -80,9 +116,15 @@ fprintf("\nBEGIN: k4a depth camera calibration script\n");
 	%datas = cell2struct(seqDepthDataMatrixSize, {'shortname', 'longname'}, 2);
 	%disp(datas);
 	
+	disp("\n-------\n");
+	disp(seqPointCloudsForSpecificDistance);
+	disp("=======\n");
+	
 	stcMeasurement.ranges = distances;
 	stcMeasurement.irFilePaths = seq_pbe_ir_images;
-	stcMeasurement.pcFilePaths = seq_pbe_point_clouds;
+	%stcMeasurement.pcFilePaths = seq_pbe_point_clouds;
+	stcMeasurement.pcAvgFilePaths = seq_avg_point_clouds;
+	stcMeasurement.pcFilePaths = seqPointCloudsForSpecificDistance;
 	%stcMeasurement.matsize = depthDataMatrixSize;%stcMeasurement.matsize = datas;
 	stcMeasurement.depthDataSizes = seqDepthDataMatrixSizes;
 	tblCalData = struct2table(stcMeasurement);
@@ -91,6 +133,7 @@ fprintf("\nBEGIN: k4a depth camera calibration script\n");
 	disp(stcMeasurement);
 	fprintf("\nTable:\n");
 	disp(tblCalData);
+	
 	
 	fun_k4a_calibration(seq_rgb_images, 25, seq_ir_images, 25, tblCalData);
 
