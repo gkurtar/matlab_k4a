@@ -1,4 +1,5 @@
 
+%*******************************************************************************************
 %
 % Given an array of distances and an array of probability distribution objects
 % this function fits a linear model based on input arguments.
@@ -11,6 +12,7 @@
 %    mdlMeanLM -> Linear model of mean values that fits input mean values
 %    mdlStdDevLM -> Linear model of Standard Deviations that fits input std dev values parameters
 %
+%*******************************************************************************************
 function [ mdlMeanLM, mdlStdDevLM ] = fun_detect_prob_params_based_on_distance(argSeqDistances, argSeqPds)
 
 	%fprintf("\nBEGIN: fun_detect_prob_params_based_on_distance(%s -- size %d and %s -- size %d\n", ...
@@ -24,23 +26,23 @@ function [ mdlMeanLM, mdlStdDevLM ] = fun_detect_prob_params_based_on_distance(a
 		fprintf('input argument array lengths (%d and %d) should be equal ', ...
             size(argSeqDistances), size(argSeqPds));
 		return;
-    end
+	end
 
-    mean_vals = zeros(1, length(argSeqPds));
-    for i = 1 : length(argSeqPds)
-       mean_vals(i) = argSeqPds(i).mu;
-    end
-    
-    stddev_vals = zeros(1, length(argSeqPds));
-    for i = 1 : length(argSeqPds)
-       stddev_vals(i) = argSeqPds(i).sigma;
-    end
+	mean_vals = zeros(1, length(argSeqPds));
+	for i = 1 : length(argSeqPds)
+		mean_vals(i) = argSeqPds(i).mu;
+	end
+
+	stddev_vals = zeros(1, length(argSeqPds));
+	for i = 1 : length(argSeqPds)
+		stddev_vals(i) = argSeqPds(i).sigma;
+	end
 
 	mdlMeanLM = fitlm (argSeqDistances, mean_vals);
-    plot (mdlMeanLM);
+	plot (mdlMeanLM);
 
-    mdlStdDevLM = fitlm (argSeqDistances, stddev_vals);
-    plot (mdlStdDevLM);
+	mdlStdDevLM = fitlm (argSeqDistances, stddev_vals);
+	plot (mdlStdDevLM);
 
 	return;
 end
