@@ -35,7 +35,7 @@ function [matDepthData] = fun_read_point_cloud_data(argFilePath, argRowCount, ar
 	if (argRowCount * argColCount ~= rows)
 		error("Size of the data file does not match up with row and col count arguments provided");
 	elseif (3 ~= cols)
-		error("Input data file should consist of triplets.\n");
+		error("Input data file should consist of triplets.");
     	end
 	
 	fprintf("%s file is imported, sizes are %d %d \n", argFilePath, rows, cols);
