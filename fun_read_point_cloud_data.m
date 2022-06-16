@@ -19,7 +19,7 @@ function [matDepthData] = fun_read_point_cloud_data(argFilePath, argRowCount, ar
 	if exist(argFilePath, 'file') ~= 2
 		error(sprintf("input file %s does not exist\n", argFilePath));
 	elseif (~isnumeric(argRowCount) || ~isnumeric(argColCount))
-		error("arguments should be numeric\n");
+		error("arguments should be numeric");
 	%elseif (~isinteger(int16(argRowCount)) || ~isinteger(int16(argColCount)))
 	%	error("arguments should be integer");
 	elseif (mod(argRowCount, 1) ~= 0 || mod(argColCount, 1) ~= 0)
