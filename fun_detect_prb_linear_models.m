@@ -5,12 +5,12 @@
 % this function fits a linear model based on input arguments.
 %
 % Input Arguments:
-%    argSeqDistances -> Distance(cm) array, Row Vector
-%    argSeqPds    -> Probability Distribution object array, Row Vector
+%    argSeqDistances	-> Distance(cm) array, Row Vector
+%    argSeqPds		-> Probability Distribution object array, Row Vector
 %
 % Output Values:
-%    mdlMeanLM -> Linear model of mean values that fits input mean values
-%    mdlStdDevLM -> Linear model of Standard Deviations that fits input std dev values parameters
+%    mdlMeanLM		-> Linear model of mean values that fits input mean values
+%    mdlStdDevLM	-> Linear model of Standard Deviations that fits input std dev values parameters
 %
 %*******************************************************************************************
 function [ mdlMeanLM, mdlStdDevLM ] = fun_detect_prob_params_based_on_distance(argSeqDistances, argSeqPds)
