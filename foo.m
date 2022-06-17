@@ -22,110 +22,62 @@
 % **********************************************************
 
 function [ depthCameraCalibrationParamMatrix ] = fun_k4a_foo(argMeasurements)
-%function [ correctedImage ] = fun_k4a_calibration(...
-%	argRgbImages, argRgbSquareSize, argIrImages, argIrSquareSize, argMeasurements)
 
-	fprintf("\nBEGIN: fun_k4a_calibration\n");
-    
-    %if (3 < 5) return;
+	fprintf("\nBEGIN: fun_k4a_foo\n"); 
 
-	%fprintf("\nStarting RGB camera calibration\n");
-	%disp(argRgbImages);
-	%rgbCamParams = fun_detect_camera_params(argRgbImages, argRgbSquareSize);
-
-	%fprintf("\nStarting IR camera calibration\n");
-	%disp(argIrImages);
-	%irCamParams = fun_detect_camera_params(argIrImages, argIrSquareSize);
-
-	fprintf("\nUndistorting Depth Image\n");
-	%seqUndistortedDepthData = {};
 	tableRowCount = height(argMeasurements);
+	resultCellArray = {};
 
-    matProbDistObjects = {};
-    seqMatDepthData = {};
 	for i = 1 : tableRowCount
-        %depthDataAvgFilePath = argMeasurements(i, :).pcAvgFilePaths;
+		fprintf("\nIterating row %d, dist is %d\n", i, argMeasurements(i, :).ranges);
 
+		distance = argMeasurements(i, :).ranges;
 		seqDepthDataFilePaths = argMeasurements(i, :).pcFilePaths;
-        depthDataDim = argMeasurements(i, :).depthDataSizes;
-		sizes = [depthDataDim{1}];
+		depthDataDims = argMeasurements(i, :).depthDataSizes;
+		sizes = [depthDataDims{1}];
 		
-        %disp(seqDepthDataFilePaths);
+		%disp(seqDepthDataFilePaths);
 
-        disp ("____")
-        disp (sizes)
-        
-        matDepthData = {};
-        for j = 1 : numel(seqDepthDataFilePaths)
-            disp(seqDepthDataFilePaths(j));
-            %matDepthData = [matDepthData ; importdata(seqDepthDataFilePaths(j))];
-            tmp = importdata(seqDepthDataFilePaths(j));
+		seqMatDepthData = {};
+		for j = 1 : numel(seqDepthDataFilePaths)
+			disp(seqDepthDataFilePaths(j));
+			fprintf("\nGoing to process depth data file %s\n", seqDepthDataFilePaths(j));
 
-            [rows, cols] = size(tmp);
-	        fprintf("%s file is imported, sizes are %d %d \n", seqDepthDataFilePaths(j), rows, cols);
-
-    
-            colIndex = 3;
-            matDepthData = zeros(rows, cols);
-            for m=1:rows
-                for n=1:cols
-                    rowIndex = (i - 1) * cols + j;
-                    %dimg_mat(i, j) = 0;
-                    %if (j < 20)
-                        %fprintf ("i %d, j %d, row %d depth %d \n", i, j, rowIndex, depthData(rowIndex, colIndex));
-                    %end
-                    matDepthData(i, j) = tmp(rowIndex, colIndex);
-                end
-            end
-
-
-        end
-        disp ("++++")
-
-
-        %matTmp = matDepthData(1);
-        %disp(matTmp);
-
-
-		%fprintf("\ndepthDataFilePath: %s, Depth Data Dim:  %d __ \n", depthDataFilePath, depthDataDim{1, :});
-
-		%if (~exist(depthDataAvgFilePath, 'file'))
-        %    warningMessage = sprintf("Warning: file does not exist:\n%s", depthDataAvgFilePath);
-		%	error(warningMessage); %uiwait(msgbox(warningMessage));
-        %end
-
-		% File exists.  Do stuff....
-		%depthData = importdata(depthDataFilePath);
-		%undistortedDepthData = fun_undistort_depth_data(depthData, sizes(1), sizes(2), irCamParams);
-		
-        %seqUndistortedDepthData = [seqUndistortedDepthData ; undistortedDepthData];
-		%fprintf("%s is undistorted:\n", depthDataFilePath);
-		
-    end
-
-    %{
-    for i = 1 : tableRowCount
-		depthDataFilePath = argMeasurements(i, :).pcFilePaths;
-		depthDataDim = argMeasurements(i, :).depthDataSizes;
-		sizes = [depthDataDim{1}];
-		fprintf("\ndepthDataDim:\n");
-		%disp(depthDataDim{1});
-		%disp(sizes(1)); %disp(sizes(2));
-		%fprintf("\ndepthDataFilePath: %s, Depth Data Dim:  %d __ \n", depthDataFilePath, depthDataDim{1, :});
-
-		if exist(depthDataFilePath, 'file')
-			% File exists.  Do stuff....
-			depthData = importdata(depthDataFilePath);
-			undistortedDepthData = fun_undistort_depth_data(depthData, sizes(1), sizes(2), irCamParams);
-			seqUndistortedDepthData = [seqUndistortedDepthData ; undistortedDepthData];
-			fprintf("%s is undistorted:\n", depthDataFilePath);
-		else
-			warningMessage = sprintf("Warning: file does not exist:\n%s", depthDataFilePath);
-			error(warningMessage); %uiwait(msgbox(warningMessage));
+			matDepthData = fun_read_point_cloud_data(seqDepthDataFilePaths(j), sizes(1), sizes(2));
+			seqMatDepthData{j} = matDepthData;
 		end
-    end
-    %}
 
-	fprintf("\nEND: fun_k4a_calibration\n");
+		matProbDistObjects = {};
+		[rows, cols] = size(matDepthData);
+		for m = 1 : rows / 100
+			%fprintf("processing row %d\n", m);
+			for n = 1 : cols / 100
+				vectorTmp = zeros(1, numel(seqMatDepthData));
+				for k = 1 : numel(seqMatDepthData)
+					matDepthData = seqMatDepthData{k};
+					vectorTmp(k) = matDepthData(m, n);
+					%fprintf("checking %d %d and %d\n", m, n, k);
+				end
+				%disp(vectorTmp);
+				
+				%probability dist object is found
+				pdobj = fitdist(vectorTmp.', 'Normal');
+				matProbDistObjects{m, n} = pdobj;
+			end
+		end
+
+		%Iterate seqMatDepthData and eval pd for pixel i, j and store it in a data structure
+		%matProbDistObjects(i, j) = "some pd object";
+		%add this data structure into a table where each row represents the
+		%record for the corresponding distance
+
+		resultCellArray{i, 1} = cast(distance, "int16");
+		resultCellArray{i, 2} = matProbDistObjects;
+
+		%disp (matProbDistObjects)
+	end
+	disp (resultCellArray);
+
+	fprintf("\nEND: fun_k4a_foo\n");
 	return;
 end
