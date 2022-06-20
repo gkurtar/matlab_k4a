@@ -1,10 +1,13 @@
 % ***********************************************************
 % fun_read_point_cloud_data
+% given a txt file path which represnts a 2d image this method calls importdata after various checks and reads
+% this data as a matrix and returns it. Each line of the input file consists of triplets where 1st element is row number,
+% second one is column number and third one is the corresponding value at that pixel position.
 %
 % % Input Arguments:
 %		argFilePath     -> Path of the file where each line consist of the triplets (row, col, depth)
-%		argRowCount		-> Number of the rows in the depth image
-%		argColCount		-> Number of the columns in the depth image
+%		argRowCount	-> Number of the rows in the depth image
+%		argColCount	-> Number of the columns in the depth image
 %
 % % Output Values:
 %		matDepthData	-> Depth Data matrix
