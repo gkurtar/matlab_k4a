@@ -1,22 +1,17 @@
 % ***********************************************************
 % 
 % fun_undistort_depth_data function
-% K4A Depth Camera Calibration and undistortion is done by this method
-% 10 Haziran 2020
+% K4A depth images are undistorted via IR camera params by this method.
+% Corrected image is returned as an m by n matrix where its sizes are same with the input array.
 %
 % INPUT:
-%
-%   argDepthData	-> Depth Point Cloud as an array imported from a file of triples
-%					where each line contains coordinates of a pixel and the corresponding
-%					depth value in it. The dims of this array should be [argRowCount * argColCount] [3].
-%					
+%   argDepthData	-> Depth Point Cloud as an array imported from a file of triples. The size of this array is [argRowCount * argColCount] [3].
 %   argRowCount		-> Row Count of the Depth Data
 %   argColCount		-> Column Count of the Depth Data
-%   argCameraParams -> IR(Depth) camera parameters
+%   argCameraParams 	-> IR(Depth) camera parameters
 %
 % OUTPUT: 
-%   correctedImage  -> corrected image as a two dimensional (depth point cloud) array where its
-%					sizes are eq to argRowCount and argColCount.
+%   correctedImage	-> corrected image as a two dimensional (depth point cloud) array where its size is eq to [argRowCount] [argColCount]
 %
 % **********************************************************
 
