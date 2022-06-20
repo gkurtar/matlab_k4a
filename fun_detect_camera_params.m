@@ -1,10 +1,9 @@
 % ************************************************************************************
 % 
-% fun_detect_camera_params function
-% camera Params are estimated by this method
-%
+% fun_detect_camera_params
+% camera Params are estimated by this method, it uses builtin matlab functions such as estimateCameraParameters.
+% 
 % INPUT:
-%
 %   argFiles		-> an array of strings where each element represents an image file that is going to be used for calibration
 %   argSquareSize	-> size of the checkerboard pattern squares in milimeters
 %
@@ -17,29 +16,14 @@ function [ cameraParams ] = fun_detect_camera_params(argFiles, argSquareSize)
 
 	fprintf("\nBEGIN: fun_detect_camera_params\n");
 	
-	%arguments
-	%	argFiles string
-	%    argSquareSize  double {mustBeNumeric, mustBeReal, mustBePositive}
-	%end
 	
-	fprintf("\nBEGIN: fun_detect_camera_params 2\n");
-	
-	%cameraParams = "";
-	
-	%if (isnan(str2double(argSquareSize)))
-	%	fprintf('SquareSize argument (%d) must be an integer\n', argSquareSize);
-	%	return;
-	%end
-	
-	if (~isnumeric(argSquareSize) || ~(sign(argSquareSize) > 0))
+	if (~isnumeric(argSquareSize) || mod(argRowCount, 1) ~= 0 || sign(argSquareSize) <= 0)
 		error('SquareSize argument (%d) must be numeric and positive \n', argSquareSize);
 	end
-	%squareSize = str2num(argSquareSize);
-
-	%fs = matlab.io.datastore.FileSet(argFiles);
-	%imgds = imageDatastore(fs);
-	imgds = imageDatastore(argFiles);
+	
+	%fs = matlab.io.datastore.FileSet(argFiles);%imgds = imageDatastore(fs);
 	%imgds = imageDatastore({'im1_upd.png', 'im2_upd.png', 'im3_upd.png', 'im4_upd.png'});
+	imgds = imageDatastore(argFiles);
 
 	%detect calibration pattern
 	[imagePoints, boardSize] = detectCheckerboardPoints(imgds.Files);
