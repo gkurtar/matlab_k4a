@@ -9,10 +9,10 @@
 %   argSeqOfGroundTruthImageMatrices	-> an array of ...
 %
 % **********************************************************
-function [seqDiffValues, seqGroundTruthValues] = fun_k4a_find_depth_error_distribution(...
+function [seqDiffValues, seqGroundTruthValues] = fun_inspect_errors(...
 	argSeqOfDepthImageMatrices, argSeqOfGroundTruthImageMatrices)
 
-	fprintf("\nBEGIN: fun_k4a_find_depth_error_distribution\n");
+	fprintf("\nBEGIN: fun_inspect_errors\n");
 	fprintf("\nArgument Checking: \n");
 
 	if (~iscell(argSeqOfDepthImageMatrices) || ~iscell(argSeqOfGroundTruthImageMatrices))
@@ -44,7 +44,6 @@ function [seqDiffValues, seqGroundTruthValues] = fun_k4a_find_depth_error_distri
 	end
 
 	seqMatDiff = {};
-	
 	szMatData = size(argSeqOfDepthImageMatrices{1});
     
 	rowCount = szMatData(1, 1);
@@ -90,6 +89,6 @@ function [seqDiffValues, seqGroundTruthValues] = fun_k4a_find_depth_error_distri
     	ax.XAxisLocation = "origin";
     	ax.YAxisLocation = "origin";
 
-	fprintf("\nEND: fun_k4a_find_depth_error_distribution\n");
+	fprintf("\nEND: fun_inspect_errors\n");
 	return;
 end
