@@ -80,6 +80,7 @@ fprintf("\nBEGIN: k4a depth camera calibration script\n");
 		seq_pbe_point_clouds = [seq_pbe_point_clouds; string(filepath)];
 		seqDepthDataMatrixSizes = [seqDepthDataMatrixSizes; depthDataMatrixSize];
 	end
+deneme 123
 	%}
 	
 	seq_avg_point_clouds = {};
