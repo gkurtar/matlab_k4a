@@ -11,9 +11,9 @@
 %    SDEV      -> standard deviation of errors evaluated for the arguments
 %
 % **********************************************************
-function [MAX_ERROR, RMSE, SDEV] = fun_detect_error_stats(argMeasuredDepthValues, argRealDepthValues)
+function [MAX_ERROR, RMSE, SDEV] = fun_find_error_stats(argMeasuredDepthValues, argRealDepthValues)
 
-   fprintf("\nBEGIN: fun_detect_error_stats\n");
+   fprintf("\nBEGIN: fun_find_error_stats\n");
    
    if (~isvector(argMeasuredDepthValues) || ~isvector(argRealDepthValues))
       fprintf('input arguments should be vectors\n');
@@ -52,7 +52,7 @@ function [MAX_ERROR, RMSE, SDEV] = fun_detect_error_stats(argMeasuredDepthValues
    fprintf("\nReal_depth_distances\n");
    fprintf(" %d ", argRealDepthValues.' );
    
-   fprintf("\nEND: fun_detect_error_stats\n");
+   fprintf("\nEND: fun_find_error_stats\n");
    return;
 
 end
