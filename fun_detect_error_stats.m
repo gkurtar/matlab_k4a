@@ -38,12 +38,14 @@ function [MAX_ERROR, RMSE, SDEV] = fun_detect_error_stats(argMeasuredDepthValues
    diff_data = argMeasuredDepthValues - argRealDepthValues;
    
    %compute for real to fitted diff matrix
-   MAX_ERROR = max(diff_data);
+   minVal = min(diff_data);
+   maxVal = max(diff_data);
+   MAX_ERROR = max(abs(minVal), abs(maxVal));
    SQE = diff_data.^2;
    MSE = mean(SQE(:));
    SDEV = std(diff_data(:));
    RMSE = sqrt(MSE);
-   fprintf ("\nDepth Residuals\n\t; mse %f, rmse %f, std_dev: %f", MSE, RMSE, SDEV);
+   fprintf ("\nDepth Residuals\n\t; max_error %f, mse %f, rmse %f, std_dev: %f", MAX_ERROR, MSE, RMSE, SDEV);
    
    fprintf("\nMeasured_depth_distances\n");
    fprintf(" %d ", argMeasuredDepthValues.' );
