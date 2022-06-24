@@ -1,9 +1,13 @@
 % ***********************************************************
-% detect_errors metod compares two datasets to determine errors
+%   fun_find_error_stats
+%   
+%   detects error stats such as max of the errors, RMSE and standard deviation by comparing
+%   the input arguments. First argument is the measured depth values vector whereas second
+%   one is the ground truth values for the corresponding index of the first argument.
 %
 % % Input Arguments:
-%    argMeasuredDepthValues     -> Measured Sensor Depth Data for a number of points
-%    argRealDepthValues         -> Real Depth Data for corresponding points
+%    argMeasuredDepthValues     -> a vector of Measured Sensor Depth Data for a number of points
+%    argRealDepthValues         -> a vector of Real Depth Data for corresponding points
 %
 % % Output Values:
 %    MAX_ERROR -> max valued error of the diff of the arguments. 
