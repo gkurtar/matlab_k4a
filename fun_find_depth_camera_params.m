@@ -22,9 +22,9 @@
 %
 % **********************************************************
 
-function [ matMeanLinearModels, matStdevLinearModels ] = fun_k4a_foo(argMeasurements, argDepthDataSize)
+function [ matMeanLinearModels, matStdevLinearModels ] = fun_find_depth_camera_params(argMeasurements, argDepthDataSize)
 
-	fprintf("\nBEGIN: fun_k4a_foo\n"); 
+	fprintf("\nBEGIN: fun_find_depth_camera_params\n"); 
 
 	seqProbDistObjectMatrices = {};
 	matMeanLinearModels = {};
@@ -143,6 +143,6 @@ function [ matMeanLinearModels, matStdevLinearModels ] = fun_k4a_foo(argMeasurem
 
 	toc;
 
-	fprintf("\nEND: fun_k4a_foo\n");
+	fprintf("\nEND: fun_find_depth_camera_params\n");
 	return;
 end
