@@ -50,11 +50,12 @@ function [seqDiffValues, seqGroundTruthValues] = fun_k4a_find_depth_error_distri
 	rowCount = szMatData(1, 1);
 	colCount = szMatData(1, 2);
 
-    fprintf("rows: %d, cols: %d", rowCount, colCount);
+    	fprintf("rows: %d, cols: %d", rowCount, colCount);
 	
 	seqDiffValues = zeros(1, szMatData(1) * szMatData(2) * numel(argSeqOfDepthImageMatrices));
 	seqGroundTruthValues = zeros(1, szMatData(1) * szMatData(2) * numel(argSeqOfDepthImageMatrices));
-    size(seqDiffValues);
+	seqMeasuredDepthValues = zeros(1, szMatData(1) * szMatData(2) * numel(argSeqOfDepthImageMatrices));
+    	size(seqDiffValues);
 	index = 0;
 	
 	for i = 1 : numel(argSeqOfDepthImageMatrices)
@@ -68,6 +69,7 @@ function [seqDiffValues, seqGroundTruthValues] = fun_k4a_find_depth_error_distri
 				index = (j - 1) * colCount + k;
 				seqDiffValues(1, baseIndex + index) = matDepthImage(j, k) - matGroundTruth(j, k);
 				seqGroundTruthValues(1, baseIndex + index) = matGroundTruth(j, k);
+				seqMeasuredDepthValues(1, baseIndex + index) = matDepthImage(j, k);
 			end
 		end
 		
@@ -75,14 +77,18 @@ function [seqDiffValues, seqGroundTruthValues] = fun_k4a_find_depth_error_distri
 		%seqMatDiff{i} = matDiff;
 	end
 	
+	[resMaxError, resRmse, resSdev] = fun_detect_error_stats(seqMeasuredDepthValues, seqGroundTruthValues);
+	
 	fprintf("\nFind diff values and plot them: \n");
 	
-    scatter(seqDiffValues, seqGroundTruthValues);
-    xlim([0, 15]);
-    ylim([-10, 10]);
-    ax = gca;
-    ax.XAxisLocation = "origin";
-    ax.YAxisLocation = "origin";
+    	scatter(seqGroundTruthValues, seqDiffValues);
+	xlabel("Distance");
+	ylabel("Error");
+    	xlim([0, max(seqMeasuredDepthValues) * 1.25]);
+    	ylim([-3 * resMaxError, 3 * resMaxError]);
+    	ax = gca;
+    	ax.XAxisLocation = "origin";
+    	ax.YAxisLocation = "origin";
 
 	fprintf("\nEND: fun_k4a_find_depth_error_distribution\n");
 	return;
