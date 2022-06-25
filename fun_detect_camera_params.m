@@ -1,7 +1,8 @@
 % ************************************************************************************
 % 
 % fun_detect_camera_params
-% camera Params are estimated by this method, it uses builtin matlab functions such as estimateCameraParameters.
+% RGB and IR camera Params are estimated by this method.
+% It uses builtin matlab functions such as estimateCameraParameters.
 % 
 % INPUT:
 %   argFiles		-> an array of strings where each element represents an image file that is going to be used for calibration
@@ -15,7 +16,6 @@
 function [ cameraParams ] = fun_detect_camera_params(argFiles, argSquareSize)
 
 	fprintf("\nBEGIN: fun_detect_camera_params\n");
-	
 	
 	if (~isnumeric(argSquareSize) || mod(argRowCount, 1) ~= 0 || sign(argSquareSize) <= 0)
 		error('SquareSize argument (%d) must be numeric and positive \n', argSquareSize);
