@@ -5,7 +5,7 @@
 % It uses builtin matlab functions such as estimateCameraParameters.
 % 
 % INPUT:
-%   argFiles		-> an array of strings where each element represents an image file that is going to be used for calibration
+%   argFiles		-> an array of strings where each element represents an image file path that is going to be used for calibration
 %   argSquareSize	-> size of the checkerboard pattern squares in milimeters
 %
 % OUTPUT: 
