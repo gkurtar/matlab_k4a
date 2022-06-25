@@ -1,24 +1,29 @@
 % ***********************************************************
 % 
-% fun_k4a_foo function
-% K4A Depth Camera Calibration is done by this method.
+% fun_find_depth_camera_params function
+% 
+% Parameters of the proposed calibration method is evaluated by this method.
+% A probability distribution object is evaluated for each pixel of each distance where each
+% probability distance object consist of mean and stddev field.
+% Based on the distance, linear model of mean and stddev values of the corresponding probability distribution object are evalauted
+% A linear model matrix for mean values and a linear model matrix for stddev values are detected.
+% 
+% 
 % Parameters for probability Based depth camera cal scheme is detected by
 % this method.
-% 16 Haziran 2020
 %
 % INPUT:
 %
-%	argMeasurements			-> a table where each row contains info for a specific distance
-%								Col 1 (ranges) (Integer): Sampling Distance in cm
-%								Col 2 (irFilePaths) (String): IR Image file path (Average)
-%								Col 3 (pcFilePaths) (String):  a sequence of depth data (point cloud) file paths
-%									acquired at the specified distance
+%	argMeasurements		-> a table where each row contains info for a specific distance
+%					Col 1 (ranges) (Integer): Sampling Distance in cm
+%					Col 2 (irFilePaths) (String): IR Image file path (Average)
+%					Col 3 (pcFilePaths) (String): A sequence of depth data file paths for the specified distance
 %
-%	argDepthDataSize		-> argDepthDataSize, a 1 x 2 array which represents row and col sizes of depth data;
+%	argDepthDataSize	-> argDepthDataSize, a 1 x 2 array which represents row and col sizes of depth data;
 %
 % OUTPUT: 
-%	depthCameraParamMatrix	-> a matrix of structures where each structure consists of two fields:
-%								linear model objects of mean and stddev values
+%	matMeanLinearModels	-> a matrix of linear model objects for mean values
+%	matStdevLinearModels	-> a matrix of linear model objects for stddev values
 %
 % **********************************************************
 
