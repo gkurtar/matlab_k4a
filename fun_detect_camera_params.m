@@ -2,7 +2,8 @@
 % 
 % fun_detect_camera_params
 % RGB and IR camera Params are estimated by this method.
-% It uses builtin matlab functions such as estimateCameraParameters.
+% It uses builtin matlab functions such as estimateCameraParameters and
+% returns the camera Parameters object.
 % 
 % INPUT:
 %   argFiles		-> an array of strings where each element represents an image file path that is going to be used for calibration
