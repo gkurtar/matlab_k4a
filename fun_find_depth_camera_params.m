@@ -1,16 +1,13 @@
 % ***********************************************************
 % 
-% fun_find_depth_camera_params function
+% fun_find_depth_camera_params
 % 
 % Parameters of the proposed calibration method is evaluated by this method.
 % A probability distribution object is evaluated for each pixel of each distance where each
 % probability distance object consist of mean and stddev field.
-% Based on the distance, linear model of mean and stddev values of the corresponding probability distribution object are evalauted
-% A linear model matrix for mean values and a linear model matrix for stddev values are detected.
-% 
-% 
-% Parameters for probability Based depth camera cal scheme is detected by
-% this method.
+% Based on the distance, linear model of mean and stddev values of the corresponding
+% probability distribution object are evalauted. A linear model matrix for mean values and a
+% linear model matrix for stddev values are detected and returned
 %
 % INPUT:
 %
