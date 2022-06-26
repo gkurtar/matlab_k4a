@@ -6,49 +6,42 @@
 % A probability distribution object is evaluated for each pixel of each distance where each
 % probability distance object consists of mean and stddev field.
 % Based on the distance, linear model of mean and stddev values of the corresponding
-% probability distribution object of a pixel is evalauted. A linear model matrix for mean values and a
-% linear model matrix for stddev values are detected and returned.
+% probability distribution object of a pixel is evalauted. A linear model matrix for
+% mean values and a linear model matrix for stddev values are detected and returned.
 %
 % INPUT:
+%   argDistances					-> an array of distance values in cm
+%	argSeqOfDepthDataFilePathArray	-> a cell array where each element is an array consisting of Depth data file paths
+%	argDepthDataSize				-> a 1 x 2 array which represents row and col sizes of depth data;
 %
-%	argMeasurements		-> a table where each row contains info for a specific distance
-%					Col 1 (ranges) (Integer): Sampling Distance in cm
-%					Col 2 (irFilePaths) (String): IR Image file path (Average)
-%					Col 3 (pcFilePaths) (String): A sequence of depth data file paths for the specified distance
-%
-%	argDepthDataSize	-> argDepthDataSize, a 1 x 2 array which represents row and col sizes of depth data;
-%
-% OUTPUT: 
-%	matMeanLinearModels	-> a 2D array (depth image sized) of linear model objects for mean values
+% OUTPUT:
+%	matMeanLinearModels		-> a 2D array (depth image sized) of linear model objects for mean values
 %	matStdevLinearModels	-> a 2D array (depth image sized) of linear model objects for stddev values
 %
 % **********************************************************
 
-function [ matMeanLinearModels, matStdevLinearModels ] = fun_find_depth_camera_params(argMeasurements, argDepthDataSize)
+function [ matMeanLinearModels, matStdevLinearModels ] = fun_find_depth_camera_params(argDistances, argSeqOfDepthDataFilePathArray, argDepthDataSize)
 
 	fprintf("\nBEGIN: fun_find_depth_camera_params\n"); 
+	
+	%argument check could be added
 
 	seqProbDistObjectMatrices = {};
 	matMeanLinearModels = {};
 	matStdevLinearModels = {};
 	
-	tableRowCount = height(argMeasurements);
-	seqDistances = argMeasurements.ranges;
 	rowCount = argDepthDataSize(1);
 	colCount = argDepthDataSize(2);
-	%rowCount = cast( argDepthDataSize(1), 'int16') / 100;
-	%colCount = cast( argDepthDataSize(2), 'int16') / 100;
 	
 	tic;
+	fprintf("\nGoing to evaluate prob dist objects for each pixel of each distance\n");
 
-	for i = 1 : tableRowCount
-		fprintf("\nIterating row %d, dist is %d\n", i, argMeasurements(i, :).ranges);
-
-		%distance = argMeasurements(i, :).ranges;
-		seqDepthDataFilePaths = argMeasurements(i, :).pcFilePaths;
-		%depthDataDims = argMeasurements(i, :).depthDataSizes;
-		%sizes = [depthDataDims{1}];
-
+	for i = 1 : numel(argDistances)
+		fprintf("\nIterating %d, dist is %d\n", i, argDistances(i));
+		
+		%seqDepthDataFilePaths = argMeasurements(i, :).pcFilePaths;
+		seqDepthDataFilePaths = argSeqOfDepthDataFilePathArray(i);
+		
 		seqMatDepthData = {};
 		for j = 1 : numel(seqDepthDataFilePaths)
 			disp(seqDepthDataFilePaths(j));
@@ -127,10 +120,10 @@ function [ matMeanLinearModels, matStdevLinearModels ] = fun_find_depth_camera_p
 				stdevVals(p) = seqPdObjects{p}.sigma;
 			end
 
-			mdlMeanLM = fitlm (seqDistances, meanVals);
+			mdlMeanLM = fitlm (argDistances, meanVals);
 			%plot (mdlMeanLM);
 
-			mdlStdDevLM = fitlm (seqDistances, stdevVals);
+			mdlStdDevLM = fitlm (argDistances, stdevVals);
 			%plot(mdlStdDevLM);
 			
 			matMeanLinearModels{i, j} = mdlMeanLM;
