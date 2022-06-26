@@ -1,29 +1,29 @@
 % ***********************************************************
-% 
-% fun_k4a_find_depth_error_distribution function
-% K4A Depth Camera Error Distribution is evaluated and plotted by this function
+% fun_inspect_errors
+%
+% Compares measured depth values and corresponding ground truth values and 
+% shows the figure for the errors based on distance by scatter function.
+% Also finds statistics for the depth measurement errors such as rmse and stdev and prints them.
 % 
 % INPUT:
-%
-%   argSeqOfDepthImageMatrices			-> an array of ..
-%   argSeqOfGroundTruthImageMatrices	-> an array of ...
+%   argSeqOfDepthImageMatrices		-> a cell array where each element is a 2D array of measured depth values 
+%   argSeqOfGroundTruthImageMatrices	-> a cell array where each element is a 2D array of ground truth values of the corresponding measurements 
 %
 % **********************************************************
-function [seqDiffValues, seqGroundTruthValues] = fun_inspect_errors(...
-	argSeqOfDepthImageMatrices, argSeqOfGroundTruthImageMatrices)
+function fun_inspect_errors(argSeqOfDepthImageMatrices, argSeqOfGroundTruthImageMatrices)
 
 	fprintf("\nBEGIN: fun_inspect_errors\n");
 	fprintf("\nArgument Checking: \n");
 
 	if (~iscell(argSeqOfDepthImageMatrices) || ~iscell(argSeqOfGroundTruthImageMatrices))
-		error("sdf 1");
+		error("Each argument must be a cell-array");
 	end
 
 	if (numel(argSeqOfDepthImageMatrices) ~= numel(argSeqOfGroundTruthImageMatrices) ...
 		|| numel(argSeqOfGroundTruthImageMatrices) == 0)
-		warningMessage = sprintf("Warning: sdf:%s\n", numel(argSeqOfDepthImageMatrices));
-		%uiwait(msgbox(warningMessage));
-		error("sdf");
+		warningMessage = sprintf("Element count of the arguments should be equal and gt zero: %d, %d\n", ...
+				numel(argSeqOfDepthImageMatrices), numel(argSeqOfGroundTruthImageMatrices));
+		error(warningMessage);
 	end
 
 	for i = 1 : numel(argSeqOfDepthImageMatrices)
@@ -31,30 +31,27 @@ function [seqDiffValues, seqGroundTruthValues] = fun_inspect_errors(...
 		matGroundTruth = argSeqOfGroundTruthImageMatrices{i};
 		
 		if (~ismatrix(matDepthImage) || ~ismatrix(matGroundTruth))
-			error("sdf 2");
+			error("Each cell-array element should be a matrix.");
 		end
 		
 		szDepth = size(matDepthImage)
-        disp("sdf");
+		%disp("sdf");
 		szGrTuth = size(matGroundTruth)
 		
 		if (numel(szDepth) ~= 2 || numel(szGrTuth) ~= 2 || ~isequal(size(matDepthImage), size(matGroundTruth)))
-			error("sdf 3");
+			error("Matrix dimensions should be equal and size of each matrix must have two elements.");
 		end
 	end
 
-	seqMatDiff = {};
 	szMatData = size(argSeqOfDepthImageMatrices{1});
-    
 	rowCount = szMatData(1, 1);
 	colCount = szMatData(1, 2);
 
-    	fprintf("rows: %d, cols: %d", rowCount, colCount);
+	fprintf("rows: %d, cols: %d", rowCount, colCount);
 	
 	seqDiffValues = zeros(1, szMatData(1) * szMatData(2) * numel(argSeqOfDepthImageMatrices));
 	seqGroundTruthValues = zeros(1, szMatData(1) * szMatData(2) * numel(argSeqOfDepthImageMatrices));
 	seqMeasuredDepthValues = zeros(1, szMatData(1) * szMatData(2) * numel(argSeqOfDepthImageMatrices));
-    	size(seqDiffValues);
 	index = 0;
 	
 	for i = 1 : numel(argSeqOfDepthImageMatrices)
@@ -76,18 +73,28 @@ function [seqDiffValues, seqGroundTruthValues] = fun_inspect_errors(...
 		%seqMatDiff{i} = matDiff;
 	end
 	
-	[resMaxError, resRmse, resSdev] = fun_detect_error_stats(seqMeasuredDepthValues, seqGroundTruthValues);
+	%[resMaxError, resRmse, resSdev] = fun_detect_error_stats(seqMeasuredDepthValues, seqGroundTruthValues);
+	%diff_data = argMeasuredDepthValues - argRealDepthValues;
 	
+	%compute for real to fitted diff matrix
+	minVal = min(seqDiffValues);
+	maxVal = max(seqDiffValues);
+	maxErrorVal = max(abs(minVal), abs(maxVal));
+	SQE = seqDiffValues.^2;
+	MSE = mean(SQE(:));
+	RMSE = sqrt(MSE);
+	SDEV = std(seqDiffValues(:));
+	fprintf ("\nDepth Residual Stats are:\n\tmax_error %f, mse %f, rmse %f, std_dev: %f", maxErrorVal, MSE, RMSE, SDEV);
+
 	fprintf("\nFind diff values and plot them: \n");
-	
-    	scatter(seqGroundTruthValues, seqDiffValues);
+	scatter(seqGroundTruthValues, seqDiffValues);
 	xlabel("Distance");
 	ylabel("Error");
-    	xlim([0, max(seqMeasuredDepthValues) * 1.25]);
-    	ylim([-3 * resMaxError, 3 * resMaxError]);
-    	ax = gca;
-    	ax.XAxisLocation = "origin";
-    	ax.YAxisLocation = "origin";
+	xlim([0, max(seqMeasuredDepthValues) * 1.25]);
+	ylim([-3 * maxErrorVal, 3 * maxErrorVal]);
+	ax = gca;
+	ax.XAxisLocation = "origin";
+	ax.YAxisLocation = "origin";
 
 	fprintf("\nEND: fun_inspect_errors\n");
 	return;
