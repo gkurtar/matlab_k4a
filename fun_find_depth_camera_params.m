@@ -4,10 +4,10 @@
 % 
 % Parameters of the proposed calibration method is evaluated by this method.
 % A probability distribution object is evaluated for each pixel of each distance where each
-% probability distance object consist of mean and stddev field.
+% probability distance object consists of mean and stddev field.
 % Based on the distance, linear model of mean and stddev values of the corresponding
-% probability distribution object are evalauted. A linear model matrix for mean values and a
-% linear model matrix for stddev values are detected and returned
+% probability distribution object of a pixel is evalauted. A linear model matrix for mean values and a
+% linear model matrix for stddev values are detected and returned.
 %
 % INPUT:
 %
@@ -19,8 +19,8 @@
 %	argDepthDataSize	-> argDepthDataSize, a 1 x 2 array which represents row and col sizes of depth data;
 %
 % OUTPUT: 
-%	matMeanLinearModels	-> a matrix of linear model objects for mean values
-%	matStdevLinearModels	-> a matrix of linear model objects for stddev values
+%	matMeanLinearModels	-> a 2D array (depth image sized) of linear model objects for mean values
+%	matStdevLinearModels	-> a 2D array (depth image sized) of linear model objects for stddev values
 %
 % **********************************************************
 
