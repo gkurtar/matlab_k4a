@@ -10,12 +10,12 @@
 % mean values and a linear model matrix for stddev values are detected and returned.
 %
 % INPUT:
-%   argDistances					-> an array of distance values in cm
+%   argDistances			-> an array of distance values in cm
 %	argSeqOfDepthDataFilePathArray	-> a cell array where each element is an array consisting of Depth data file paths
-%	argDepthDataSize				-> a 1 x 2 array which represents row and col sizes of depth data;
+%	argDepthDataSize		-> a 1 x 2 array which represents row and col sizes of depth data;
 %
 % OUTPUT:
-%	matMeanLinearModels		-> a 2D array (depth image sized) of linear model objects for mean values
+%	matMeanLinearModels	-> a 2D array (depth image sized) of linear model objects for mean values
 %	matStdevLinearModels	-> a 2D array (depth image sized) of linear model objects for stddev values
 %
 % **********************************************************
