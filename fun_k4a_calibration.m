@@ -4,16 +4,19 @@
 % fun_k4a_calibration function
 % K4A Depth Camera Calibration and error analysis is done by this method
 % 10 Haziran 2020
+% (RGB camera params are to be estimated)
 %
 % INPUT:
 %
-%   argRgbImages	-> an array of RGB images of a planar checkerboard pattern 	(RGB camera params are to be estimated)
-%   argIrImages		-> an array of IR images of a planar checkerboard pattern 	(IR camera params are to be estimated)
-%   argMeasurements -> a table where each row contains info for a specific distance
-%							Col 1 (ranges) (Integer): Sampling Distance in cm
-%							Col 2 (irFilePaths) (String): IR Image file paths (Average)
-%							Col 3 (pcFilePaths) (String): Point Cloud file paths (Average)
-%							Col 4 (depthDataSizes) (1x2 double): Point Cloud matrix dimensions
+%   argRgbImages	-> an array of RGB image file paths of a planar checkerboard pattern 	
+%   argRgbSquareSize	-> an integer which is the size of the square (centimeter) in the RGB checkerboard pattern
+%   argIrImages		-> an array of IR image file paths of a planar checkerboard pattern
+%   argIrSquareSize	-> an integer which is the size of the square (centimeter) in the IR checkerboard pattern
+%   argMeasurements 	-> a table where each row contains info for a specific distance
+%						Col 1 (ranges) (Integer): Sampling Distance in cm
+%						Col 2 (irFilePaths) (String): IR Image file paths (Average)
+%						Col 3 (pcFilePaths) (String): Point Cloud file paths (Average)
+%						Col 4 (depthDataSizes) (1x2 double): Point Cloud matrix dimensions
 %
 % OUTPUT: 
 %   correctedImages -> corrected images in measurements
