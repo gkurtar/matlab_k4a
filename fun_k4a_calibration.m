@@ -1,22 +1,23 @@
 
 % ***********************************************************
 % 
-% fun_k4a_calibration function
+% fun_k4a_calibration
+%
 % K4A Depth Camera Calibration and error analysis is done by this method
 % 10 Haziran 2020
 % (RGB camera params are to be estimated)
 %
 % INPUT:
 %
-%   argRgbImages	-> an array of RGB image file paths of a planar checkerboard pattern 	
+%   argRgbImages		-> an array of RGB image file paths of a planar checkerboard pattern 	
 %   argRgbSquareSize	-> an integer which is the size of the square (centimeter) in the RGB checkerboard pattern
-%   argIrImages		-> an array of IR image file paths of a planar checkerboard pattern
-%   argIrSquareSize	-> an integer which is the size of the square (centimeter) in the IR checkerboard pattern
+%   argIrImages			-> an array of IR image file paths of a planar checkerboard pattern
+%   argIrSquareSize		-> an integer which is the size of the square (centimeter) in the IR checkerboard pattern
 %   argMeasurements 	-> a table where each row contains info for a specific distance
 %						Col 1 (ranges) (Integer): Sampling Distance in cm
 %						Col 2 (irFilePaths) (String): IR Image file paths (Average)
 %						Col 3 (pcFilePaths) (String): Point Cloud file paths (Average)
-%						Col 4 (depthDataSizes) (1x2 double): Point Cloud matrix dimensions
+%   argDepthDataDims	-> a 1x2 vector denoting the size ( row and col count) of the depth data image matrix
 %
 % OUTPUT: 
 %   correctedImages -> corrected images in measurements
@@ -25,7 +26,7 @@
 % **********************************************************
 
 function [ correctedImage ] = fun_k4a_calibration(...
-	argRgbImages, argRgbSquareSize, argIrImages, argIrSquareSize, argMeasurements)
+	argRgbImages, argRgbSquareSize, argIrImages, argIrSquareSize, argMeasurements, argDepthDataDims)
 
 	fprintf("\nBEGIN: fun_k4a_calibration\n");
 
@@ -46,7 +47,7 @@ function [ correctedImage ] = fun_k4a_calibration(...
 	for i = 1 : tableRowCount
 		depthDataFilePath = argMeasurements(i, :).pcFilePaths;
 		depthDataDim = argMeasurements(i, :).depthDataSizes;
-		sizes = [depthDataDim{1}];
+		%sizes = [depthDataDim{1}];
 		fprintf("\ndepthDataDim:\n");
 		%disp(depthDataDim{1});
 		%disp(sizes(1)); %disp(sizes(2));
@@ -55,7 +56,8 @@ function [ correctedImage ] = fun_k4a_calibration(...
 		if exist(depthDataFilePath, 'file')
 			% File exists.  Do stuff....
 			depthData = importdata(depthDataFilePath);
-			undistortedDepthData = fun_undistort_depth_data(depthData, sizes(1), sizes(2), irCamParams);
+			%undistortedDepthData = fun_undistort_depth_data(depthData, sizes(1), sizes(2), irCamParams);
+			undistortedDepthData = fun_undistort_depth_data(depthData, argDepthDataDims(1), argDepthDataDims(2), irCamParams);
 			seqUndistortedDepthData = [seqUndistortedDepthData ; undistortedDepthData];
 			%fprintf("%s is undistorted:\n", depthDataFilePath);
 		else
