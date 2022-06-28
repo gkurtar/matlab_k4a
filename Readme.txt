@@ -1,5 +1,4 @@
 
-
 iş akışı
 -------------------------------------------------------------------------------------------------------------------		
 1. start processing script çağrılır.
@@ -23,25 +22,31 @@ iş akışı
 % e) Bu aşamada her bir depth image'a bağlı olarak bir ground truth image de elde edilir.
 %	 Düzeltilen image'ler ile Ground Truth image'ler karsılastırılarak error stats bulunur ve bir dosyaya yazılır.
 %
-% K4A Depth Camera Calibration and error analysis is done by this method.
+% K4A Depth Camera Calibration and depth image correction error analysis is done by this method.
 % RGB camera parameters are estimated first, After this step IR camera parameters
-% are estimated. Depth camera data are undistorted by using IR camera paramters.
+% are estimated. Depth camera data could be undistorted by using these IR camera paramters.
 % Depth Camera measurements are also processed and analysed.
 % Linear models of mean and std deviation for each pixel is evaluated as depth camera parameters.
-% Undistorted depth data are corrected via depth camera parameters afterwards.
-% Corrected data are compared with ground truth data and residual values are further analysed
+% Depth images which are to be corrected would be processed after these steps.
+% Using these input images ground truth data is determined.
+% First step involves undistorting depth data via IR camera Parameters.
+% In second step these depth images are corrected via depth camera parameters.
+% After these steps corrected data are compared with ground truth data and residual values are further analysed
 % and depth error stats are acquired.
 %
 % INPUT:
-%   argRgbImages		-> an array of RGB image file paths of a planar checkerboard pattern 	
-%   argRgbSquareSize	-> an integer which is the size of the square (centimeter) in the RGB checkerboard pattern
-%   argIrImages			-> an array of IR image file paths of a planar checkerboard pattern
-%   argIrSquareSize		-> an integer which is the size of the square (centimeter) in the IR checkerboard pattern
-%   argSeqDistances		-> an array of distances in cm.
-%   argSeqOfPcFilePaths -> a cell array where each element contains row vector of strings and each string denotes the depth data file path %						of the corresponding indexed distances array i.e. { [da1.txt, da2.txt, da3.txt], [db1.txt, db2.txt, db3.txt] } 
+%   argRgbImages        -> an array of RGB image file paths of a planar checkerboard pattern 	
+%   argRgbSquareSize    -> an integer which is the size of the square (centimeter) in the RGB checkerboard pattern
+%   argIrImages         -> an array of IR image file paths of a planar checkerboard pattern
+%   argIrSquareSize     -> an integer which is the size of the square (centimeter) in the IR checkerboard pattern
+%   argSeqDistances     -> an array of distances in cm.
+%   argSeqOfPcFilePaths -> a cell array where each element contains row vector of strings and each string denotes the depth data file path
+%                          of the corresponding indexed distances array i.e. { [da1.txt, da2.txt, da3.txt], [db1.txt, db2.txt, db3.txt] }
+%   argSeqOfDepthDataToBeCorrected -> an array of Depth Image file paths to be corrected
 %   argDepthDataSize	-> a 1x2 vector denoting the size ( row and col count) of the depth data image matrix
 %
-% OUTPUT: __
+% OUTPUT:
+%   resCorrectedImages	-> corrected images in measurements
 %
 -------------------------------------------------------------------------------------------------------------------			   
 3. fun_detect_camera_params
