@@ -21,7 +21,9 @@
 %   argIrImages         -> an array of IR image file paths of a planar checkerboard pattern
 %   argIrSquareSize     -> an integer which is the size of the square (centimeter) in the IR checkerboard pattern
 %   argSeqDistances     -> an array of distances in cm.
-%   argSeqOfPcFilePaths -> a cell array where each element contains row vector of strings and each string denotes the depth data file path						of the corresponding indexed distances array i.e. { [da1.txt, da2.txt, da3.txt], [db1.txt, db2.txt, db3.txt] } 
+%   argSeqOfPcFilePaths -> a cell array where each element contains row vector of strings and each string denotes the depth data file path
+%                          of the corresponding indexed distances array i.e. { [da1.txt, da2.txt, da3.txt], [db1.txt, db2.txt, db3.txt] }
+%   argSeqOfDepthDataToBeCorrected -> an array of Depth Image file paths to be corrected
 %   argDepthDataSize	-> a 1x2 vector denoting the size ( row and col count) of the depth data image matrix
 %
 %%%%   argMeasurements 	-> a table where each row contains info for a specific distance
@@ -34,7 +36,7 @@
 %
 % **********************************************************
 
-function [ correctedImage ] = fun_k4a_calibration(...
+function [ resCorrectedImages ] = fun_k4a_calibration(...
 	argRgbImages, argRgbSquareSize, argIrImages, argIrSquareSize, argMeasurements, argDepthDataSize)
 
 	fprintf("\nBEGIN: fun_k4a_calibration\n");
