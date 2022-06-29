@@ -23,15 +23,8 @@
 %   argSeqDistances     -> an array of distances in cm.
 %   argSeqOfPcFilePaths -> a cell array where each element is a string array and each string denotes the depth data file path
 %                          of the corresponding indexed distances array i.e. { [da1.txt, da2.txt, da3.txt], [db1.txt, db2.txt, db3.txt] }
-%   argSeqOfDepthDataToBeCorrected -> an array of Depth Image file paths to be corrected
-
-%   argSeqOfDepthDataToBeCorrected -> an array of Depth Image file paths to be corrected
+%   argSeqOfDepthDataToBeAnalysed -> an array of Depth Image file paths to be corrected
 %   argDepthDataSize	-> a 1x2 vector denoting the size ( row and col count) of the depth data image matrix
-%
-%%%%   argMeasurements 	-> a table where each row contains info for a specific distance
-%						Col 1 (ranges) (Integer): Sampling Distance in cm
-%						Col 2 (irFilePaths) (String): IR Image file paths (Average)
-%						Col 3 (pcFilePaths) (String): Point Cloud file paths (Average)
 %
 % OUTPUT:
 %   resCorrectedImages	-> corrected images in measurements
@@ -39,7 +32,14 @@
 % **********************************************************
 
 function [ resCorrectedImages ] = fun_k4a_calibration(...
-	argRgbImages, argRgbSquareSize, argIrImages, argIrSquareSize, argMeasurements, argDepthDataSize)
+	argRgbImages,
+	argRgbSquareSize,
+	argIrImages,
+	argIrSquareSize,
+	argSeqDistances,
+	argSeqOfPcFilePaths,
+	argSeqOfDepthDataToBeAnalysed,
+	argDepthDataSize)
 
 	fprintf("\nBEGIN: fun_k4a_calibration\n");
 
@@ -51,11 +51,10 @@ function [ resCorrectedImages ] = fun_k4a_calibration(...
 	%disp(argIrImages);
 	irCamParams = fun_detect_camera_params(argIrImages, argIrSquareSize);
 
+	%{
 	fprintf("\nUndistorting Depth Image\n");
-	
 	seqUndistortedDepthData = {};
 	tableRowCount = height(argMeasurements);
-
 	fprintf("\nRow Count: %d\n", tableRowCount);
 	for i = 1 : tableRowCount
 		depthDataFilePath = argMeasurements(i, :).pcFilePaths;
@@ -79,7 +78,34 @@ function [ resCorrectedImages ] = fun_k4a_calibration(...
 			error(warningMessage);
 		end
 	end
+	%}
 
+	fprintf("\nProcessing Depth Images to find depth cam params\n");
+	[matMeanLinearModels, matStdevLinearModels] = fun_find_depth_camera_params(argSeqDistances, argSeqOfPcFilePaths, argDepthDataSize);
+
+	fprintf("\nProcessing Depth Images to correct them.\n");
+	seqOfCorrectedImages = {};
+	seqOfGroundTruthImages = {};
+	
+	for i = 1 : numel(argSeqOfDepthDataToBeAnalysed)
+
+		depthDataFilePath = argSeqOfDepthDataToBeAnalysed(i);
+		depthData = importdata(depthDataFilePath);
+		%undistortedDepthData = fun_undistort_depth_data(depthData, sizes(1), sizes(2), irCamParams);
+		undistortedDepthData = fun_undistort_depth_data(depthData, argDepthDataSize(1), argDepthDataSize(2), irCamParams);
+
+		%find ground truth data
+		% sample code
+		%seqOfGroundTruthImages = [seqOfGroundTruthImages ; someGTImage];
+
+		%correct measurements // width ve height degerleri arguman verilmeden de bulunabilir.
+		resCorrectedImage = fun_correct_measurements(undistortedDepthData, argDepthDataSize(1), argDepthDataSize(2), matMeanLinearModels);
+		seqOfCorrectedImages = [seqOfCorrectedImages ; resCorrectedImage];
+	end
+	
+	fprintf("\nAnalysing errors\n");
+	fun_inspect_errors(argSeqOfDepthImageMatrices, argSeqOfGroundTruthImageMatrices);
+	
 	fprintf("\nEND: fun_k4a_calibration\n");
 	return;
 end
