@@ -11,11 +11,11 @@
 %		argColCount	-> Number of the columns in the depth image
 %
 % % Output Values:
-%		matDepthData	-> Depth Data matrix
+%		resMatDepthData	-> Depth Data matrix
 %
 % **********************************************************
 
-function [matDepthData] = fun_read_point_cloud_data(argFilePath, argRowCount, argColCount)
+function [resMatDepthData] = fun_read_point_cloud_data(argFilePath, argRowCount, argColCount)
 
 	fprintf("\nBEGIN: fun_read_point_cloud_data\n");
 
@@ -44,13 +44,13 @@ function [matDepthData] = fun_read_point_cloud_data(argFilePath, argRowCount, ar
 	
 	fprintf("%s file is imported, sizes are %d %d \n", argFilePath, rows, cols);
 	colIndex = 3;
-	matDepthData = zeros(argRowCount, argColCount);
+	resMatDepthData = zeros(argRowCount, argColCount);
 
 	for i = 1 : argRowCount
 		for j = 1 : argColCount
 			rowIndex = (i - 1) * cols + j;
-			matDepthData(i, j) = tmp(rowIndex, colIndex);
-			%if (j == 20) fprintf ("i %d, j %d, row %d depth %d \n", i, j, rowIndex, matDepthData(i, j));
+			resMatDepthData(i, j) = tmp(rowIndex, colIndex);
+			%if (j == 20) fprintf ("i %d, j %d, row %d depth %d \n", i, j, rowIndex, resMatDepthData(i, j));
 		end
 	end
 
