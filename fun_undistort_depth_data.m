@@ -12,11 +12,11 @@
 %   argCameraParams -> IR(Depth) camera parameters
 %
 % OUTPUT: 
-%   correctedImage	-> corrected image as a two dimensional (depth point cloud) array where its size is eq to [argRowCount] [argColCount]
+%   resCorrectedImage	-> corrected image as a two dimensional (depth point cloud) array where its size is eq to [argRowCount] [argColCount]
 %
 % **********************************************************
 
-function [ correctedImage ] = fun_undistort_depth_data(argDepthData, argRowCount, argColCount, argCameraParams)
+function [ resCorrectedImage ] = fun_undistort_depth_data(argDepthData, argRowCount, argColCount, argCameraParams)
 
 	RESULT_PATH = "c:\tmp\cal\";
 	fprintf("\nBEGIN: fun_undistort_depth_data\n");
@@ -43,12 +43,12 @@ function [ correctedImage ] = fun_undistort_depth_data(argDepthData, argRowCount
 	%fileID = fopen('ud_depth.txt', 'w');
 	fileID = fopen(strcat(RESULT_PATH, "ud_depth.txt"), 'w');
 	
-	correctedImage = zeros(argRowCount, argColCount);
+	resCorrectedImage = zeros(argRowCount, argColCount);
 	for i=1:argRowCount
 		for j=1:argColCount
 			%fprintf(fileID, "%d %d %d\n", i, j, imgUndistortedDepthData.CData(i, j));
 			fprintf(fileID, "%d %d %d\n", i, j, cast(imgUndistortedDepthData.CData(i, j), "uint16"));
-			correctedImage(i, j) = cast(imgUndistortedDepthData.CData(i, j), "uint16");
+			resCorrectedImage(i, j) = cast(imgUndistortedDepthData.CData(i, j), "uint16");
 		end
 	end
 	
