@@ -129,7 +129,28 @@ iş akışı
 % OUTPUT: __
 %
 -------------------------------------------------------------------------------------------------------------------		
-7. fun_read_point_cloud_data
+7. fun_correct_measurements
+%
+% Bu metod her bir pixel için hesaplanmış mean linear modeller kullanarak input olarak verilen
+% iki boyutlu depth image data'yı düzelterek, yeni bir depth data matrix sonucu verir.
+%
+% Given a 2D (w x h) array of depth measurements where w and h are width and height of the
+% input image respectively and a 2D (w x h) array of  linear model objects where each model
+% represents the mean value of the evaluated probability distribution at the corresponding
+% pixel this method returns the corrected measurements.
+%
+% Input Arguments:
+%   argDepthImage            -> Depth Image Data of size (argHeight x argWidth)
+%   argWidth                 -> Depth Image Width
+%   argHeight                -> Depth Image Height 
+%   argMeanLinearModelMatrix -> 2D array of size (argHeight x argWidth) where each element
+%								is a linear model object of the corresponding pixel
+%
+% Output Values:
+%   resCorrectedImage        -> Corrected Depth Image Data of size (argHeight x argWidth).
+%
+-------------------------------------------------------------------------------------------------------------------		
+8. fun_read_point_cloud_data
 %
 % a) Input argumanı olarak verilen dosyayı importdata fonksiyonu ile okur.
 % b) Yine arguman olarak belirtilen rowCount ve colCount boyutlarında bir 2d array ile okunan data return edilir.
