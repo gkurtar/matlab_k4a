@@ -40,7 +40,7 @@ iş akışı
 %   argIrImages         -> an array of IR image file paths of a planar checkerboard pattern
 %   argIrSquareSize     -> an integer which is the size of the square (centimeter) in the IR checkerboard pattern
 %   argSeqDistances     -> an array of distances in cm.
-%   argSeqOfPcFilePaths -> a cell array where each element contains row vector of strings and each string denotes the depth data file path
+%   argSeqOfPcFilePathArray -> a cell array where each element is a string array and each string denotes the depth data file path
 %                          of the corresponding indexed distances array i.e. { [da1.txt, da2.txt, da3.txt], [db1.txt, db2.txt, db3.txt] }
 %   argSeqOfDepthDataToBeCorrected -> an array of Depth Image file paths to be corrected
 %   argDepthDataSize	-> a 1x2 vector denoting the size ( row and col count) of the depth data image matrix
@@ -64,7 +64,7 @@ iş akışı
 %   argSquareSize	-> size of the checkerboard pattern squares in milimeters
 %
 % OUTPUT: 
-%   cameraParams	-> estimated Camera Parameters object
+%   resCameraParams	-> estimated Camera Parameters object
 %
 -------------------------------------------------------------------------------------------------------------------			
 4. fun_undistort_depth_data
@@ -82,7 +82,7 @@ iş akışı
 %   argCameraParams -> IR(Depth) camera parameters
 %
 % OUTPUT: 
-%   correctedImage	-> a 2D array of size [argRowCount * argColCount] which represents corrected image (depth point cloud) 
+%   resCorrectedImage	-> a 2D array of size [argRowCount * argColCount] which represents corrected image (depth point cloud) 
 %
 -------------------------------------------------------------------------------------------------------------------		
 5. fun_find_depth_camera_params
@@ -145,5 +145,5 @@ iş akışı
 %	argColCount		-> Number of the columns in the depth image
 %
 % OUTPUT:
-%	matDepthData	-> a 2D array of size [argRowCount * argColCount] which represents Depth Point Cloud
+%	resDepthDataMatrix	-> a 2D array of size [argRowCount * argColCount] which represents Depth Point Cloud
 %
