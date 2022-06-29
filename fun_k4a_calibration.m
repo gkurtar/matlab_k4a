@@ -23,7 +23,7 @@
 %   argSeqDistances     -> an array of distances in cm.
 %   argSeqOfPcFilePaths -> a cell array where each element is a string array and each string denotes the depth data file path
 %                          of the corresponding indexed distances array i.e. { [da1.txt, da2.txt, da3.txt], [db1.txt, db2.txt, db3.txt] }
-%   argSeqOfDepthDataToBeAnalysed -> an array of Depth Image file paths to be corrected
+%   argSeqOfDepthDataToBeCorrected -> an array of Depth Image file paths to be corrected
 %   argDepthDataSize	-> a 1x2 vector denoting the size ( row and col count) of the depth data image matrix
 %
 % OUTPUT:
@@ -38,7 +38,7 @@ function [ resCorrectedImages ] = fun_k4a_calibration(...
 	argIrSquareSize,
 	argSeqDistances,
 	argSeqOfPcFilePaths,
-	argSeqOfDepthDataToBeAnalysed,
+	argSeqOfDepthDataToBeCorrected,
 	argDepthDataSize)
 
 	fprintf("\nBEGIN: fun_k4a_calibration\n");
@@ -87,9 +87,9 @@ function [ resCorrectedImages ] = fun_k4a_calibration(...
 	seqOfCorrectedImages = {};
 	seqOfGroundTruthImages = {};
 	
-	for i = 1 : numel(argSeqOfDepthDataToBeAnalysed)
+	for i = 1 : numel(argSeqOfDepthDataToBeCorrected)
 
-		depthDataFilePath = argSeqOfDepthDataToBeAnalysed(i);
+		depthDataFilePath = argSeqOfDepthDataToBeCorrected(i);
 		depthData = importdata(depthDataFilePath);
 		%undistortedDepthData = fun_undistort_depth_data(depthData, sizes(1), sizes(2), irCamParams);
 		undistortedDepthData = fun_undistort_depth_data(depthData, argDepthDataSize(1), argDepthDataSize(2), irCamParams);
