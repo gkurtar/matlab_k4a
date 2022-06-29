@@ -12,11 +12,11 @@
 %   argSquareSize	-> size of the checkerboard pattern squares in milimeters
 %
 % OUTPUT: 
-%   cameraParams	-> estimated Camera Parameters object
+%   resCameraParams	-> estimated Camera Parameters object
 %
 % **********************************************************
 
-function [ cameraParams ] = fun_detect_camera_params(argFiles, argSquareSize)
+function [ resCameraParams ] = fun_detect_camera_params(argFiles, argSquareSize)
 
 	fprintf("\nBEGIN: fun_detect_camera_params\n");
 	
@@ -37,11 +37,11 @@ function [ cameraParams ] = fun_detect_camera_params(argFiles, argSquareSize)
 	% Calibrate the camera.
 	I = readimage(imgds, 1); %Read one of them 
 	imageSize = [size(I, 1), size(I, 2)];
-	cameraParams = estimateCameraParameters(imagePoints, worldPoints, 'ImageSize',imageSize);
+	resCameraParams = estimateCameraParameters(imagePoints, worldPoints, 'ImageSize',imageSize);
 
 	%Remove lens distortion and display results
 	I = imgds.readimage(1);
-	J1 = undistortImage(I, cameraParams);
+	J1 = undistortImage(I, resCameraParams);
 
 	%{
 	figure;
@@ -52,7 +52,7 @@ function [ cameraParams ] = fun_detect_camera_params(argFiles, argSquareSize)
 	imshow(J1);
 	title('Corrected');
 	%}
-	disp(cameraParams);
+	disp(resCameraParams);
 
 	fprintf("\nEND: fun_detect_camera_params\n");
 end
