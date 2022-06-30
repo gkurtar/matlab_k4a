@@ -90,7 +90,9 @@ function [ resCorrectedImages ] = fun_k4a_calibration(...
 	for i = 1 : numel(argSeqOfDepthDataToBeCorrected)
 
 		depthDataFilePath = argSeqOfDepthDataToBeCorrected(i);
-		depthData = importdata(depthDataFilePath);
+		%depthData = importdata(depthDataFilePath);
+		depthData = fun_read_point_cloud_data(depthDataFilePath, argDepthDataSize(1), argDepthDataSize(2));
+		
 		%undistortedDepthData = fun_undistort_depth_data(depthData, sizes(1), sizes(2), irCamParams);
 		undistortedDepthData = fun_undistort_depth_data(depthData, argDepthDataSize(1), argDepthDataSize(2), irCamParams);
 
