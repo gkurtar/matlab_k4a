@@ -21,13 +21,13 @@
 %   argIrImages         -> an array of IR image file paths of a planar checkerboard pattern
 %   argIrSquareSize     -> an integer which is the size of the square (centimeter) in the IR checkerboard pattern
 %   argSeqDistances     -> an array of distances in cm.
-%   argSeqOfPcFilePaths -> a cell array where each element is a string array and each string denotes the depth data file path
+%   argSeqOfPcFilePathArray -> a cell array where each element is a string array and each string denotes the depth data (point cloud) file path
 %                          of the corresponding indexed distances array i.e. { [da1.txt, da2.txt, da3.txt], [db1.txt, db2.txt, db3.txt] }
 %   argSeqOfDepthDataToBeCorrected -> an array of Depth Image file paths to be corrected
-%   argDepthDataSize	-> a 1x2 vector denoting the size ( row and col count) of the depth data image matrix
+%   argDepthDataSize    -> a 1x2 vector denoting the size ( row and col count) of the depth data image matrix
 %
 % OUTPUT:
-%   resCorrectedImages	-> corrected images in measurements
+%   resCorrectedImages	-> an array of corrected images whose size is eq to argument named argSeqOfDepthDataToBeCorrected
 %
 % **********************************************************
 
@@ -37,7 +37,7 @@ function [ resCorrectedImages ] = fun_k4a_calibration(...
 	argIrImages,
 	argIrSquareSize,
 	argSeqDistances,
-	argSeqOfPcFilePaths,
+	argSeqOfPcFilePathArray,
 	argSeqOfDepthDataToBeCorrected,
 	argDepthDataSize)
 
@@ -81,7 +81,7 @@ function [ resCorrectedImages ] = fun_k4a_calibration(...
 	%}
 
 	fprintf("\nProcessing Depth Images to find depth cam params\n");
-	[matMeanLinearModels, matStdevLinearModels] = fun_find_depth_camera_params(argSeqDistances, argSeqOfPcFilePaths, argDepthDataSize);
+	[matMeanLinearModels, matStdevLinearModels] = fun_find_depth_camera_params(argSeqDistances, argSeqOfPcFilePathArray, argDepthDataSize);
 
 	fprintf("\nProcessing Depth Images to correct them.\n");
 	seqOfCorrectedImages = {};
