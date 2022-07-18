@@ -13,7 +13,7 @@
 %    mdlStdDevLM	-> Linear model of Standard Deviations that fits input std dev values parameters
 %
 %*******************************************************************************************
-function [ mdlMeanLM, mdlStdDevLM ] = fun_find_prob_params_based_on_distance(argSeqDistances, argSeqPds)
+function [ mdlMeanLM, mdlStdDevLM ] = fun_find_prb_linear_models(argSeqDistances, argSeqPds)
 
 	%fprintf("\nBEGIN: fun_find_prob_params_based_on_distance(%s -- size %d and %s -- size %d\n", ...
 	%	mat2str(argSeqDistances), length(argSeqDistances), mat2str(argSeqPds), length(argSeqPds));
