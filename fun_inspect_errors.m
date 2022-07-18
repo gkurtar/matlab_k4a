@@ -1,4 +1,4 @@
-% ***********************************************************
+% ******************************************************************
 % fun_inspect_errors
 %
 % Compares measured depth values and corresponding ground truth values and 
@@ -9,7 +9,7 @@
 %   argSeqOfDepthImageMatrices		-> a cell array where each element is a 2D array of measured depth values 
 %   argSeqOfGroundTruthImageMatrices	-> a cell array where each element is a 2D array of ground truth values of the corresponding measurements 
 %
-% **********************************************************
+% ******************************************************************
 function fun_inspect_errors(argSeqOfDepthImageMatrices, argSeqOfGroundTruthImageMatrices)
 
 	fprintf("\nBEGIN: fun_inspect_errors\n");
