@@ -24,85 +24,16 @@ fprintf("\nBEGIN: k4a depth camera calibration script\n");
 
 	fprintf("\nStartig RGB camera calibration\n");
 
-	%Read RGB IMAGES from folder and store in an image array
-
-	%{
-	seq_rgb_images = {};
-	files_dir = dir(fullfile(RGB_PATH, '*.png'));
-	for i = 1:numel(files_dir)
-		filepath = fullfile(files_dir(i).folder, files_dir(i).name);
-		%seq_rgb_images = [seq_rgb_images, imread(filepath)];
-		seq_rgb_images = [seq_rgb_images, string(filepath)];
-	end
-	fprintf("\nRead %d RGB Images from %s\n", numel(files_dir), RGB_PATH);
-	disp(seq_rgb_images);
-	%}
-	
-	seq_rgb_images = {};
-	[sel_file, sel_path] = uigetfile("*.*", "Select multiple RGB images for RGB Camera Calibration!", 'MultiSelect', 'on');
-	
-	if (isequal(sel_file, 0) || isequal(sel_path, 0))
-		error("Not any RGB Images are selected!")
-	end;
-	
-	if (~iscell(sel_file))
-		sel_file = {sel_file};
-	end
-	
-	if (numel(sel_file) < 3)
-		error("At least 3 RGB calibration image files are needed!");
-	end;
-	
-	disp("numel files!");
-	disp(numel(sel_file));
-	
-	for i = 1 : numel(sel_file)
-		filepath = fullfile(sel_path, sel_file(i));
-		seq_rgb_images = [seq_rgb_images, string(filepath)];
-	end
-	
-	fprintf("\nSelected %d RGB Images from %s\n", numel(sel_file), sel_path);
+	%Select RGB IMAGES from disk and store in an image array
+	seq_rgb_images = fun_get_files("Select multiple RGB images for RGB Camera Calibration!", 3);
+	fprintf("\nSelected %d RGB calibration Images\n", numel(seq_rgb_images));
 	disp(seq_rgb_images);
 	
-	
-	%Read IR IMAGES from folder and store in an image array
-	%{
-	files_dir = dir(fullfile(IR_PATH, '*.png'));
-	seq_ir_images = {}; %zeros(numel(files_dir));
-	for i = 1:numel(files_dir)
-		filepath = fullfile(files_dir(i).folder, files_dir(i).name);
-		%seq_ir_images = [seq_ir_images, imread(filepath)];
-		seq_ir_images = [seq_ir_images, string(filepath)];
-	end
-	fprintf("\nRead %d IR Images from %s\n", numel(files_dir), IR_PATH);
+	%Select IR IMAGES from disk and store in an image array
+	seq_ir_images = fun_get_files("Select multiple IR images for IR Camera Calibration!", 3);
+	fprintf("\nSelected %d IR calibration Images\n", numel(seq_ir_images));
 	disp(seq_ir_images);
-	%}
 	
-	seq_ir_images = {};
-	[sel_file, sel_path] = uigetfile("*.*", "Select multiple IR images for IR Camera Calibration!", 'MultiSelect', 'on');
-	
-	if (isequal(sel_file, 0) || isequal(sel_path, 0))
-		error("Not any IR Images are selected!")
-	end;
-	
-	if (~iscell(sel_file))
-		sel_file = {sel_file};
-	end
-	
-	if (numel(sel_file) < 3)
-		error("At least 3 IR calibration image files are needed!");
-	end;
-	
-	disp("numel files!");
-	disp(numel(sel_file));
-	
-	for i = 1 : numel(sel_file)
-		filepath = fullfile(sel_path, sel_file(i));
-		seq_ir_images = [seq_ir_images, string(filepath)];
-	end
-	
-	fprintf("\nSelected %d IR Images from %s\n", numel(sel_file), sel_path);
-	disp(seq_ir_images);
 	
 	prompt = {'Enter RGB calibration image square size (cm):',...
 		'Enter IR calibration image square size (cm):', 'Enter depth image distances (cm):'};
