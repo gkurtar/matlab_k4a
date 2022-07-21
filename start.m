@@ -9,20 +9,20 @@
 % returned objects from this function are written to the disk and shown in various figures 
 % 
 % **********************************************************
+% **********************************************************
 
-fprintf("\nBEGIN: k4a depth camera calibration script\n");
+	fprintf("\nBEGIN: k4a depth camera calibration script\n");
 
 	%constants
 	RGB_PATH = 'c:\tmp\cal\RGB';
 	IR_PATH = 'c:\tmp\cal\IR';
-	PBCAL_DATA_PATH = 'c:\tmp\CAL\AVG';
-	DEPTH_DATA_PATH = 'c:\tmp\cal\depth';
+	DEPTH_PC_SAMPLE_DATA = 'c:\tmp\CAL\AVG';
+	DEPTH_DATA_TO_CORRECT = 'c:\tmp\cal\depth';
 	
 	distances = [50; 100; 150]; %, 200, 250, 300, 350, 400, 450, 500];
 	depthDataMatrixSize = [480, 640];
-	seqDepthDataMatrixSizes = {};
 
-	fprintf("\nStartig RGB camera calibration\n");
+	fprintf("\nStartig to get RGB calibration images\n");
 
 	%Select RGB IMAGES from disk and store in an image array
 	seq_rgb_images = fun_get_files("Select multiple RGB images for RGB Camera Calibration!", 3);
@@ -76,7 +76,14 @@ fprintf("\nBEGIN: k4a depth camera calibration script\n");
 	fprintf("\nSelected %d point cloud files\n", numel(seq_all_point_clouds));
 	disp(seq_all_point_clouds);
 
-	%fun_k4a_calibration(seq_rgb_images, rgb_sq_size, seq_ir_images,...
-	%	ir_sq_size, seq_distances, seq_all_point_clouds, depth_data_matrix_size);
+	%Select point cloud files for correction from disk and store in an array
+	seq_depth_data_to_correct = fun_get_files("Select depth data files to correct!", 0);
+	fprintf("\nSelected %d point cloud file(s) to correct\n", numel(seq_depth_data_to_correct));
+	disp(seq_depth_data_to_correct);
 
-fprintf("\nEND: k4a depth camera calibration script\n");
+	fun_k4a_calibration(seq_rgb_images, rgb_sq_size, seq_ir_images, ir_sq_size,...
+		seq_distances, seq_all_point_clouds, depth_data_matrix_size, seq_depth_data_to_correct);
+
+	fprintf("\nEND: k4a depth camera calibration script\n");
+	
+% **********************************************************
