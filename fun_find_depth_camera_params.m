@@ -40,15 +40,16 @@ function [ matMeanLinearModels, matStdevLinearModels ] = fun_find_depth_camera_p
 		fprintf("\nIterating %d, dist is %d\n", i, argDistances(i));
 		
 		%seqDepthDataFilePaths = argMeasurements(i, :).pcFilePaths;
-		seqDepthDataFilePaths = argSeqOfDepthDataFilePathArray(i);
+		seqDepthDataFilePaths = argSeqOfDepthDataFilePathArray{i};
 		
 		seqMatDepthData = {};
 		for j = 1 : numel(seqDepthDataFilePaths)
+			fprintf("\nIterating %d, of %d , file is %s\n ", j, numel(seqDepthDataFilePaths), seqDepthDataFilePaths(j));
 			disp(seqDepthDataFilePaths(j));
-			fprintf("\nGoing to process depth data file %s\n", seqDepthDataFilePaths(j));
+			%fprintf("\nGoing to process depth data file %s\n", seqDepthDataFilePaths(j));
 
 			%matDepthData = fun_read_point_cloud_data(seqDepthDataFilePaths(j), sizes(1), sizes(2));
-			matDepthData = fun_read_point_cloud_data(seqDepthDataFilePaths(j), rowCount, colCount);
+			matDepthData = fun_read_point_cloud_data(seqDepthDataFilePaths{j}, rowCount, colCount);
 			seqMatDepthData{j} = matDepthData;
 		end
 
