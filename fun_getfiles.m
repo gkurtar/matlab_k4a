@@ -1,5 +1,19 @@
-
-
+% ******************************************************************
+% fun_getfiles
+%
+% By invoking this function the user can select multiple files via file selection dialog box of the operation system.
+% First argument of the method is used as the title of the file selection dialog window whereas
+% second one is used to define the minimum number of files to be selected by the user. Upon success this
+% method returns an array of strings where each one is the selected file path.
+%
+% INPUT:
+%   argStrTitle		-> The title of the user file selection dialog 
+%   argMinNumberOfFiles	-> Minimum number of files to select for multiple selection.
+%
+% OUTPUT:
+%   seqFiles		-> an array where each element is the full file path of the selected file(s) 
+%
+% ******************************************************************
 function [seqFiles] = fun_getfiles(argStrTitle, argMinNumberOfFiles)
 
 	fprintf("\nBEGIN: fun_getfiles\n");
