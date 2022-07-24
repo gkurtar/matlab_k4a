@@ -14,10 +14,13 @@
 	fprintf("\nBEGIN: k4a depth camera calibration script\n");
 
 	%constants
-	RGB_PATH = 'c:\tmp\cal\RGB';
-	IR_PATH = 'c:\tmp\cal\IR';
-	DEPTH_PC_SAMPLE_DATA = 'c:\tmp\CAL\AVG';
-	DEPTH_DATA_TO_CORRECT = 'c:\tmp\cal\depth';
+	RGB_FILES = ['c:\tmp\cal\rgb\rgb1.png', 'c:\tmp\cal\rgb\rgb2.png', 'c:\tmp\cal\rgb\rgb3.png'];
+	IR_FILES = ['c:\tmp\cal\ir\ir1.png', 'c:\tmp\cal\ir\ir2.png', 'c:\tmp\cal\ir\ir3.png'];
+	DEPTH_PC_SAMPLE_DATA = {{'c:\tmp\CAL\depth\pc_1_50.txt', 'c:\tmp\CAL\depth\pc_2_50.txt', 'c:\tmp\CAL\depth\pc_3_50.txt'}, ...
+				{'c:\tmp\CAL\depth\pc_1_100.txt', 'c:\tmp\CAL\depth\pc_2_100.txt', 'c:\tmp\CAL\depth\pc_3_100.txt'}, ...
+				{'c:\tmp\CAL\depth\pc_1_150.txt', 'c:\tmp\CAL\depth\pc_2_150.txt', 'c:\tmp\CAL\depth\pc_3_150.txt'} };
+				
+	DEPTH_DATA_TO_CORRECT = ['c:\tmp\cal\depth\sample1.txt'];
 	
 	distances = [50; 100; 150]; %, 200, 250, 300, 350, 400, 450, 500];
 	depthDataMatrixSize = [480, 640];
