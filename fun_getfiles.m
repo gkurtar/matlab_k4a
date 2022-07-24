@@ -2,9 +2,10 @@
 % fun_getfiles
 %
 % By invoking this function the user can select multiple files via file selection dialog box of the operation system.
-% First argument of the method is used as the title of the file selection dialog window whereas
-% second one is used to define the minimum number of files to be selected by the user. Upon success this
-% method returns an array of strings where each one is the selected file path.
+% First argument of the method is used as the title of the file selection dialog window whereas second one is used
+% to define the minimum number of files to be selected by the user. If zero is provided as second argument than
+% minimum number file check is discarded and the user is free to select any number of files provided that at least
+% one file is selected. Upon success this method returns an array of strings where each one is the selected file path.
 %
 % INPUT:
 %   argStrTitle		-> The title of the user file selection dialog 
