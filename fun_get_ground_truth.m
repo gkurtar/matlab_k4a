@@ -16,14 +16,14 @@ function [ resGroundTruth ] = fun_get_ground_truth(argDepthDataFilePath, argDept
 	
 	img_height = argDepthDataSize(1);
 	img_width = argDepthDataSize(2);
+    resGroundTruth = zeros(img_height * img_width, 3);
 
 	depthData = fun_read_point_cloud_data(argDepthDataFilePath, argDepthDataSize(1), argDepthDataSize(2));
-
     pointPositions = importdata(fullfile(argDepthDataFilePath));
     
     figure;
     ptCloud = pointCloud(pointPositions);
-    pcshow(ptCloud);
+    pcshow(ptCloud, 'VerticalAxis', 'X');
 	xlabel('X(px)');
 	ylabel('Y(px)');
 	zlabel('Z(mm)');
@@ -59,48 +59,64 @@ function [ resGroundTruth ] = fun_get_ground_truth(argDepthDataFilePath, argDept
 	hold off;
 	
 	%--------------------------------------------------------------------------
-	%------------------ Compute Diff and rmse for both ------------------------
+	%------------------ FIT PLANE ------------------------
    
 	FITTED_DATA=zeros(img_height, img_width);
 	REAL_TO_FITTED_DIFF=zeros(img_height, img_width); %diff between real and fitted
    
 	colIndex = 3;
 	diffBtwRealDepthAndFitted = 0;
-	sumOfSqOfDiffsBtwDepthAndFitted = 0;
-   
-	sumResidualReal=0;
 
 	for i = 1:img_height
-	  for j = 1:img_width
+		for j = 1:img_width
 
-         rowIndex = (i - 1) * img_width + j;
-      
-	     if (i >= roi_y_min && i <= roi_y_max ...
-	        && j >= roi_x_min && j <= roi_x_max)
-		 
-		    FITTED_DATA(i, j) = (x_plmdl * j + y_plmdl * i + delta_val_plmdl ) / z_plmdl;
-			FITTED_DATA(i, j) = abs(FITTED_DATA(i, j));
+			rowIndex = (i - 1) * img_width + j;
+			orgDepthVal = pointPositions(rowIndex, colIndex);
+			 
+			if (orgDepthVal < argFrameDistance + argFrameDistance / 10 && orgDepthVal > argFrameDistance - argFrameDistance / 10)
+				FITTED_DATA(i, j) = (x_plmdl * j + y_plmdl * i + delta_val_plmdl ) / z_plmdl;
+				FITTED_DATA(i, j) = abs(FITTED_DATA(i, j));
+            else
+				FITTED_DATA(i, j) = orgDepthVal;
+            end
 			
-		    if (pointPositions(rowIndex, colIndex) ~= 0)
-			   diffBtwRealDepthAndFitted = FITTED_DATA(i, j) - pointPositions(rowIndex, colIndex);
-		       %REAL_TO_FITTED_DIFF(i, j) = diffBtwRealDepthAndFitted;
-		    else
-			   diffBtwRealDepthAndFitted = 0;
-		    end
+			%{
+			if (i >= roi_y_min && i <= roi_y_max ...
+				&& j >= roi_x_min && j <= roi_x_max)
+			 
+				FITTED_DATA(i, j) = (x_plmdl * j + y_plmdl * i + delta_val_plmdl ) / z_plmdl;
+				FITTED_DATA(i, j) = abs(FITTED_DATA(i, j));
+				
+				if (pointPositions(rowIndex, colIndex) ~= 0)
+				   diffBtwRealDepthAndFitted = FITTED_DATA(i, j) - pointPositions(rowIndex, colIndex);
+				else
+				   diffBtwRealDepthAndFitted = 0;
+				end
 
-	     else
-	        FITTED_DATA(i, j) = 0;
-		    diffBtwRealDepthAndFitted = 0;
-	     end
+			else
+				FITTED_DATA(i, j) = 0;
+				diffBtwRealDepthAndFitted = 0;
+			end
 
-	     REAL_TO_FITTED_DIFF(i, j) = diffBtwRealDepthAndFitted;
-		 sumResidualReal = sumResidualReal + diffBtwRealDepthAndFitted;
+			REAL_TO_FITTED_DIFF(i, j) = diffBtwRealDepthAndFitted;
 
-	     %fprintf("%d \t %d \t %d \t %7.4f \t %4.4f \n", ...
-		%	   i, j, pointPositions(rowIndex, colIndex), ...
-		%	   FITTED_DATA(i, j), diffBtwRealDepthAndFitted);
+			%fprintf("%d \t %d \t %d \t %7.4f \t %4.4f \n", ...
+			%	   i, j, pointPositions(rowIndex, colIndex), ...
+			%	   FITTED_DATA(i, j), diffBtwRealDepthAndFitted);
+			%}
+			
+			resGroundTruth(rowIndex, 1) = i;
+			resGroundTruth(rowIndex, 2) = j;
+			resGroundTruth(rowIndex, 3) = FITTED_DATA(i, j);
 		end
 	end
+
+	figure;
+	pcshow(resGroundTruth, 'VerticalAxis', 'X');
+	xlabel('X(px)');
+	ylabel('Y(px)');
+	zlabel('Z(mm)');
+	title('GT');
 	
     fprintf("\nEND: fun_get_ground_truth\n");
 	return;
