@@ -44,7 +44,7 @@ function [ matMeanLinearModels, matStdevLinearModels ] = fun_find_depth_camera_p
 		
 		seqMatDepthData = {};
 		for j = 1 : numel(seqDepthDataFilePaths)
-			fprintf("\nIterating %d, of %d , file is %s\n ", j, numel(seqDepthDataFilePaths), seqDepthDataFilePaths(j));
+			fprintf("\nIterating %d, of %d , file is %s\n ", j, numel(seqDepthDataFilePaths), seqDepthDataFilePaths{j});
 			disp(seqDepthDataFilePaths(j));
 			%fprintf("\nGoing to process depth data file %s\n", seqDepthDataFilePaths(j));
 
