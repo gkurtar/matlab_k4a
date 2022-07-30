@@ -20,11 +20,11 @@ function [ resCorrectedImage ] = fun_correct_measurements(argDepthImage, argWidt
 
 	fprintf("\nBEGIN: fun_correct_measurements\n");
 
-	if (isempty(argDepthImage) || isempty(argLinearModels))
+	if (isempty(argDepthImage) || isempty(argMeanLinearModelMatrix))
 		error('both input argument array sizes (%d and %d) should be gt zero',...
-			size(argDepthImage), size(argLinearModels));
-	elseif (isnan(str2double(argWidth)) || isnan(str2double(argHeight)))
-		error('width (%s) and height (%s) arguments must be an integer', argWidth, argHeight);
+			size(argDepthImage), size(argMeanLinearModelMatrix));
+	%elseif (isnan(str2double(argWidth)) || isnan(str2double(argHeight)))
+	%	error('width (%s) and height (%s) arguments must be an integer', argWidth, argHeight);
 	%{
 	elseif ((size(argDepthImage, 1) ~= size(argMeanLinearModelMatrix, 1)) || (size(argDepthImage, 1) ~= argHeight * argWidth))
 		fprintf('row sizes of input argument matrices (%d and %d) should be equal and match height argument (%d) ', ...
@@ -36,6 +36,8 @@ function [ resCorrectedImage ] = fun_correct_measurements(argDepthImage, argWidt
 	else
 		fprintf("going to correct depth data");
 	end
+	
+	
 	
 	resCorrectedImage=zeros(argHeight, argWidth);
 	
