@@ -11,14 +11,14 @@
 %    resGroundTruth		-> Ground Truth
 %
 %*******************************************************************************************
-function [ resGroundTruth ] = fun_get_ground_truth(argDepthDataFilePath, argDepthDataSize, argDistance)
+function [ resGroundTruth ] = fun_get_ground_truth(argDepthDataFilePath, argWidth, argHeight, argDistance)
 
 	fprintf("\nBEGIN: fun_get_ground_truth\n");
 	
-	img_height = argDepthDataSize(1);
-	img_width = argDepthDataSize(2);
-	resGroundTruth = zeros(img_height, img_width);
-    resGroundTruthPc = zeros(img_height * img_width, 3);
+	%img_height = argDepthDataSize(1);
+	%img_width = argDepthDataSize(2);
+	resGroundTruth = zeros(argHeight, argWidth);
+    resGroundTruthPc = zeros(argHeight * argWidth, 3);
     pointPositions = importdata(fullfile(argDepthDataFilePath));
     
     figure;
@@ -61,16 +61,16 @@ function [ resGroundTruth ] = fun_get_ground_truth(argDepthDataFilePath, argDept
 	%--------------------------------------------------------------------------
 	%------------------ FIT PLANE ------------------------
    
-	FITTED_DATA=zeros(img_height, img_width);
-	REAL_TO_FITTED_DIFF=zeros(img_height, img_width); %diff between real and fitted
+	FITTED_DATA=zeros(argHeight, argWidth);
+	REAL_TO_FITTED_DIFF=zeros(argHeight, argWidth); %diff between real and fitted
    
 	colIndex = 3;
 	diffBtwRealDepthAndFitted = 0;
 
-	for i = 1:img_height
-		for j = 1:img_width
+	for i = 1:argHeight
+		for j = 1:argWidth
 
-			rowIndex = (i - 1) * img_width + j;
+			rowIndex = (i - 1) * argWidth + j;
 			orgDepthVal = pointPositions(rowIndex, colIndex);
 			 
 			if (orgDepthVal < argDistance + argDistance / 10 && orgDepthVal > argDistance - argDistance / 10)
