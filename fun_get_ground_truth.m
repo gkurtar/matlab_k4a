@@ -11,7 +11,7 @@
 %    resGroundTruth		-> Ground Truth
 %
 %*******************************************************************************************
-function [ resGroundTruth ] = fun_get_ground_truth(argDepthDataFilePath, argWidth, argHeight, argDistance)
+function [ resGroundTruth ] = fun_get_ground_truth(argDepthDataFilePath, argHeight, argWidth, argDistance)
 
 	fprintf("\nBEGIN: fun_get_ground_truth\n");
 	
