@@ -20,7 +20,7 @@ function [ resCameraParams ] = fun_detect_camera_params(argFiles, argSquareSize)
 
 	fprintf("\nBEGIN: fun_detect_camera_params\n");
 	
-	if (~isnumeric(argSquareSize) || mod(argRowCount, 1) ~= 0 || sign(argSquareSize) <= 0)
+	if (~isnumeric(argSquareSize) || mod(argSquareSize, 1) ~= 0 || sign(argSquareSize) <= 0)
 		error('SquareSize argument (%d) must be numeric and positive \n', argSquareSize);
 	end
 	
