@@ -57,19 +57,37 @@ function [ matMeanLinearModels, matStdevLinearModels ] = fun_find_depth_camera_p
 		end
 
 
-		matProbDistObjects = cell(rowCount , colCount);
+		matProbDistObjects = cell(rowCount / 4 , colCount / 4);
 		
-		for m = 1 : rowCount % / 4
-			for n = 1 : colCount % / 4
-				vectorTmp = zeros(1, numel(seqMatDepthData));
+		vectorTmp = zeros(1, numel(seqMatDepthData));
+		
+		for m = 1 : rowCount / 4
+			for n = 1 : colCount / 4
+				
+				%vectorTmp = zeros(1, numel(seqMatDepthData));
+				vectorTmp(:) = 0;
+				
 				for k = 1 : numel(seqMatDepthData)
 					matDepthData = seqMatDepthData{k};
 					vectorTmp(k) = matDepthData(m, n);
 				end
 				
-				%b = vectorTmp(vectorTmp ~= 0);
-				vectorTmp(vectorTmp == 0) = [];
+				if (all(vectorTmp == 0)) %if all values are eq to zero
+					matProbDistObjects{m, n} = zero_pd_obj;
+				else
+					if (all(vectorTmp)) %none are zero, we could simply evaluate
+						pdobj = fitdist(vectorTmp.', 'Normal');
+						matProbDistObjects{m, n} = pdobj;
+					else
+						%there are zeroes extract them and evaluate
+						b = vectorTmp(vectorTmp ~= 0);
+						pdobj = fitdist(b.', 'Normal');
+						matProbDistObjects{m, n} = pdobj;
+					end;
+				end;
 				
+				%{
+				vectorTmp(vectorTmp == 0) = [];
 				if (isempty(vectorTmp))
 					matProbDistObjects{m, n} = zero_pd_obj;
 				else
@@ -77,6 +95,7 @@ function [ matMeanLinearModels, matStdevLinearModels ] = fun_find_depth_camera_p
 					pdobj = fitdist(vectorTmp.', 'Normal');
 					matProbDistObjects{m, n} = pdobj;
 				end;
+				%}
 				
 				%probability dist object is found
 				%pdobj = fitdist(vectorTmp.', 'Normal');
@@ -102,11 +121,13 @@ function [ matMeanLinearModels, matStdevLinearModels ] = fun_find_depth_camera_p
 	
 	rowIndex = -1;
 	colIndex = -1;
+	meanVals = zeros(1, length(argDistances));
 	
-	for i = 1 : rowCount % / 4
+	for i = 1 : rowCount / 4
 		
-		for j = 1 : colCount % / 4 
+		for j = 1 : colCount / 4
 
+			
 			%seqPdObjects = {};
 			seqPdObjects = cell(1, numel(seqProbDistObjectMatrices));
 			for p = 1 : numel(seqProbDistObjectMatrices)
@@ -117,7 +138,9 @@ function [ matMeanLinearModels, matStdevLinearModels ] = fun_find_depth_camera_p
 			
 			%disp ("=====");%disp (seqPdObjects);%disp ("=====");
 
-			meanVals = zeros(1, length(seqPdObjects));
+			%meanVals = zeros(1, length(seqPdObjects));
+			meanVals(:) = 0;
+			
 			for p = 1 : length(seqPdObjects)
 				%pdObject = seqPdObjects{p};
 				%disp (p);disp (pdObject);  disp (sprintf("xxxxx\n"));
@@ -125,6 +148,7 @@ function [ matMeanLinearModels, matStdevLinearModels ] = fun_find_depth_camera_p
 				meanVals(p) = seqPdObjects{p}.mu;
 			end
 			
+
 			%check meanVals, if all values are same and they are zero then
 			%	check for an evaluation that has been done already and use that value again 
 			
