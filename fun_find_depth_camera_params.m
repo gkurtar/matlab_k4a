@@ -26,7 +26,8 @@ function [ matMeanLinearModels, matStdevLinearModels ] = fun_find_depth_camera_p
 	
 	%argument check could be added
 
-	seqProbDistObjectMatrices = {};
+	%seqProbDistObjectMatrices = {};
+	seqProbDistObjectMatrices = cell(1, numel(argDistances));
 	matMeanLinearModels = {};
 	matStdevLinearModels = {};
 	
@@ -43,21 +44,24 @@ function [ matMeanLinearModels, matStdevLinearModels ] = fun_find_depth_camera_p
 		seqDepthDataFilePaths = argSeqOfDepthDataFilePathArray{i};
 		
 		seqMatDepthData = {};
+		%seqMatDepthData = cell(numel(seqDepthDataFilePaths));
 		for j = 1 : numel(seqDepthDataFilePaths)
 			fprintf("\nIterating %d, of %d , file is %s\n ", j, numel(seqDepthDataFilePaths), seqDepthDataFilePaths{j});
 			disp(seqDepthDataFilePaths(j));
 			%fprintf("\nGoing to process depth data file %s\n", seqDepthDataFilePaths(j));
 
-			%matDepthData = fun_read_point_cloud_data(seqDepthDataFilePaths(j), sizes(1), sizes(2));
-			matDepthData = fun_read_point_cloud_data(seqDepthDataFilePaths{j}, rowCount, colCount);
-			seqMatDepthData{j} = matDepthData;
+			%matDepthData = fun_read_point_cloud_data(seqDepthDataFilePaths{j}, rowCount, colCount);
+			%seqMatDepthData{j} = matDepthData;
+			seqMatDepthData{j} = fun_read_point_cloud_data(seqDepthDataFilePaths{j}, rowCount, colCount);
 		end
 
-		matProbDistObjects = {};
+		%matProbDistObjects = {};
+		matProbDistObjects = cell(rowCount / 4, colCount / 4);
+		
 		%[rows, cols] = size(matDepthData);
-		for m = 1 : rowCount / 50 %rows / 100
+		for m = 1 : rowCount / 4 %rows / 100
 			%fprintf("processing row %d\n", m);
-			for n = 1 : colCount / 50 % cols / 100
+			for n = 1 : colCount / 4 % cols / 100
 				vectorTmp = zeros(1, numel(seqMatDepthData));
 				for k = 1 : numel(seqMatDepthData)
 					matDepthData = seqMatDepthData{k};
@@ -75,69 +79,57 @@ function [ matMeanLinearModels, matStdevLinearModels ] = fun_find_depth_camera_p
 		%add this data structure into a table where each row represents the
 		%record for the corresponding distance
 
-		%seqProbDistObjectMatrices{i, 1} = cast(distance, "int16");
-		%seqProbDistObjectMatrices{i, 2} = matProbDistObjects;
 		seqProbDistObjectMatrices{i} = matProbDistObjects;
-
-		%disp (matProbDistObjects)
 	end
-	%disp (seqProbDistObjectMatrices);
 	
+	toc;
+	fprintf("Prob Dist Objects are evaluated \n");
+	
+	tic;
 	fprintf("\nGoing to evaluate linear models based on distances\n");
-	
 	%for each pixel, iterate pd objects for each distance and evaluate linear models for mean and stdev 
-	for i = 1 : rowCount / 50 % argDepthDataSize(1) / 100
+	for i = 1 : rowCount / 4 % argDepthDataSize(1) / 100
 		
-		for j = 1 : colCount / 50 % argDepthDataSize(2) / 100
-		
+		for j = 1 : colCount / 4 % argDepthDataSize(2) / 100
+
 			seqPdObjects = {};
 			for p = 1 : numel(seqProbDistObjectMatrices)
 				tmp = seqProbDistObjectMatrices{p};
-				%fprintf	("iterate %d", p);
-				
-				%disp (tmp);
-				%disp ("+++++");
-				%disp (tmp{i, j});
-				%disp ("=====");
-				
+				%fprintf("iterate %d", p);%disp (tmp);%disp ("+++++");%disp (tmp{i, j});%disp ("=====");
 				seqPdObjects{p} = tmp{i, j};
 			end
 			
-			%disp ("=====");
-			%disp (seqPdObjects);
-			%disp ("=====");
+			%disp ("=====");%disp (seqPdObjects);%disp ("=====");
 
 			meanVals = zeros(1, length(seqPdObjects));
 			for p = 1 : length(seqPdObjects)
 				%pdObject = seqPdObjects{p};
 				%disp (p);disp (pdObject);  disp (sprintf("xxxxx\n"));
-				%fprintf("\nEND: fun_k4a_foo %s\n", pdObject);
 				%meanVals(p) = pdObject.mu;
 				meanVals(p) = seqPdObjects{p}.mu;
 			end
-
+			
+			mdlMeanLM = fitlm (argDistances, meanVals);
+			%plot (mdlMeanLM);
+			matMeanLinearModels{i, j} = mdlMeanLM;
+			
+			%{
 			stdevVals = zeros(1, length(seqPdObjects));
 			for p = 1 : length(seqPdObjects)
 				stdevVals(p) = seqPdObjects{p}.sigma;
 			end
 
-			mdlMeanLM = fitlm (argDistances, meanVals);
-			%plot (mdlMeanLM);
-
 			mdlStdDevLM = fitlm (argDistances, stdevVals);
-			%plot(mdlStdDevLM);
-			
-			matMeanLinearModels{i, j} = mdlMeanLM;
 			matStdevLinearModels{i, j} = mdlStdDevLM;
-
+			%}
 		end
 	end
 	
 	%disp(matMeanLinearModels);
-	disp("sdf");
 	%disp(matStdevLinearModels);
 
 	toc;
+	fprintf("Linear models are evaluated \n");
 
 	fprintf("\nEND: fun_find_depth_camera_params\n");
 	return;
