@@ -40,7 +40,7 @@ function [resMatDepthData] = fun_read_point_cloud_data(argFilePath, argRowCount,
 		error("Size of the data file does not match up with row and col count arguments provided");
 	elseif (3 ~= cols)
 		error("Input data file should consist of triplets.");
-    	end
+    end
 	
 	fprintf("%s file is imported, sizes are %d %d \n", argFilePath, rows, cols);
 	colIndex = 3;
@@ -48,7 +48,7 @@ function [resMatDepthData] = fun_read_point_cloud_data(argFilePath, argRowCount,
 
 	for i = 1 : argRowCount
 		for j = 1 : argColCount
-			rowIndex = (i - 1) * cols + j;
+			rowIndex = (i - 1) * argColCount + j;
 			resMatDepthData(i, j) = tmp(rowIndex, colIndex);
 			%if (j == 20) fprintf ("i %d, j %d, row %d depth %d \n", i, j, rowIndex, resMatDepthData(i, j));
 		end
