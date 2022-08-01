@@ -13,7 +13,7 @@
 function fun_inspect_errors(argSeqOfDepthImageMatrices, argSeqOfGroundTruthImageMatrices)
 
 	fprintf("\nBEGIN: fun_inspect_errors\n");
-	fprintf("\nArgument Checking: \n");
+	
 
 	if (~iscell(argSeqOfDepthImageMatrices) || ~iscell(argSeqOfGroundTruthImageMatrices))
 		error("Each argument must be a cell-array");
@@ -34,9 +34,9 @@ function fun_inspect_errors(argSeqOfDepthImageMatrices, argSeqOfGroundTruthImage
 			error("Each cell-array element should be a matrix.");
 		end
 		
-		szDepth = size(matDepthImage)
+		szDepth = size(matDepthImage);
 		%disp("sdf");
-		szGrTuth = size(matGroundTruth)
+		szGrTuth = size(matGroundTruth);
 		
 		if (numel(szDepth) ~= 2 || numel(szGrTuth) ~= 2 || ~isequal(size(matDepthImage), size(matGroundTruth)))
 			error("Matrix dimensions should be equal and size of each matrix must have two elements.");
@@ -84,6 +84,9 @@ function fun_inspect_errors(argSeqOfDepthImageMatrices, argSeqOfGroundTruthImage
 	MSE = mean(SQE(:));
 	RMSE = sqrt(MSE);
 	SDEV = std(seqDiffValues(:));
+	
+	fprintf ("\nMin diff is %f max_diff is %f ", minVal, maxVal);
+	
 	fprintf ("\nDepth Residual Stats are:\n\tmax_error %f, mse %f, rmse %f, std_dev: %f", maxErrorVal, MSE, RMSE, SDEV);
 
 	fprintf("\nFind diff values and plot them: \n");
