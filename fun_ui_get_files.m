@@ -15,7 +15,7 @@
 %   seqFiles		-> an array where each element is the full file path of the selected file(s) 
 %
 % ******************************************************************
-function [seqFiles] = fun_getfiles(argStrTitle, argMinNumberOfFiles)
+function [seqFiles] = fun_ui_get_files(argStrTitle, argMinNumberOfFiles)
 
 	fprintf("\nBEGIN: fun_getfiles\n");
 
