@@ -63,6 +63,13 @@ function fun_inspect_errors(argSeqOfDepthImageMatrices, argSeqOfGroundTruthImage
 		for (j = 1 : rowCount)
 			for (k = 1 : colCount)
 				index = (j - 1) * colCount + k;
+				if (matDepthImage(j, k) == matGroundTruth(j, k))
+					continue;
+				elseif (isequal(0, matDepthImage(j, k)) || isequal(0, matGroundTruth(j, k)) )
+					continue;
+				elseif (matDepthImage(j, k) / matGroundTruth(j, k) < 0.8 || matDepthImage(j, k) / matGroundTruth(j, k) > 1.2 )
+					continue;
+				end
 				seqDiffValues(1, baseIndex + index) = matDepthImage(j, k) - matGroundTruth(j, k);
 				seqGroundTruthValues(1, baseIndex + index) = matGroundTruth(j, k);
 				seqMeasuredDepthValues(1, baseIndex + index) = matDepthImage(j, k);
@@ -89,6 +96,7 @@ function fun_inspect_errors(argSeqOfDepthImageMatrices, argSeqOfGroundTruthImage
 	
 	fprintf ("\nDepth Residual Stats are:\n\tmax_error %f, mse %f, rmse %f, std_dev: %f", maxErrorVal, MSE, RMSE, SDEV);
 
+	figure;
 	fprintf("\nFind diff values and plot them: \n");
 	scatter(seqGroundTruthValues, seqDiffValues);
 	xlabel("Distance");
