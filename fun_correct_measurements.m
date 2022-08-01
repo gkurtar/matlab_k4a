@@ -16,7 +16,7 @@
 % Output Values:
 %   resCorrectedImage        -> Corrected Depth Image Data of size (argHeight x argWidth).
 %
-function [ resCorrectedImage ] = fun_correct_measurements(argDepthImage, argWidth, argHeight, argMeanLinearModelMatrix)
+function [ resCorrectedImage ] = fun_correct_measurements(argDepthImage, argHeight, argWidth, argMeanLinearModelMatrix)
 
 	fprintf("\nBEGIN: fun_correct_measurements\n");
 
@@ -36,8 +36,6 @@ function [ resCorrectedImage ] = fun_correct_measurements(argDepthImage, argWidt
 	else
 		fprintf("going to correct depth data");
 	end
-	
-	
 	
 	resCorrectedImage=zeros(argHeight, argWidth);
 	
@@ -60,9 +58,10 @@ function [ resCorrectedImage ] = fun_correct_measurements(argDepthImage, argWidt
 			%}
 			
 			org_depth = argDepthImage(i, j); %assign z val
-			mean_lm = argMeanLinearModelMatrix(i, j); %find linear model
+			mean_lm = argMeanLinearModelMatrix{i, j}; %find linear model
 			
-			if (org_depth == 0 || mean_lm == 0)
+			%if (org_depth == 0 || mean_lm == 0)
+			if (org_depth == 0)
 				revised_depth = org_depth;
 			else
 				revised_depth = predict(mean_lm, org_depth);

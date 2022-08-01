@@ -4,7 +4,8 @@
 %
 % Input Arguments:
 %    argDepthDataFile	-> full file path of the depth data (point cloud)
-%    argDepthDataSize   -> a 1x2 vector denoting the size ( row and col count) of the depth data image matrix
+%    argHeight          -> depth data matrix height
+%    argWidth           -> depth data matrix width
 %    argDistance        -> Distance of the planar board in mm
 %
 % Output Values:
@@ -30,9 +31,9 @@ function [ resGroundTruth ] = fun_get_ground_truth(argDepthDataFilePath, argHeig
 	title('Original Point Cloud');
 
     roi_x_min = 0;
-    roi_x_max = argDepthDataSize(2);
+    roi_x_max = argWidth;
     roi_y_min = 0;
-    roi_y_max = argDepthDataSize(1);
+    roi_y_max = argHeight;
     roi_z_min = argDistance - (argDistance / 10);
     roi_z_max = argDistance + (argDistance / 10);
     
