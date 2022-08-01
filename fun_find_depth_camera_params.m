@@ -57,12 +57,13 @@ function [ matMeanLinearModels, matStdevLinearModels ] = fun_find_depth_camera_p
 		end
 
 
-		matProbDistObjects = cell(rowCount / 4 , colCount / 4);
+		%matProbDistObjects = cell(rowCount / 2 , colCount / 2);
+		matProbDistObjects = cell(rowCount, colCount);
 		
 		vectorTmp = zeros(1, numel(seqMatDepthData));
 		
-		for m = 1 : rowCount / 4
-			for n = 1 : colCount / 4
+		for m = 1 : rowCount %/ 2
+			for n = 1 : colCount %/ 2
 				
 				%vectorTmp = zeros(1, numel(seqMatDepthData));
 				vectorTmp(:) = 0;
@@ -123,12 +124,10 @@ function [ matMeanLinearModels, matStdevLinearModels ] = fun_find_depth_camera_p
 	colIndex = -1;
 	meanVals = zeros(1, length(argDistances));
 	
-	for i = 1 : rowCount / 4
+	for i = 1 : rowCount %/ 2
 		
-		for j = 1 : colCount / 4
+		for j = 1 : colCount %/ 2
 
-			
-			%seqPdObjects = {};
 			seqPdObjects = cell(1, numel(seqProbDistObjectMatrices));
 			for p = 1 : numel(seqProbDistObjectMatrices)
 				tmp = seqProbDistObjectMatrices{p};
@@ -184,9 +183,6 @@ function [ matMeanLinearModels, matStdevLinearModels ] = fun_find_depth_camera_p
 		end
 	end
 	
-	%disp(matMeanLinearModels);
-	%disp(matStdevLinearModels);
-
 	toc;
 	fprintf("Linear models are evaluated \n");
 
