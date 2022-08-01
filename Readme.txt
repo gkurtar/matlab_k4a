@@ -102,7 +102,7 @@ iş akışı
 % mean values and a linear model matrix for stddev values are detected and returned.
 %
 % INPUT:
-%   argDistances					-> an array of distance values in cm
+% argDistances					-> an array of distance values in cm
 %	argSeqOfDepthDataFilePathArray	-> a cell array where each element is an array consisting of Depth data file paths
 %	argDepthDataSize				-> a 1 x 2 array which represents row and col sizes of depth data;
 %
@@ -168,3 +168,22 @@ iş akışı
 % OUTPUT:
 %	resDepthDataMatrix	-> a 2D array of size [argRowCount * argColCount] which represents Depth Point Cloud
 %
+-------------------------------------------------------------------------------------------------------------------		
+9. fun_ui_get_files
+%
+% a) matlab ta bulunan uigetfile metodu cagrilir. 
+% b) arguman olarak verilen diger parametreler ile dialog penceresi başlığı ve
+%    minimum dosya sayısı gibi ayarlar tanımlanır.
+%
+% By invoking this function the user can select multiple files via file selection dialog box of the operation system.
+% First argument of the method is used as the title of the file selection dialog window whereas second one is used
+% to define the minimum number of files to be selected by the user. If zero is provided as second argument than
+% minimum number file check is discarded and the user is free to select any number of files provided that at least
+% one file is selected. Upon success this method returns an array of strings where each one is the selected file path.
+%
+% INPUT:
+%   argStrTitle		-> The title of the user file selection dialog 
+%   argMinNumberOfFiles	-> Minimum number of files to select for multiple selection.
+%
+% OUTPUT:
+%   seqFiles		-> an array where each element is the full file path of the selected file(s) 
