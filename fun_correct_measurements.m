@@ -57,6 +57,7 @@ function [ resCorrectedImage ] = fun_correct_measurements(argDepthImage, argHeig
 			resCorrectedImage(rowIndex, 3) = int32(revised_depth);
 			%}
 			
+			%{
 			org_depth = argDepthImage(i, j); %assign z val
 			mean_lm = argMeanLinearModelMatrix{i, j}; %find linear model
 			
@@ -68,6 +69,30 @@ function [ resCorrectedImage ] = fun_correct_measurements(argDepthImage, argHeig
 			end
 
 			resCorrectedImage(i, j) = int32(revised_depth);
+			%}
+			
+			org_depth = argDepthImage(i, j); %assign z val
+			
+			resCorrectedImage(i, j) = org_depth;
+			
+			if (org_depth ~= 0)
+				
+				mean_lm = argMeanLinearModelMatrix{i, j}; %find linear model
+				
+				if (all (mean_lm.Coefficients{:, 1} == 0) ...
+						&& all (mean_lm.Coefficients{:,2} == 0))
+					%fprintf("row %d, col %d: coefficient first two columns are zero\n", i, j);
+					continue;
+				end
+				
+				revised_depth = predict(mean_lm, org_depth);
+				%if (j == 160 && i < 200 && i > 100)
+					%fprintf("org depth %d, predicted %d\n", org_depth, revised_depth);
+				%end;
+				
+				resCorrectedImage(i, j) = int32(revised_depth);
+			end
+
 		end
 	end
 	
