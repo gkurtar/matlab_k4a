@@ -93,16 +93,15 @@ function fun_inspect_errors(argSeqOfDepthImageMatrices, argSeqOfGroundTruthImage
 	SDEV = std(seqDiffValues(:));
 	
 	fprintf ("\nMin diff is %f max_diff is %f ", minVal, maxVal);
-	
 	fprintf ("\nDepth Residual Stats are:\n\tmax_error %f, mse %f, rmse %f, std_dev: %f", maxErrorVal, MSE, RMSE, SDEV);
 
 	figure;
 	fprintf("\nFind diff values and plot them: \n");
-	scatter(seqGroundTruthValues, seqDiffValues);
+	scatter(seqGroundTruthValues, seqDiffValues, '+');
 	xlabel("Distance");
 	ylabel("Error");
 	xlim([0, max(seqMeasuredDepthValues) * 1.25]);
-	ylim([-3 * maxErrorVal, 3 * maxErrorVal]);
+	ylim([-2 * maxErrorVal, 2 * maxErrorVal]);
 	ax = gca;
 	ax.XAxisLocation = "origin";
 	ax.YAxisLocation = "origin";
