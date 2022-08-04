@@ -8,19 +8,21 @@
 % one file is selected. Upon success this method returns an array of strings where each one is the selected file path.
 %
 % INPUT:
-%   argStrTitle		-> The title of the user file selection dialog 
+%   argDirectoryURL     -> Directory URL
+%   argStrTitle         -> The title of the user file selection dialog 
 %   argMinNumberOfFiles	-> Minimum number of files to select for multiple selection.
 %
 % OUTPUT:
 %   seqFiles		-> an array where each element is the full file path of the selected file(s) 
 %
 % ******************************************************************
-function [seqFiles] = fun_ui_get_files(argStrTitle, argMinNumberOfFiles)
+function [seqFiles] = fun_ui_get_files(argDirectoryURL, argStrTitle, argMinNumberOfFiles)
 
-	fprintf("\nBEGIN: fun_getfiles\n");
+	fprintf("\nBEGIN: fun_ui_get_files\n");
 
 	seqFiles = {};
-	[sel_file, sel_path] = uigetfile("*.*", argStrTitle, 'MultiSelect', 'on');
+	[sel_file, sel_path] = uigetfile("*.*", argStrTitle, argDirectoryURL, 'MultiSelect', 'on');
+	
 	
 	if (isequal(sel_file, 0) || isequal(sel_path, 0))
 		error("Not any RGB Images are selected!")
@@ -30,7 +32,7 @@ function [seqFiles] = fun_ui_get_files(argStrTitle, argMinNumberOfFiles)
 		sel_file = {sel_file};
 	end
 	
-	if (numel(sel_file) < argMinNumberOfFiles)
+	if (argMinNumberOfFiles > 0 && numel(sel_file) < argMinNumberOfFiles)
 		error(sprintf("At least %d RGB calibration image files are needed!", argMinNumberOfFiles));
 	end;
 	
@@ -45,6 +47,6 @@ function [seqFiles] = fun_ui_get_files(argStrTitle, argMinNumberOfFiles)
 	%fprintf("\nSelected %d RGB Images from %s\n", numel(sel_file), sel_path);
 	%disp(seq_rgb_images);
 	
-	fprintf("\nEND: fun_getfiles\n");
+	fprintf("\nEND: fun_ui_get_files\n");
 	return;
 end
