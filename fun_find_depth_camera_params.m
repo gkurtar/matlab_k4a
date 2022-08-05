@@ -76,14 +76,20 @@ function [ matMeanLinearModels, matStdevLinearModels ] = fun_find_depth_camera_p
 				if (all(vectorTmp == 0)) %if all values are eq to zero
 					matProbDistObjects{m, n} = zero_pd_obj;
 				else
+			
 					if (all(vectorTmp)) %none are zero, we could simply evaluate
 						pdobj = fitdist(vectorTmp.', 'Normal');
 						matProbDistObjects{m, n} = pdobj;
 					else
 						%there are zeroes extract them and evaluate
 						b = vectorTmp(vectorTmp ~= 0);
-						pdobj = fitdist(b.', 'Normal');
-						matProbDistObjects{m, n} = pdobj;
+						
+						if (length(b) > 1)
+							pdobj = fitdist(b.', 'Normal');
+							matProbDistObjects{m, n} = pdobj;
+						else
+							matProbDistObjects{m, n} = zero_pd_obj;
+						end;
 					end;
 				end;
 				
