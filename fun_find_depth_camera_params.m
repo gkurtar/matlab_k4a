@@ -10,9 +10,10 @@
 % mean values and a linear model matrix for stddev values are detected and returned.
 %
 % INPUT:
-%   argDistances			-> an array of distance values in cm
+%   argDistances			        -> an array of distance values in cm
 %	argSeqOfDepthDataFilePathArray	-> a cell array where each element is an array consisting of Depth data file paths
-%	argDepthDataSize		-> a 1 x 2 array which represents row and col sizes of depth data;
+%   argHeight                       -> Depth Image Height
+%   argWidth                        -> Depth Image Width
 %
 % OUTPUT:
 %	matMeanLinearModels	-> a 2D array (depth image sized) of linear model objects for mean values
@@ -20,17 +21,17 @@
 %
 % **********************************************************
 
-function [ matMeanLinearModels, matStdevLinearModels ] = fun_find_depth_camera_params(argDistances, argSeqOfDepthDataFilePathArray, argDepthDataSize)
+function [ matMeanLinearModels, matStdevLinearModels ] = fun_find_depth_camera_params(...
+	argDistances, argSeqOfDepthDataFilePathArray, argImageHeight, argImageWidth)
 
 	fprintf("\nBEGIN: fun_find_depth_camera_params\n"); 
 
-	%seqProbDistObjectMatrices = {};
 	seqProbDistObjectMatrices = cell(1, numel(argDistances));
 	matMeanLinearModels = {};
 	matStdevLinearModels = {};
 	
-	rowCount = argDepthDataSize(1);
-	colCount = argDepthDataSize(2);
+	%rowCount = argDepthDataSize(1);
+	%colCount = argDepthDataSize(2);
 	
 	vectorTmp = zeros(1, 6);
 	zero_pd_obj = fitdist (vectorTmp.', 'Normal');
@@ -41,7 +42,6 @@ function [ matMeanLinearModels, matStdevLinearModels ] = fun_find_depth_camera_p
 	for i = 1 : numel(argDistances)
 		fprintf("\nIterating %d, dist is %d\n", i, argDistances(i));
 		
-		%seqDepthDataFilePaths = argMeasurements(i, :).pcFilePaths;
 		seqDepthDataFilePaths = argSeqOfDepthDataFilePathArray{i};
 		
 		%seqMatDepthData = {};
@@ -51,19 +51,19 @@ function [ matMeanLinearModels, matStdevLinearModels ] = fun_find_depth_camera_p
 			%disp(seqDepthDataFilePaths(j));
 			%fprintf("\nGoing to process depth data file %s\n", seqDepthDataFilePaths(j));
 
-			%matDepthData = fun_read_point_cloud_data(seqDepthDataFilePaths{j}, rowCount, colCount);
+			%matDepthData = fun_read_point_cloud_data(seqDepthDataFilePaths{j}, argImageHeight, argImageWidth);
 			%seqMatDepthData{j} = matDepthData;
-			seqMatDepthData{j} = fun_read_point_cloud_data(seqDepthDataFilePaths{j}, rowCount, colCount);
+			seqMatDepthData{j} = fun_read_point_cloud_data(seqDepthDataFilePaths{j}, argImageHeight, argImageWidth);
 		end
 
 
-		%matProbDistObjects = cell(rowCount / 2 , colCount / 2);
-		matProbDistObjects = cell(rowCount, colCount);
+		%matProbDistObjects = cell(argImageHeight / 2 , argImageWidth / 2);
+		matProbDistObjects = cell(argImageHeight, argImageWidth);
 		
 		vectorTmp = zeros(1, numel(seqMatDepthData));
 		
-		for m = 1 : rowCount %/ 2
-			for n = 1 : colCount %/ 2
+		for m = 1 : argImageHeight %/ 2
+			for n = 1 : argImageWidth %/ 2
 				
 				%vectorTmp = zeros(1, numel(seqMatDepthData));
 				vectorTmp(:) = 0;
@@ -124,9 +124,9 @@ function [ matMeanLinearModels, matStdevLinearModels ] = fun_find_depth_camera_p
 	colIndex = -1;
 	meanVals = zeros(1, length(argDistances));
 	
-	for i = 1 : rowCount %/ 2
+	for i = 1 : argImageHeight %/ 2
 		
-		for j = 1 : colCount %/ 2
+		for j = 1 : argImageWidth %/ 2
 
 			seqPdObjects = cell(1, numel(seqProbDistObjectMatrices));
 			for p = 1 : numel(seqProbDistObjectMatrices)
