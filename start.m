@@ -16,37 +16,86 @@
 	%constants
 	RGB_FILES = {'c:\tmp\cal\rgb\rgb1.png'; 'c:\tmp\cal\rgb\rgb2.png'; 'c:\tmp\cal\rgb\rgb3.png'};
 	IR_FILES = {'c:\tmp\cal\ir\ir1.png'; 'c:\tmp\cal\ir\ir2.png'; 'c:\tmp\cal\ir\ir3.png'};
+	
+	%{
 	DEPTH_PC_SAMPLE_DATA = {{'c:\tmp\CAL\depth\pc_1_50.txt', 'c:\tmp\CAL\depth\pc_2_50.txt', 'c:\tmp\CAL\depth\pc_3_50.txt'}, ...
+				{'c:\tmp\CAL\depth\pc_1_75.txt', 'c:\tmp\CAL\depth\pc_2_75.txt', 'c:\tmp\CAL\depth\pc_3_75.txt'}, ...
 				{'c:\tmp\CAL\depth\pc_1_100.txt', 'c:\tmp\CAL\depth\pc_2_100.txt', 'c:\tmp\CAL\depth\pc_3_100.txt'}, ...
+				{'c:\tmp\CAL\depth\pc_1_125.txt', 'c:\tmp\CAL\depth\pc_2_125.txt', 'c:\tmp\CAL\depth\pc_3_125.txt'}, ...
 				{'c:\tmp\CAL\depth\pc_1_150.txt', 'c:\tmp\CAL\depth\pc_2_150.txt', 'c:\tmp\CAL\depth\pc_3_150.txt'} };
+	%}
+				
+	DEPTH_PC_SAMPLE_DATA = {...
+	{'c:\tmp\CAL\depth\pc_50_1.txt', 'c:\tmp\CAL\depth\pc_50_2.txt', 'c:\tmp\CAL\depth\pc_50_3.txt', 'c:\tmp\CAL\depth\pc_50_4.txt', ...
+	 'c:\tmp\CAL\depth\pc_50_5.txt', 'c:\tmp\CAL\depth\pc_50_6.txt', 'c:\tmp\CAL\depth\pc_50_7.txt', 'c:\tmp\CAL\depth\pc_50_8.txt', ...
+	 'c:\tmp\CAL\depth\pc_50_9.txt', 'c:\tmp\CAL\depth\pc_50_10.txt' ...
+	 }, ...
+	 
+	 
+	 {'c:\tmp\CAL\depth\pc_75_1.txt', 'c:\tmp\CAL\depth\pc_75_2.txt','c:\tmp\CAL\depth\pc_75_3.txt', 'c:\tmp\CAL\depth\pc_75_4.txt', ...
+	 'c:\tmp\CAL\depth\pc_75_5.txt', 'c:\tmp\CAL\depth\pc_75_6.txt', 'c:\tmp\CAL\depth\pc_75_7.txt', 'c:\tmp\CAL\depth\pc_75_8.txt', ...
+	 'c:\tmp\CAL\depth\pc_75_9.txt', 'c:\tmp\CAL\depth\pc_75_10.txt' ...
+	 }, ...
+	 
+	 {'c:\tmp\CAL\depth\pc_100_1.txt','c:\tmp\CAL\depth\pc_100_2.txt','c:\tmp\CAL\depth\pc_100_3.txt',...
+	 'c:\tmp\CAL\depth\pc_100_4.txt','c:\tmp\CAL\depth\pc_100_5.txt', 'c:\tmp\CAL\depth\pc_100_6.txt',...
+	 'c:\tmp\CAL\depth\pc_100_7.txt', 'c:\tmp\CAL\depth\pc_100_8.txt','c:\tmp\CAL\depth\pc_100_9.txt','c:\tmp\CAL\depth\pc_100_10.txt' ...
+	 }, ...
+	 
+	 {'c:\tmp\CAL\depth\pc_125_1.txt','c:\tmp\CAL\depth\pc_125_2.txt','c:\tmp\CAL\depth\pc_125_3.txt',...
+	 'c:\tmp\CAL\depth\pc_125_4.txt','c:\tmp\CAL\depth\pc_125_5.txt','c:\tmp\CAL\depth\pc_125_6.txt',...
+	 'c:\tmp\CAL\depth\pc_125_7.txt', 'c:\tmp\CAL\depth\pc_125_8.txt','c:\tmp\CAL\depth\pc_125_9.txt',...
+	 'c:\tmp\CAL\depth\pc_125_10.txt' ...
+	 },
+	 
+	 {'c:\tmp\CAL\depth\pc_150_1.txt','c:\tmp\CAL\depth\pc_150_2.txt','c:\tmp\CAL\depth\pc_150_3.txt',...
+	 'c:\tmp\CAL\depth\pc_150_4.txt','c:\tmp\CAL\depth\pc_150_5.txt','c:\tmp\CAL\depth\pc_150_6.txt',...
+	 'c:\tmp\CAL\depth\pc_150_7.txt', 'c:\tmp\CAL\depth\pc_150_8.txt','c:\tmp\CAL\depth\pc_150_9.txt','c:\tmp\CAL\depth\pc_150_10.txt' ...
+	 } ...
+	 };
 				
 	DEPTH_DATA_TO_CORRECT = ['c:\tmp\cal\depth\sample1.txt'];
 	
-	distances = [50; 100; 150]; %, 200, 250, 300, 350, 400, 450, 500];
-	depthDataMatrixSize = [480, 640];
-	rgbSqSize = 25;
-	irSqSize = 25;
+	distances = [500, 750, 1000, 1250, 1500];
+	depthDataMatrixSize = [576, 640];
+	rgbSqSize = 35;
+	irSqSize = 35;
 	local_test_flag = true;
+	roi_vector = [320, 350, 220, 240];
 
 	if (local_test_flag)
-		fun_k4a_calibration(RGB_FILES, rgbSqSize, IR_FILES, irSqSize,...
-			distances, DEPTH_PC_SAMPLE_DATA, depthDataMatrixSize);
+		%fun_k4a_calibration(RGB_FILES, rgbSqSize, IR_FILES, irSqSize,...
+		%	distances, DEPTH_PC_SAMPLE_DATA, depthDataMatrixSize);
+
+		%fprintf("\nProcessing Depth Images to find depth cam params\n");
+		%[matMeanLinearModels, matStdevLinearModels] = fun_find_depth_camera_params(...
+		%		distances, DEPTH_PC_SAMPLE_DATA, depthDataMatrixSize(1), depthDataMatrixSize(2), [320, 350, 220, 240]);
+		
+		fprintf("\nStarting RGB camera calibration\n");
+		[rgbCamParams] = fun_detect_camera_params(RGB_FILES, rgbSqSize);
+
+		fprintf("\nStarting IR camera calibration\n");
+		[irCamParams] = fun_detect_camera_params(IR_FILES, irSqSize);
+
+		fprintf("\nProcessing Depth Images to find depth cam params\n");
+		[matMeanLinearModels, matStdevLinearModels] = fun_find_depth_camera_params(...
+						distances, DEPTH_PC_SAMPLE_DATA, depthDataMatrixSize(1), depthDataMatrixSize(2), roi_vector);
+
 		return;
     end
 
 	fprintf("\nStarting to get RGB calibration images\n");
 
 	%Select RGB IMAGES from disk and store in an image array
-	seq_rgb_images = fun_get_files("Select multiple RGB images for RGB Camera Calibration!", 3);
+	seq_rgb_images = fun_ui_get_files("Select multiple RGB images for RGB Camera Calibration!", 3);
 	fprintf("\nSelected %d RGB calibration Images\n", numel(seq_rgb_images));
 	disp(seq_rgb_images);
 	
 	%Select IR IMAGES from disk and store in an image array
-	seq_ir_images = fun_get_files("Select multiple IR images for IR Camera Calibration!", 3);
+	seq_ir_images = fun_ui_get_files("Select multiple IR images for IR Camera Calibration!", 3);
 	fprintf("\nSelected %d IR calibration Images\n", numel(seq_ir_images));
 	disp(seq_ir_images);
-	
-	
+
 	prompt = {'Enter RGB calibration image square size (cm):',...
 				'Enter IR calibration image square size (cm):',...
 				'Enter depth image distances (cm):',...
@@ -79,7 +128,7 @@
 	for i = 1 : numel(seq_distances)
 		fprintf("\nDistances: %d , \n", seq_distances(i));	
 		strTitle = sprintf("Select multiple point cloud data files for %d cm distance!", seq_distances(i));
-		seq_point_clouds = fun_get_files(strTitle, 3);
+		seq_point_clouds = fun_ui_get_files(strTitle, 3);
 		fprintf("\nSelected %d point cloud files for distance %d cm\n", numel(seq_point_clouds), seq_distances(i));
 		disp(seq_point_clouds);
 		seq_all_point_clouds{i} = seq_point_clouds;
@@ -89,7 +138,7 @@
 	disp(seq_all_point_clouds);
 
 	%Select point cloud files for correction from disk and store in an array
-	seq_depth_data_to_correct = fun_get_files("Select depth data files to correct!", 0);
+	seq_depth_data_to_correct = fun_ui_get_files("Select depth data files to correct!", 0);
 	fprintf("\nSelected %d point cloud file(s) to correct\n", numel(seq_depth_data_to_correct));
 	disp(seq_depth_data_to_correct);
 
