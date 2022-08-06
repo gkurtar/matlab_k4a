@@ -12,6 +12,7 @@
 %   argHeight                -> Depth Image Height 
 %   argMeanLinearModelMatrix -> 2D array of size (argHeight x argWidth) where each element
 %								is a linear model object of the corresponding pixel
+%   argRoiVector             -> ROI vector
 %
 % Output Values:
 %   resCorrectedImage        -> Corrected Depth Image Data of size (argHeight x argWidth).

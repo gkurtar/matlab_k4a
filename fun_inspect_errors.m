@@ -10,11 +10,11 @@
 %   argSeqOfGroundTruthImageMatrices	-> a cell array where each element is a 2D array of ground truth values of the corresponding measurements 
 %
 % ******************************************************************
-function fun_inspect_errors(argSeqOfDepthImageMatrices, argSeqOfGroundTruthImageMatrices)
+function fun_inspect_errors(argDepthImage, argGroundTruthImage)
 
 	fprintf("\nBEGIN: fun_inspect_errors\n");
 	
-
+	%{
 	if (~iscell(argSeqOfDepthImageMatrices) || ~iscell(argSeqOfGroundTruthImageMatrices))
 		error("Each argument must be a cell-array");
 	end
@@ -25,7 +25,7 @@ function fun_inspect_errors(argSeqOfDepthImageMatrices, argSeqOfGroundTruthImage
 				numel(argSeqOfDepthImageMatrices), numel(argSeqOfGroundTruthImageMatrices));
 		error(warningMessage);
 	end
-
+	
 	for i = 1 : numel(argSeqOfDepthImageMatrices)
 		matDepthImage = argSeqOfDepthImageMatrices{i};
 		matGroundTruth = argSeqOfGroundTruthImageMatrices{i};
@@ -42,46 +42,62 @@ function fun_inspect_errors(argSeqOfDepthImageMatrices, argSeqOfGroundTruthImage
 			error("Matrix dimensions should be equal and size of each matrix must have two elements.");
 		end
 	end
+	%}
+	
+	if (~ismatrix(argDepthImage) || ~ismatrix(argGroundTruthImage))
+		error("Each cell-array element should be a matrix.");
+	end
+	
+	szDepth = size(argDepthImage);
+	szGrTuth = size(argGroundTruthImage);
+	
+	if (numel(szDepth) ~= 2 || numel(szGrTuth) ~= 2 || ~isequal(size(argDepthImage), size(argGroundTruthImage)))
+		error("Matrix dimensions should be equal and size of each matrix must have two elements.");
+	end
 
+	%{
 	szMatData = size(argSeqOfDepthImageMatrices{1});
 	rowCount = szMatData(1, 1);
 	colCount = szMatData(1, 2);
+	%}
+	szMatData = size(argDepthImage);
+	rowCount = szMatData(1);
+	colCount = szMatData(2);
 
 	fprintf("rows: %d, cols: %d", rowCount, colCount);
 	
-	seqDiffValues = zeros(1, szMatData(1) * szMatData(2) * numel(argSeqOfDepthImageMatrices));
-	seqGroundTruthValues = zeros(1, szMatData(1) * szMatData(2) * numel(argSeqOfDepthImageMatrices));
-	seqMeasuredDepthValues = zeros(1, szMatData(1) * szMatData(2) * numel(argSeqOfDepthImageMatrices));
+	%seqDiffValues = zeros(1, szMatData(1) * szMatData(2) * numel(argSeqOfDepthImageMatrices));
+	%seqGroundTruthValues = zeros(1, szMatData(1) * szMatData(2) * numel(argSeqOfDepthImageMatrices));
+	%seqMeasuredDepthValues = zeros(1, szMatData(1) * szMatData(2) * numel(argSeqOfDepthImageMatrices));
+	
+	seqDiffValues = zeros(1, szMatData(1) * szMatData(2));
+	seqGroundTruthValues = zeros(1, szMatData(1) * szMatData(2));
+	seqMeasuredDepthValues = zeros(1, szMatData(1) * szMatData(2));
 	index = 0;
 	
-	for i = 1 : numel(argSeqOfDepthImageMatrices)
-		matDepthImage = argSeqOfDepthImageMatrices{i};
-		matGroundTruth = argSeqOfGroundTruthImageMatrices{i};
+	%for i = 1 : numel(argSeqOfDepthImageMatrices)
+	%	matDepthImage = argSeqOfDepthImageMatrices{i};
+	%	matGroundTruth = argSeqOfGroundTruthImageMatrices{i};
 		
-		baseIndex = (i - 1) * rowCount * colCount;
+	%	baseIndex = (i - 1) * rowCount * colCount;
 		
-		for (j = 1 : rowCount)
-			for (k = 1 : colCount)
-				index = (j - 1) * colCount + k;
-				if (matDepthImage(j, k) == matGroundTruth(j, k))
-					continue;
-				elseif (isequal(0, matDepthImage(j, k)) || isequal(0, matGroundTruth(j, k)) )
-					continue;
-				elseif (matDepthImage(j, k) / matGroundTruth(j, k) < 0.8 || matDepthImage(j, k) / matGroundTruth(j, k) > 1.2 )
-					continue;
-				end
-				seqDiffValues(1, baseIndex + index) = matDepthImage(j, k) - matGroundTruth(j, k);
-				seqGroundTruthValues(1, baseIndex + index) = matGroundTruth(j, k);
-				seqMeasuredDepthValues(1, baseIndex + index) = matDepthImage(j, k);
+	for (j = 1 : rowCount)
+		for (k = 1 : colCount)
+			index = (j - 1) * colCount + k;
+			if (argDepthImage(j, k) == argGroundTruthImage(j, k))
+				continue;
+			elseif (isequal(0, argDepthImage(j, k)) || isequal(0, argGroundTruthImage(j, k)) )
+				continue;
+			elseif (argDepthImage(j, k) / argGroundTruthImage(j, k) < 0.8 || argDepthImage(j, k) / argGroundTruthImage(j, k) > 1.2 )
+				continue;
 			end
+			seqDiffValues(1, index) = argDepthImage(j, k) - argGroundTruthImage(j, k);
+			seqGroundTruthValues(1, index) = argGroundTruthImage(j, k);
+			seqMeasuredDepthValues(1, index) = argDepthImage(j, k);
 		end
-		
-		%matDiff = matDepthImage - matGroundTruth;
-		%seqMatDiff{i} = matDiff;
 	end
-	
-	%[resMaxError, resRmse, resSdev] = fun_detect_error_stats(seqMeasuredDepthValues, seqGroundTruthValues);
-	%diff_data = argMeasuredDepthValues - argRealDepthValues;
+		
+	%end
 	
 	%compute for real to fitted diff matrix
 	minVal = min(seqDiffValues);

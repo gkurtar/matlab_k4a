@@ -31,83 +31,32 @@
 %
 % **********************************************************
 
-function [ resCorrectedImages ] = fun_k4a_calibration(...
-	argRgbImages, ...
-	argRgbSquareSize, ...
-	argIrImages, ...
-	argIrSquareSize, ...
-	argSeqDistances, ...
-	argSeqOfPcFilePathArray, ...
+function [ resCorrectedImage, resGroundTruthImage ] = fun_k4a_calibration(...
+	argIrCamParams, ...
+	argMatMeanLinearModels,...
 	argDepthDataSize, ...
-	argSeqOfDepthDataToBeCorrected)
+	argRoiVector, ...
+	argDepthDataFilePath,...
+	argPlaneDistance)
 
 	fprintf("\nBEGIN: fun_k4a_calibration\n");
 	
-	fprintf("\nStarting RGB camera calibration\n");
-	%disp(argRgbImages);
-	rgbCamParams = fun_detect_camera_params(argRgbImages, argRgbSquareSize);
+	fprintf("\n____depth data is %s\n\theight: %d, width: %d",...
+				argDepthDataFilePath, argDepthDataSize(1), argDepthDataSize(2));
+	
+	depthData = fun_read_point_cloud_data(argDepthDataFilePath, argDepthDataSize(1), argDepthDataSize(2));
+	undistortedDepthData = fun_undistort_depth_data(depthData, argDepthDataSize(1), argDepthDataSize(2), argIrCamParams);
 
-	fprintf("\nStarting IR camera calibration\n");
-	%disp(argIrImages);
-	irCamParams = fun_detect_camera_params(argIrImages, argIrSquareSize);
-
-	fprintf("\nProcessing Depth Images to find depth cam params\n");
-	[matMeanLinearModels, matStdevLinearModels] = fun_find_depth_camera_params(...
-						argSeqDistances, argSeqOfPcFilePathArray, argDepthDataSize);
+	%correct measurements
+	resCorrectedImage = fun_correct_measurements(...
+		undistortedDepthData, argDepthDataSize(1), argDepthDataSize(2), argMatMeanLinearModels, argRoiVector);
 	
-	%if (3 < 5) return; end;
+	%find ground truth data
+	resGroundTruthImage = fun_get_ground_truth(argDepthDataFilePath, argDepthDataSize(1), argDepthDataSize(2), argPlaneDistance);
 	
-	% get one file for each distance;
-	seqOfDepthDataToBeCorrected = {};
-	for i = 1 : numel(argSeqDistances)
-		fprintf("\nIterating %d, dist is %d\n", i, argSeqDistances(i));
-		seqDepthDataFilePaths = argSeqOfPcFilePathArray{i};
-		%disp(seqDepthDataFilePaths(1));
-		%seqOfDepthDataToBeCorrected{i} = seqDepthDataFilePaths(1);
-		seqOfDepthDataToBeCorrected = [seqOfDepthDataToBeCorrected, seqDepthDataFilePaths(1) ]; 	
-	end
-	
-	disp(seqOfDepthDataToBeCorrected);
-	
-	for i = 1 : numel(seqOfDepthDataToBeCorrected)
-		%fprintf("\nIterating %d, depth data is %d\n", i, seqOfDepthDataToBeCorrected(i));
-		fprintf("\nIterating %d, depth data is \n", i);
-		disp(seqOfDepthDataToBeCorrected(i));
-	end
-
-	
-
-	fprintf("\nProcessing Depth Images to correct them.\n");
-	seqOfCorrectedImages = {};
-	seqOfGroundTruthImages = {};
-	
-	%control for argSeqDistances length with seqOfDepthDataToBeCorrected
-	if (length(argSeqDistances) ~= length(seqOfDepthDataToBeCorrected))
-		error("sdfsdf");
-	end;
-	
-	for i = 1 : numel(seqOfDepthDataToBeCorrected)
-
-		fprintf("\n____Iterating %d, depth data is %s\n\theight: %d, width: %d",...
-					i, seqOfDepthDataToBeCorrected{i}, argDepthDataSize(1), argDepthDataSize(2));
-		%disp(seqOfDepthDataToBeCorrected{i});
-
-		depthDataFilePath = seqOfDepthDataToBeCorrected{i};
-		depthData = fun_read_point_cloud_data(depthDataFilePath, argDepthDataSize(1), argDepthDataSize(2));
-		
-		undistortedDepthData = fun_undistort_depth_data(depthData, argDepthDataSize(1), argDepthDataSize(2), irCamParams);
-
-		%correct measurements // width ve height degerleri arguman verilmeden de bulunabilir.
-		resCorrectedImage = fun_correct_measurements(undistortedDepthData, argDepthDataSize(1), argDepthDataSize(2), matMeanLinearModels);
-		seqOfCorrectedImages = [seqOfCorrectedImages ; resCorrectedImage];
-		
-		%find ground truth data
-		[ groundTruthImage ] = fun_get_ground_truth(depthDataFilePath, argDepthDataSize(1), argDepthDataSize(2), argSeqDistances(i))
-		seqOfGroundTruthImages = [seqOfGroundTruthImages; groundTruthImage];
-	end
-	
+	%analyse errors
 	fprintf("\nAnalysing errors\n");
-	fun_inspect_errors(seqOfCorrectedImages, seqOfGroundTruthImages);
+	fun_inspect_errors(resCorrectedImage, resGroundTruthImage);
 	
 	fprintf("\nEND: fun_k4a_calibration\n");
 	return;

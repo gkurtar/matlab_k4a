@@ -54,7 +54,8 @@
 	 } ...
 	 };
 				
-	DEPTH_DATA_TO_CORRECT = ['c:\tmp\cal\depth\sample1.txt'];
+	DEPTH_DATA_TO_CORRECT = ['c:\tmp\cal\depth\sample_225.txt'];
+	depthDataToCorrectPlaneDistance = 2250;
 	
 	distances = [500, 750, 1000, 1250, 1500];
 	depthDataMatrixSize = [576, 640];
@@ -64,9 +65,7 @@
 	roi_vector = [320, 350, 220, 240];
 
 	if (local_test_flag)
-		%fun_k4a_calibration(RGB_FILES, rgbSqSize, IR_FILES, irSqSize,...
-		%	distances, DEPTH_PC_SAMPLE_DATA, depthDataMatrixSize);
-
+		
 		%fprintf("\nProcessing Depth Images to find depth cam params\n");
 		%[matMeanLinearModels, matStdevLinearModels] = fun_find_depth_camera_params(...
 		%		distances, DEPTH_PC_SAMPLE_DATA, depthDataMatrixSize(1), depthDataMatrixSize(2), [320, 350, 220, 240]);
@@ -79,7 +78,11 @@
 
 		fprintf("\nProcessing Depth Images to find depth cam params\n");
 		[matMeanLinearModels, matStdevLinearModels] = fun_find_depth_camera_params(...
-						distances, DEPTH_PC_SAMPLE_DATA, depthDataMatrixSize(1), depthDataMatrixSize(2), roi_vector);
+						distances, DEPTH_PC_SAMPLE_DATA, depthDataMatrixSize(1),...
+						depthDataMatrixSize(2), roi_vector);
+
+		fun_k4a_calibration(irCamParams, matMeanLinearModels, depthDataMatrixSize, roi_vector,...
+			DEPTH_DATA_TO_CORRECT, depthDataToCorrectPlaneDistance);
 
 		return;
     end
