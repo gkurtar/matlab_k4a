@@ -51,9 +51,33 @@
 	 {'c:\tmp\CAL\depth\pc_150_1.txt','c:\tmp\CAL\depth\pc_150_2.txt','c:\tmp\CAL\depth\pc_150_3.txt',...
 	 'c:\tmp\CAL\depth\pc_150_4.txt','c:\tmp\CAL\depth\pc_150_5.txt','c:\tmp\CAL\depth\pc_150_6.txt',...
 	 'c:\tmp\CAL\depth\pc_150_7.txt', 'c:\tmp\CAL\depth\pc_150_8.txt','c:\tmp\CAL\depth\pc_150_9.txt','c:\tmp\CAL\depth\pc_150_10.txt' ...
+	 }, ...
+	 
+	 {'c:\tmp\CAL\depth\pc_175_1.txt','c:\tmp\CAL\depth\pc_175_2.txt','c:\tmp\CAL\depth\pc_175_3.txt',...
+	 'c:\tmp\CAL\depth\pc_175_4.txt','c:\tmp\CAL\depth\pc_175_5.txt','c:\tmp\CAL\depth\pc_175_6.txt',...
+	 'c:\tmp\CAL\depth\pc_175_7.txt', 'c:\tmp\CAL\depth\pc_175_8.txt','c:\tmp\CAL\depth\pc_175_9.txt','c:\tmp\CAL\depth\pc_175_10.txt' ...
+	 }, ...
+	 
+	 {'c:\tmp\CAL\depth\pc_200_1.txt','c:\tmp\CAL\depth\pc_200_2.txt','c:\tmp\CAL\depth\pc_200_3.txt',...
+	 'c:\tmp\CAL\depth\pc_200_4.txt','c:\tmp\CAL\depth\pc_200_5.txt','c:\tmp\CAL\depth\pc_200_6.txt',...
+	 'c:\tmp\CAL\depth\pc_200_7.txt', 'c:\tmp\CAL\depth\pc_200_8.txt','c:\tmp\CAL\depth\pc_200_9.txt','c:\tmp\CAL\depth\pc_200_10.txt' ...
 	 } ...
+	 
 	 };
-				
+	
+	% rois for 5 agust data
+	%{
+	roi = 170,  74  361 x 248 ==>  50
+	roi = 218, 132  249 x 187 ==>  75
+	roi = 239, 163  200 x 143 ==> 100
+	roi = 239, 189  154 x 106 ==> 125
+	roi = 285, 203  132 x  94 ==> 150
+	roi = 294, 212  110 x  76 ==> 175
+	roi = 275, 223   95 x  65 ==> 200
+	
+	common rectangle: 300, 225  35 x 45
+	%}
+	
 	DEPTH_DATA_TO_CORRECT = ['c:\tmp\cal\depth\sample_225.txt'];
 	depthDataToCorrectPlaneDistance = 2250;
 	
@@ -62,7 +86,7 @@
 	rgbSqSize = 35;
 	irSqSize = 35;
 	local_test_flag = true;
-	roi_vector = [320, 350, 220, 240];
+	roi_vector = [300, 335, 225, 270]; % [320, 350, 220, 240];
 
 	if (local_test_flag)
 		
