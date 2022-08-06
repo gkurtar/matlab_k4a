@@ -16,7 +16,7 @@
 % Output Values:
 %   resCorrectedImage        -> Corrected Depth Image Data of size (argHeight x argWidth).
 %
-function [ resCorrectedImage ] = fun_correct_measurements(argDepthImage, argHeight, argWidth, argMeanLinearModelMatrix)
+function [ resCorrectedImage ] = fun_correct_measurements(argDepthImage, argHeight, argWidth, argMeanLinearModelMatrix, argRoiVector)
 
 	fprintf("\nBEGIN: fun_correct_measurements\n");
 
@@ -37,10 +37,20 @@ function [ resCorrectedImage ] = fun_correct_measurements(argDepthImage, argHeig
 		fprintf("going to correct depth data");
 	end
 	
+	roi_x_min = argRoiVector(1);
+	roi_x_max = argRoiVector(2);
+	roi_y_min = argRoiVector(3);
+	roi_y_max = argRoiVector(4);
+	
 	resCorrectedImage=zeros(argHeight, argWidth);
 	
 	for i = 1 : argHeight
 		for j = 1 : argWidth
+		
+			if (j < roi_x_min || j > roi_x_max ...
+					|| i < roi_y_min || i > roi_y_max )
+				continue;
+			end;
 			%{
 			rowIndex = (i - 1) * argWidth + j;
 			org_depth = argDepthImage(rowIndex, 3); %assign z val
@@ -75,9 +85,22 @@ function [ resCorrectedImage ] = fun_correct_measurements(argDepthImage, argHeig
 			
 			resCorrectedImage(i, j) = org_depth;
 			
+			if (mod(j, 50) == 0 && mod(i, 50) == 0)
+				fprintf("Iterating %d, %d\n", i, j);
+			end;
+			
 			if (org_depth ~= 0)
 				
 				mean_lm = argMeanLinearModelMatrix{i, j}; %find linear model
+				
+				%{
+				if (mean_lm.Coefficients{1, 1} == 0 ...
+					&& mean_lm.Coefficients{1, 2} == 0 ...
+					&& mean_lm.Coefficients{2, 1} == 0 ...
+					&& mean_lm.Coefficients{2, 2} == 0)
+					continue;
+				end;
+				%}
 				
 				if (all (mean_lm.Coefficients{:, 1} == 0) ...
 						&& all (mean_lm.Coefficients{:,2} == 0))
@@ -85,12 +108,18 @@ function [ resCorrectedImage ] = fun_correct_measurements(argDepthImage, argHeig
 					continue;
 				end
 				
-				revised_depth = predict(mean_lm, org_depth);
+				%revised_depth = predict(mean_lm, org_depth);
+				%resCorrectedImage(i, j) = int32(revised_depth);
+				
+				predicted_value = predict(mean_lm, org_depth);
+				resCorrectedImage(i, j) = org_depth + int32(predicted_value);
+				
+				fprintf("Row: %d, Col: %d, Org depth: %d, predicted val: %d, Corrected: %d\n",...
+					i, j, org_depth, predicted_value, resCorrectedImage(i, j)	);
+				
 				%if (j == 160 && i < 200 && i > 100)
 					%fprintf("org depth %d, predicted %d\n", org_depth, revised_depth);
 				%end;
-				
-				resCorrectedImage(i, j) = int32(revised_depth);
 			end
 
 		end

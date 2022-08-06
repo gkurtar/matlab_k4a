@@ -209,23 +209,15 @@ function [ matMeanLinearModels, matStdevLinearModels ] = fun_find_depth_camera_p
 				matStdevLinearModels{i, j} = mdlStdDevLM;
 			end;
 
+			%{
 			% logging is done here
 			if (mod(i, 20) == 0 && mod(j, 10) == 0 )
 				fprintf ("iterating : %d, %d\n", i, j);
 				disp(meanVals);
 				disp(matMeanLinearModels{i, j});
 			end;
-
-			
-			%{
-			stdevVals = zeros(1, length(seqPdObjects));
-			for p = 1 : length(seqPdObjects)
-				stdevVals(p) = seqPdObjects{p}.sigma;
-			end
-
-			mdlStdDevLM = fitlm (argDistances, stdevVals);
-			matStdevLinearModels{i, j} = mdlStdDevLM;
 			%}
+
 		end
 	end
 	

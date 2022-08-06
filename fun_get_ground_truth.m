@@ -20,9 +20,8 @@ function [ resGroundTruth ] = fun_get_ground_truth(argDepthDataFilePath, argHeig
     resGroundTruthPc = zeros(argHeight * argWidth, 3);
     pointPositions = importdata(fullfile(argDepthDataFilePath));
 	
-	pointPositions = filloutliers(pointPositions,'nearest','mean');
-	%pointPositions = rmoutliers(pointPositions);
-	
+	pointPositions = filloutliers(pointPositions, 'previous'); %'nearest','mean');
+		
     ptCloud = pointCloud(pointPositions);
    
 % {   
