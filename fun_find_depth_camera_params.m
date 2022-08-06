@@ -22,20 +22,55 @@
 % **********************************************************
 
 function [ matMeanLinearModels, matStdevLinearModels ] = fun_find_depth_camera_params(...
-	argDistances, argSeqOfDepthDataFilePathArray, argImageHeight, argImageWidth)
+	argDistances, argSeqOfDepthDataFilePathArray, argImageHeight, argImageWidth, argRoiVector)
 
-	fprintf("\nBEGIN: fun_find_depth_camera_params\n"); 
-
-	seqProbDistObjectMatrices = cell(1, numel(argDistances));
-	matMeanLinearModels = {};
-	matStdevLinearModels = {};
+	fprintf("\nBEGIN: fun_find_depth_camera_params\n");
 	
-	%rowCount = argDepthDataSize(1);
-	%colCount = argDepthDataSize(2);
+	file_result='results.txt';
+	%fileID = fopen(file_result, 'w');
+	
+	seqProbDistObjectMatrices = cell(1, numel(argDistances));
+	%matMeanLinearModels = {};
+	%matStdevLinearModels = {};
+	
+	matMeanLinearModels = cell(argImageHeight, argImageWidth);
+	matStdevLinearModels = cell(argImageHeight, argImageWidth);
+	%matEvalPixels = zeros(argImageHeight, argImageWidth);
 	
 	vectorTmp = zeros(1, 6);
 	zero_pd_obj = fitdist (vectorTmp.', 'Normal');
+	zero_linear_model = fitlm(vectorTmp, vectorTmp);
 	
+	%{
+	roi_x_min = cast(argImageWidth / 2 - argImageWidth / 20, 'uint16');
+	roi_x_max = cast(argImageWidth / 2 + argImageWidth / 20, 'uint16'); 
+	roi_y_min = cast(argImageHeight * 0.35 - argImageHeight / 25, 'uint16');
+	roi_y_max = cast(argImageHeight * 0.35 + argImageHeight / 25, 'uint16');
+	%}
+	
+	%{
+	roi_vectors = [
+		[300, 400, 150, 250, 460, 540];
+		[300, 400, 200, 250, 710, 790];
+		[300, 380, 200, 250, 960, 1040];
+		[280, 350, 210, 270, 1200, 1300];
+		[310, 380, 220, 270, 1450, 1550]];
+	%}
+	roi_vectors = [
+		[360, 380, 220, 240, 460, 540];
+		[360, 380, 220, 240, 710, 790];
+		[360, 380, 220, 240, 960, 1040];
+		%[300, 330, 210, 240, 1200, 1300];
+		%[310, 340, 220, 240, 1450, 1550]
+		];
+		
+	roi_x_min = argRoiVector(1);
+	roi_x_max = argRoiVector(2);
+	roi_y_min = argRoiVector(3);
+	roi_y_max = argRoiVector(4);
+	
+	fprintf("rois are x: %d, %d, y: %d, %d", roi_x_min, roi_x_max, roi_y_min, roi_y_max);
+
 	tic;
 	fprintf("\nGoing to evaluate prob dist objects for each pixel of each distance\n");
 
@@ -60,31 +95,69 @@ function [ matMeanLinearModels, matStdevLinearModels ] = fun_find_depth_camera_p
 		%matProbDistObjects = cell(argImageHeight / 2 , argImageWidth / 2);
 		matProbDistObjects = cell(argImageHeight, argImageWidth);
 		
+		%vectorTmp is a row vector where each element would be the evaluated value for the corresponding pixel.
 		vectorTmp = zeros(1, numel(seqMatDepthData));
+		%actual_value_for_pixel would be evaluated via a plane model
+		actual_value_for_pixel = 0;
+		actual_value_for_pixel = argDistances(i);
+		
+		%{
+		roi_vector = roi_vectors(i, :);
+		disp(roi_vector);
+		roi_x_min = roi_vector(1);
+		roi_x_max = roi_vector(2);
+		roi_y_min = roi_vector(3);
+		roi_y_max = roi_vector(4);
+		%}
+		
+		fprintf("rois are x: %d, %d, y: %d, %d", roi_x_min, roi_x_max, roi_y_min, roi_y_max);
 		
 		for m = 1 : argImageHeight %/ 2
+		
 			for n = 1 : argImageWidth %/ 2
-				
-				%vectorTmp = zeros(1, numel(seqMatDepthData));
+			
+				if (n < roi_x_min || n > roi_x_max ...
+					|| m < roi_y_min || m > roi_y_max )
+					matProbDistObjects{m, n} = zero_pd_obj;
+					continue;
+				end;
+
+				%reset vectorTmp 
 				vectorTmp(:) = 0;
 				
 				for k = 1 : numel(seqMatDepthData)
 					matDepthData = seqMatDepthData{k};
 					vectorTmp(k) = matDepthData(m, n);
 				end
-				
+				%vectorTmp now contains measured values for the corresponding pixel.
+
 				if (all(vectorTmp == 0)) %if all values are eq to zero
 					matProbDistObjects{m, n} = zero_pd_obj;
 				else
 			
 					if (all(vectorTmp)) %none are zero, we could simply evaluate
+					
+						vectorTmp = vectorTmp - actual_value_for_pixel;
+						
 						pdobj = fitdist(vectorTmp.', 'Normal');
+						
+						%{
+						if (mod(m, 10) == 0 && mod(n, 5) == 0 )
+							fprintf ("iterating : %d, %d\n", m, n);
+							disp(vectorTmp);
+							disp(pdobj);
+						end;
+						%}
+						
 						matProbDistObjects{m, n} = pdobj;
 					else
 						%there are zeroes extract them and evaluate
 						b = vectorTmp(vectorTmp ~= 0);
 						
 						if (length(b) > 1)
+						
+							vectorTmp = vectorTmp - actual_value_for_pixel;
+						
 							pdobj = fitdist(b.', 'Normal');
 							matProbDistObjects{m, n} = pdobj;
 						else
@@ -129,10 +202,26 @@ function [ matMeanLinearModels, matStdevLinearModels ] = fun_find_depth_camera_p
 	rowIndex = -1;
 	colIndex = -1;
 	meanVals = zeros(1, length(argDistances));
+	distances = zeros(1, length(argDistances));
+	
+	%{
+	roi_vector = roi_vectors(1, :);
+	disp(roi_vector);
+	roi_x_min = roi_vector(1);
+	roi_x_max = roi_vector(2);
+	roi_y_min = roi_vector(3);
+	roi_y_max = roi_vector(4);
+	%}
 	
 	for i = 1 : argImageHeight %/ 2
 		
 		for j = 1 : argImageWidth %/ 2
+
+			if (j < roi_x_min || j > roi_x_max ...
+				|| i < roi_y_min || i > roi_y_max )
+				matMeanLinearModels{i, j} = zero_linear_model;
+				continue;
+			end;
 
 			seqPdObjects = cell(1, numel(seqProbDistObjectMatrices));
 			for p = 1 : numel(seqProbDistObjectMatrices)
@@ -140,23 +229,37 @@ function [ matMeanLinearModels, matStdevLinearModels ] = fun_find_depth_camera_p
 				%fprintf("iterate %d", p);%disp (tmp);%disp ("+++++");%disp (tmp{i, j});%disp ("=====");
 				seqPdObjects{p} = tmp{i, j};
 			end
-			
-			%disp ("=====");%disp (seqPdObjects);%disp ("=====");
 
-			%meanVals = zeros(1, length(seqPdObjects));
-			meanVals(:) = 0;
-			
+			meanValsTmp = [];
+			distancesTmp = [];
+			k = 1;
+			%check meanVals alongside distances, only store non-zero values with the corresponding distances
 			for p = 1 : length(seqPdObjects)
-				%pdObject = seqPdObjects{p};
-				%disp (p);disp (pdObject);  disp (sprintf("xxxxx\n"));
-				%meanVals(p) = pdObject.mu;
+				
 				meanVals(p) = seqPdObjects{p}.mu;
+				if (seqPdObjects{p}.mu ~= 0)
+					meanValsTmp(k) = seqPdObjects{p}.mu;
+					distancesTmp(k) = argDistances(p);
+					k = k + 1;
+				end;
 			end
 			
+			if (length(meanValsTmp) == 0)
+			    matMeanLinearModels{i, j} = zero_linear_model;
+			else
+				mdlMeanLM = fitlm (distancesTmp, meanValsTmp);
+				matMeanLinearModels{i, j} = mdlMeanLM;
+				%matEvalPixels(i, j) = matEvalPixels(i, j) + 1;
+				%fprintf (fileID, "found linear model : %d, %d\n", i, j);
+			end;
 
-			%check meanVals, if all values are same and they are zero then
-			%	check for an evaluation that has been done already and use that value again 
-			
+			if (mod(i, 20) == 0 && mod(j, 10) == 0 )
+				fprintf ("iterating : %d, %d\n", i, j);
+				disp(meanVals);
+				disp(matMeanLinearModels{i, j});
+			end;
+
+			%{
 			if (all(meanVals == 0))
 				if (rowIndex > 0 && colIndex > 0)
 					matMeanLinearModels{i, j} = matMeanLinearModels{rowIndex, colIndex};
@@ -166,11 +269,12 @@ function [ matMeanLinearModels, matStdevLinearModels ] = fun_find_depth_camera_p
 					rowIndex = i;
 					colIndex = j;
 				end;
-				
 			else
 				mdlMeanLM = fitlm (argDistances, meanVals);
 				matMeanLinearModels{i, j} = mdlMeanLM;
 			end;
+			%}
+			
 			
 			%{
 			mdlMeanLM = fitlm (argDistances, meanVals);
@@ -191,6 +295,8 @@ function [ matMeanLinearModels, matStdevLinearModels ] = fun_find_depth_camera_p
 	
 	toc;
 	fprintf("Linear models are evaluated \n");
+
+	%fclose(fileID);
 
 	fprintf("\nEND: fun_find_depth_camera_params\n");
 	return;
