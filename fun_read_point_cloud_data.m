@@ -3,6 +3,7 @@
 % given a txt file path which represnts a 2d image this method calls importdata after various checks and reads
 % this data as a matrix and returns it. Each line of the input file consists of triplets where 1st element is row number,
 % second one is column number and third one is the corresponding value at that pixel position.
+% After importing data fillOutliers is called to update outlier values in the input
 % The number of lines in this file should be eq to argRowCount * argColCount.
 %
 % % Input Arguments:
@@ -33,6 +34,8 @@ function [resMatDepthData] = fun_read_point_cloud_data(argFilePath, argRowCount,
 	end
 
 	tmp = importdata(fullfile(argFilePath));
+	tmp = filloutliers(tmp,'nearest','mean');
+	
 	[rows, cols] = size(tmp);
 	
 	%extra control

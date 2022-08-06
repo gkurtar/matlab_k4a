@@ -19,55 +19,62 @@ function [ resGroundTruth ] = fun_get_ground_truth(argDepthDataFilePath, argHeig
 	resGroundTruth = zeros(argHeight, argWidth);
     resGroundTruthPc = zeros(argHeight * argWidth, 3);
     pointPositions = importdata(fullfile(argDepthDataFilePath));
+	
+	pointPositions = filloutliers(pointPositions,'nearest','mean');
+	%pointPositions = rmoutliers(pointPositions);
+	
     ptCloud = pointCloud(pointPositions);
    
-%{   
+% {   
     figure;   
-    pcshow(ptCloud, 'VerticalAxis', 'X');
+    pcshow(ptCloud, 'VerticalAxis', 'X', 'VerticalAxisDir', 'Down' );
 	xlabel('X(px)');
 	ylabel('Y(px)');
 	zlabel('Z(mm)');
 	title('Original Point Cloud');
-%}
+% }
 
-    roi_x_min = 0; %110;
-    roi_x_max = argWidth; % 125;
-    roi_y_min = 0;
-    roi_y_max = argHeight; % 145;
-    roi_z_min = argDistance - 8 ;%(argDistance / 100);
-    roi_z_max = argDistance + 8; % (argDistance / 100);
+    %roi_x_min = 240; roi_x_max = 390;
+    %roi_y_min = 190; roi_y_max = 297;
+	
+	roi_x_min = 0; roi_x_max = argWidth;
+    roi_y_min = 0; roi_y_max = argHeight;
+	
+    roi_z_min = argDistance - 2 ;%(argDistance / 100);
+    roi_z_max = argDistance + 2; % (argDistance / 100);
     
     roi_vector = [roi_x_min, roi_x_max; roi_y_min, roi_y_max; roi_z_min, roi_z_max];
 
     sampleIndicesOfROI = findPointsInROI(ptCloud, roi_vector);
 
-    [fittedPlaneModel, inlierIndices, outlierIndices] = pcfitplane(ptCloud, 3, 'SampleIndices', sampleIndicesOfROI);
+    [fittedPlaneModel, inlierIndices, outlierIndices] = pcfitplane(ptCloud, 1, 'SampleIndices', sampleIndicesOfROI);
     pointCloudNearPlane = select(ptCloud, inlierIndices);
 	%[fittedPlaneModel] = pcfitplane(ptCloud, 1, [0 0 1]);
 
-	%{
+	
     x_plmdl = fittedPlaneModel.Parameters(1);
     y_plmdl = fittedPlaneModel.Parameters(2);
     z_plmdl = fittedPlaneModel.Parameters(3);
     delta_val_plmdl = fittedPlaneModel.Parameters(4);
-	%}
 	
+	%{
 	x_plmdl = 0;
     y_plmdl = 0;
     z_plmdl = 1;
     delta_val_plmdl = argDistance * -1;
+	%}
 	
     fprintf ("\nOrg Data fitted plane model parameters are\n\t");
     fprintf ("%f ", fittedPlaneModel.Parameters);
 
-	%{
+	% {
 	figure;
 	pcshow(pointCloudNearPlane);
 	title('Optimum fitted plane');
 	hold on;
 	plot(fittedPlaneModel);
 	hold off;
-	%}
+	% }
 	
 	%--------------------------------------------------------------------------
 	%------------------ FIT PLANE ------------------------
@@ -83,7 +90,8 @@ function [ resGroundTruth ] = fun_get_ground_truth(argDepthDataFilePath, argHeig
 
 			rowIndex = (i - 1) * argWidth + j;
 			orgDepthVal = pointPositions(rowIndex, colIndex);
-			 
+			
+			%{
 			if (orgDepthVal < argDistance + argDistance / 20 && orgDepthVal > argDistance - argDistance / 20)
 				FITTED_DATA(i, j) = (x_plmdl * j + y_plmdl * i + delta_val_plmdl ) / z_plmdl;
 				FITTED_DATA(i, j) = abs(FITTED_DATA(i, j));
@@ -94,9 +102,11 @@ function [ resGroundTruth ] = fun_get_ground_truth(argDepthDataFilePath, argHeig
             end
 			
 			REAL_TO_FITTED_DIFF(i, j) = diffBtwRealDepthAndFitted;
-			%{
+			%}
+			
 			if (i >= roi_y_min && i <= roi_y_max ...
-				&& j >= roi_x_min && j <= roi_x_max)
+				&& j >= roi_x_min && j <= roi_x_max ...
+				&& orgDepthVal < argDistance + argDistance / 100 && orgDepthVal > argDistance - argDistance / 100)
 			 
 				FITTED_DATA(i, j) = (x_plmdl * j + y_plmdl * i + delta_val_plmdl ) / z_plmdl;
 				FITTED_DATA(i, j) = abs(FITTED_DATA(i, j));
@@ -106,33 +116,34 @@ function [ resGroundTruth ] = fun_get_ground_truth(argDepthDataFilePath, argHeig
 				else
 				   diffBtwRealDepthAndFitted = 0;
 				end
+				
+				fprintf("i: %d \tj: %d \t org: %d \t fit: %7.4f \t diff: %4.4f \n", ...
+					   i, j, pointPositions(rowIndex, colIndex), ...
+				   FITTED_DATA(i, j), diffBtwRealDepthAndFitted);
 
 			else
-				FITTED_DATA(i, j) = 0;
+				FITTED_DATA(i, j) = orgDepthVal;
 				diffBtwRealDepthAndFitted = 0;
 			end
 
 			REAL_TO_FITTED_DIFF(i, j) = diffBtwRealDepthAndFitted;
 
-			%fprintf("%d \t %d \t %d \t %7.4f \t %4.4f \n", ...
-			%	   i, j, pointPositions(rowIndex, colIndex), ...
-			%	   FITTED_DATA(i, j), diffBtwRealDepthAndFitted);
-			%}
+			
+			
 			
 			resGroundTruthPc(rowIndex, 1) = i;
 			resGroundTruthPc(rowIndex, 2) = j;
 			%resGroundTruthPc(rowIndex, 3) = FITTED_DATA(i, j);
 			resGroundTruthPc(rowIndex, 3) = cast(FITTED_DATA(i, j), "uint16");
-			
 
 			resGroundTruth(i, j) = cast(FITTED_DATA(i, j), "uint16");
 			
 		end
 	end
 
-	%{
+	% {
 	figure;
-	pcshow(resGroundTruthPc, 'VerticalAxis', 'X');
+	pcshow(resGroundTruthPc, 'VerticalAxis', 'X', 'VerticalAxisDir', 'Down' );
 	xlabel('X(px)');
 	ylabel('Y(px)');
 	zlabel('Z(mm)');
@@ -141,7 +152,7 @@ function [ resGroundTruth ] = fun_get_ground_truth(argDepthDataFilePath, argHeig
 	figure;
 	imagesc(REAL_TO_FITTED_DIFF);
 	title('diff');
-	%}
+	% }
 	
     fprintf("\nEND: fun_get_ground_truth\n");
 	return;
