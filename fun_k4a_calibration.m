@@ -37,12 +37,19 @@ function [ resCorrectedImage, resGroundTruthImage ] = fun_k4a_calibration(...
 	argDepthDataSize, ...
 	argRoiVector, ...
 	argDepthDataFilePath,...
-	argPlaneDistance)
+	argPlaneDistance,
+	argFileID)
 
 	fprintf("\nBEGIN: fun_k4a_calibration\n");
 	
 	fprintf("\n____depth data is %s\n\theight: %d, width: %d",...
 				argDepthDataFilePath, argDepthDataSize(1), argDepthDataSize(2));
+
+	fprintf(argFileID, "\n\n==============================\n==============================");
+	fprintf(argFileID, "\n\nGoing to undistort and correct depth data by camera parameters.");
+	fprintf(argFileID, "\n\nGenerating a ground truth data and comparing measurements are followed.");
+	fprintf(argFileID, "\n\nDepth data file is %s, W x H is (%d x %d), plane distance is %d",...
+		argDepthDataFilePath, argDepthDataSize(2), argDepthDataSize(1), argPlaneDistance);
 	
 	depthData = fun_read_point_cloud_data(argDepthDataFilePath, argDepthDataSize(1), argDepthDataSize(2));
 	undistortedDepthData = fun_undistort_depth_data(depthData, argDepthDataSize(1), argDepthDataSize(2), argIrCamParams);

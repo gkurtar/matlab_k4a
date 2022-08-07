@@ -3,16 +3,17 @@
 % This function returns Ground Truth
 %
 % Input Arguments:
-%    argDepthDataFile	-> full file path of the depth data (point cloud)
-%    argHeight          -> depth data matrix height
-%    argWidth           -> depth data matrix width
-%    argDistance        -> Distance of the planar board in mm
+%    argDepthDataFilePath -> full file path of the depth data (point cloud)
+%    argHeight            -> depth data matrix height
+%    argWidth             -> depth data matrix width
+%    argDistance          -> Distance of the planar board in mm
+%    argFileID            -> file handle
 %
 % Output Values:
-%    resGroundTruth		-> Ground Truth
+%    resGroundTruth       -> Ground Truth
 %
 %*******************************************************************************************
-function [ resGroundTruth ] = fun_get_ground_truth(argDepthDataFilePath, argHeight, argWidth, argDistance)
+function [ resGroundTruth ] = fun_get_ground_truth(argDepthDataFilePath, argHeight, argWidth, argDistance, argFileID)
 
 	fprintf("\nBEGIN: fun_get_ground_truth\n");
 	
@@ -20,10 +21,14 @@ function [ resGroundTruth ] = fun_get_ground_truth(argDepthDataFilePath, argHeig
     resGroundTruthPc = zeros(argHeight * argWidth, 3);
     pointPositions = importdata(fullfile(argDepthDataFilePath));
 	
-	pointPositions = filloutliers(pointPositions, 'previous'); %'nearest','mean');
-		
+	pointPositions = filloutliers(pointPositions, 'previous'); %'nearest','mean');	
     ptCloud = pointCloud(pointPositions);
-   
+ 
+	fprintf(argFileID, "\n\n==============================\n==============================");
+	fprintf(argFileID, "\n\nGoing to generate ground truth data for the depth data provided");
+	fprintf(argFileID, "\nFile path is %s, size is (%d x %d) and the plane distance is %d.", ...
+		argDepthDataFilePath, argWidth, argHeight, argDistance);
+	
 % {   
     figure;   
     pcshow(ptCloud, 'VerticalAxis', 'X', 'VerticalAxisDir', 'Down' );
@@ -39,8 +44,8 @@ function [ resGroundTruth ] = fun_get_ground_truth(argDepthDataFilePath, argHeig
 	roi_x_min = 0; roi_x_max = argWidth;
     roi_y_min = 0; roi_y_max = argHeight;
 	
-    roi_z_min = argDistance - 2 ;%(argDistance / 100);
-    roi_z_max = argDistance + 2; % (argDistance / 100);
+    roi_z_min = argDistance - 4 ;%(argDistance / 100);
+    roi_z_max = argDistance + 4; % (argDistance / 100);
     
     roi_vector = [roi_x_min, roi_x_max; roi_y_min, roi_y_max; roi_z_min, roi_z_max];
 
@@ -65,7 +70,10 @@ function [ resGroundTruth ] = fun_get_ground_truth(argDepthDataFilePath, argHeig
 	
     fprintf ("\nOrg Data fitted plane model parameters are\n\t");
     fprintf ("%f ", fittedPlaneModel.Parameters);
-
+	
+	fprintf(argFileID, "\nFitted Plane Model parameters are found as: ");
+	fprintf (argFileID, "%f ", fittedPlaneModel.Parameters);
+	
 	% {
 	figure;
 	pcshow(pointCloudNearPlane);
@@ -127,12 +135,9 @@ function [ resGroundTruth ] = fun_get_ground_truth(argDepthDataFilePath, argHeig
 
 			REAL_TO_FITTED_DIFF(i, j) = diffBtwRealDepthAndFitted;
 
-			
-			
-			
+
 			resGroundTruthPc(rowIndex, 1) = i;
 			resGroundTruthPc(rowIndex, 2) = j;
-			%resGroundTruthPc(rowIndex, 3) = FITTED_DATA(i, j);
 			resGroundTruthPc(rowIndex, 3) = cast(FITTED_DATA(i, j), "uint16");
 
 			resGroundTruth(i, j) = cast(FITTED_DATA(i, j), "uint16");

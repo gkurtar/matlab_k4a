@@ -81,7 +81,7 @@
 	DEPTH_DATA_TO_CORRECT = ['c:\tmp\cal\depth\sample_225.txt'];
 	depthDataToCorrectPlaneDistance = 2250;
 	
-	distances = [500, 750, 1000, 1250, 1500];
+	distances = [500, 750, 1000, 1250, 1500, 1750, 2000];
 	depthDataMatrixSize = [576, 640];
 	rgbSqSize = 35;
 	irSqSize = 35;
@@ -94,19 +94,26 @@
 		%[matMeanLinearModels, matStdevLinearModels] = fun_find_depth_camera_params(...
 		%		distances, DEPTH_PC_SAMPLE_DATA, depthDataMatrixSize(1), depthDataMatrixSize(2), [320, 350, 220, 240]);
 		
+		fileID = fopen("results.txt", 'w');
+		
 		fprintf("\nStarting RGB camera calibration\n");
-		[rgbCamParams] = fun_detect_camera_params(RGB_FILES, rgbSqSize);
+		fprintf(fileID, "\n\nSTARTED\n\nRGB camera parameters:\n");
+		[rgbCamParams] = fun_detect_camera_params(RGB_FILES, rgbSqSize, fileID);
 
 		fprintf("\nStarting IR camera calibration\n");
-		[irCamParams] = fun_detect_camera_params(IR_FILES, irSqSize);
+		fprintf(fileID, "\n\nIR camera parameters:\n");
+		[irCamParams] = fun_detect_camera_params(IR_FILES, irSqSize, fileID);
 
 		fprintf("\nProcessing Depth Images to find depth cam params\n");
 		[matMeanLinearModels, matStdevLinearModels] = fun_find_depth_camera_params(...
 						distances, DEPTH_PC_SAMPLE_DATA, depthDataMatrixSize(1),...
-						depthDataMatrixSize(2), roi_vector);
-
+						depthDataMatrixSize(2), roi_vector, fileID);
+		
+		fprintf("\nCorrect an image with the parameters\n");
 		fun_k4a_calibration(irCamParams, matMeanLinearModels, depthDataMatrixSize, roi_vector,...
-			DEPTH_DATA_TO_CORRECT, depthDataToCorrectPlaneDistance);
+			DEPTH_DATA_TO_CORRECT, depthDataToCorrectPlaneDistance, fileID);
+			
+		fclose(fileID);
 
 		return;
     end

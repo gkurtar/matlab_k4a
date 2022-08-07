@@ -6,11 +6,12 @@
 % Also finds statistics for the depth measurement errors such as rmse and stdev and prints them.
 % 
 % INPUT:
-%   argSeqOfDepthImageMatrices		-> a cell array where each element is a 2D array of measured depth values 
-%   argSeqOfGroundTruthImageMatrices	-> a cell array where each element is a 2D array of ground truth values of the corresponding measurements 
+%   argSeqOfDepthImageMatrices		 -> a cell array where each element is a 2D array of measured depth values 
+%   argSeqOfGroundTruthImageMatrices -> a cell array where each element is a 2D array of ground truth values of the corresponding measurements 
+%   argFileID                        -> file handle
 %
 % ******************************************************************
-function fun_inspect_errors(argDepthImage, argGroundTruthImage)
+function fun_inspect_errors(argDepthImage, argGroundTruthImage, argFileID)
 
 	fprintf("\nBEGIN: fun_inspect_errors\n");
 	
@@ -54,6 +55,9 @@ function fun_inspect_errors(argDepthImage, argGroundTruthImage)
 	if (numel(szDepth) ~= 2 || numel(szGrTuth) ~= 2 || ~isequal(size(argDepthImage), size(argGroundTruthImage)))
 		error("Matrix dimensions should be equal and size of each matrix must have two elements.");
 	end
+
+	fprintf(argFileID, "\n\n==============================\n==============================");
+	fprintf(argFileID, "\n\nGoing to compare depth data argument and corresponding ground truth data");
 
 	%{
 	szMatData = size(argSeqOfDepthImageMatrices{1});

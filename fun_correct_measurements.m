@@ -13,11 +13,13 @@
 %   argMeanLinearModelMatrix -> 2D array of size (argHeight x argWidth) where each element
 %								is a linear model object of the corresponding pixel
 %   argRoiVector             -> ROI vector
+%   argFileID	             -> file handle
 %
 % Output Values:
 %   resCorrectedImage        -> Corrected Depth Image Data of size (argHeight x argWidth).
 %
-function [ resCorrectedImage ] = fun_correct_measurements(argDepthImage, argHeight, argWidth, argMeanLinearModelMatrix, argRoiVector)
+function [ resCorrectedImage ] = fun_correct_measurements(...
+	argDepthImage, argHeight, argWidth, argMeanLinearModelMatrix, argRoiVector, argFileID)
 
 	fprintf("\nBEGIN: fun_correct_measurements\n");
 
@@ -38,6 +40,12 @@ function [ resCorrectedImage ] = fun_correct_measurements(argDepthImage, argHeig
 		fprintf("going to correct depth data");
 	end
 	
+	fprintf(argFileID, "\n\n==============================\n==============================");
+	fprintf(argFileID, "\n\nGoing to correct depth measurements by the camera parameters.");
+	fprintf(argFileID, "\nDepth data matrix is of size (%d x %d), and ROI rectangle is", argWidth, argHeight);	
+	fprintf(argFileID, "(Xmin, Ymin): (%d, %d) and (Xmax, Ymax): (%d, %d)\n\n", ...
+		argRoiVector(1), argRoiVector(3), argRoiVector(2), argRoiVector(4));
+
 	roi_x_min = argRoiVector(1);
 	roi_x_max = argRoiVector(2);
 	roi_y_min = argRoiVector(3);
@@ -86,9 +94,7 @@ function [ resCorrectedImage ] = fun_correct_measurements(argDepthImage, argHeig
 			
 			resCorrectedImage(i, j) = org_depth;
 			
-			if (mod(j, 50) == 0 && mod(i, 50) == 0)
-				fprintf("Iterating %d, %d\n", i, j);
-			end;
+			
 			
 			if (org_depth ~= 0)
 				
@@ -118,9 +124,12 @@ function [ resCorrectedImage ] = fun_correct_measurements(argDepthImage, argHeig
 				fprintf("Row: %d, Col: %d, Org depth: %d, predicted val: %d, Corrected: %d\n",...
 					i, j, org_depth, predicted_value, resCorrectedImage(i, j)	);
 				
-				%if (j == 160 && i < 200 && i > 100)
-					%fprintf("org depth %d, predicted %d\n", org_depth, revised_depth);
-				%end;
+				% logging is done here
+				if (mod(i, 10) == 0 && mod(j, 10) == 0)
+					fprintf(argFileID, "Row: %d, Col: %d, org depth: %d, predicted value: %d, corrected: %d\n",...
+						i, j, org_depth, predicted_value, resCorrectedImage(i, j));
+				end
+				
 			end
 
 		end

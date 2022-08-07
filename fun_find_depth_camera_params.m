@@ -15,6 +15,7 @@
 %   argHeight                       -> Depth Image Height
 %   argWidth                        -> Depth Image Width
 %	argRoiVector                    -> Roi Vector which consists of X min, X max, Y min and Y max.
+%   argFileID	                    -> file handle
 %
 % OUTPUT:
 %	matMeanLinearModels	-> a 2D array (depth image sized) of linear model objects for mean values
@@ -23,10 +24,9 @@
 % **********************************************************
 
 function [ matMeanLinearModels, matStdevLinearModels ] = fun_find_depth_camera_params(...
-	argDistances, argSeqOfDepthDataFilePathArray, argImageHeight, argImageWidth, argRoiVector)
+	argDistances, argSeqOfDepthDataFilePathArray, argImageHeight, argImageWidth, argRoiVector, argFileID)
 
 	fprintf("\nBEGIN: fun_find_depth_camera_params\n");
-	file_result='results.txt';
 	seqProbDistObjectMatrices = cell(1, numel(argDistances));
 	%matMeanLinearModels = {}; 	%matStdevLinearModels = {};
 	
@@ -37,6 +37,15 @@ function [ matMeanLinearModels, matStdevLinearModels ] = fun_find_depth_camera_p
 	vectorTmp = zeros(1, 6);
 	zero_pd_obj = fitdist (vectorTmp.', 'Normal');
 	zero_linear_model = fitlm(vectorTmp, vectorTmp);
+	
+	fprintf(argFileID, "\n\n==============================\n==============================");
+	fprintf(argFileID, "\n\nProbabililty Distribution objects for each distance are to be evaluated.");
+	fprintf(argFileID, "\nLinear models of these objects based on distances are to be evaluated.");
+	%strROI = evalc('disp(argRoiVector)');
+	%fprintf(argFileID, "\nEvaluations would be done for the ROI rectangle %s\n", strROI);
+	fprintf(argFileID, "\nEvaluations would be done for the ROI rectangle:");
+	fprintf(argFileID, "(x_min, y_min): (%d, %d) and (x_max, y_max): (%d, %d)\n\n", ...
+		argRoiVector(1), argRoiVector(3), argRoiVector(2), argRoiVector(4));
 	
 	%{
 	roi_vectors = [
@@ -77,9 +86,8 @@ function [ matMeanLinearModels, matStdevLinearModels ] = fun_find_depth_camera_p
 		
 		%vectorTmp is a row vector where each element would be the evaluated value for the corresponding pixel.
 		vectorTmp = zeros(1, numel(seqMatDepthData));
-		%actual_value_for_pixel would be evaluated via a fitting plane model		
+		%actual_value_for_pixel could also be evaluated via a fitting plane model		
 		actual_value_for_pixel = argDistances(i);
-		
 		
 		for m = 1 : argImageHeight
 		
@@ -137,7 +145,7 @@ function [ matMeanLinearModels, matStdevLinearModels ] = fun_find_depth_camera_p
 	end
 	
 	toc;
-	fprintf("Prob Dist Objects are evaluated \n");
+	fprintf("Probability Distribution Objects are evaluated \n");
 	
 	tic;
 	fprintf("\nGoing to evaluate linear models based on distances\n");
@@ -199,7 +207,6 @@ function [ matMeanLinearModels, matStdevLinearModels ] = fun_find_depth_camera_p
 				mdlMeanLM = fitlm (distancesMeanTmp, meanValsTmp);
 				matMeanLinearModels{i, j} = mdlMeanLM;
 				%matEvalPixels(i, j) = matEvalPixels(i, j) + 1;
-				%fprintf (fileID, "found linear model : %d, %d\n", i, j);
 			end;
 			
 			if (length(stdevValsTmp) == 0)
@@ -209,14 +216,20 @@ function [ matMeanLinearModels, matStdevLinearModels ] = fun_find_depth_camera_p
 				matStdevLinearModels{i, j} = mdlStdDevLM;
 			end;
 
-			%{
+			% {
 			% logging is done here
-			if (mod(i, 20) == 0 && mod(j, 10) == 0 )
-				fprintf ("iterating : %d, %d\n", i, j);
+			if (mod(i, 20) == 0 && mod(j, 20) == 0 )
+				
+				fprintf ("Iterating: %d, %d\nMean Vals:", i, j);
 				disp(meanVals);
 				disp(matMeanLinearModels{i, j});
+				
+				fprintf (argFileID, "Iterating: %d, %d\nMean Vals:\t", i, j);
+				fprintf (argFileID, "%g", meanVals);
+				strPdLm = evalc('disp(matMeanLinearModels{i, j})');
+				fprintf (argFileID, "\nLinear Model: %s\n", strPdLm);
 			end;
-			%}
+			% }
 
 		end
 	end
