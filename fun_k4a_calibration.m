@@ -37,7 +37,7 @@ function [ resCorrectedImage, resGroundTruthImage ] = fun_k4a_calibration(...
 	argDepthDataSize, ...
 	argRoiVector, ...
 	argDepthDataFilePath,...
-	argPlaneDistance,
+	argPlaneDistance, ...
 	argFileID)
 
 	fprintf("\nBEGIN: fun_k4a_calibration\n");
@@ -56,14 +56,15 @@ function [ resCorrectedImage, resGroundTruthImage ] = fun_k4a_calibration(...
 
 	%correct measurements
 	resCorrectedImage = fun_correct_measurements(...
-		undistortedDepthData, argDepthDataSize(1), argDepthDataSize(2), argMatMeanLinearModels, argRoiVector);
+		undistortedDepthData, argDepthDataSize(1), argDepthDataSize(2), argMatMeanLinearModels, argRoiVector, argFileID);
 	
 	%find ground truth data
-	resGroundTruthImage = fun_get_ground_truth(argDepthDataFilePath, argDepthDataSize(1), argDepthDataSize(2), argPlaneDistance);
+	resGroundTruthImage = fun_get_ground_truth(...
+		argDepthDataFilePath, argDepthDataSize(1), argDepthDataSize(2), argPlaneDistance, argFileID);
 	
 	%analyse errors
 	fprintf("\nAnalysing errors\n");
-	fun_inspect_errors(resCorrectedImage, resGroundTruthImage);
+	fun_inspect_errors(resCorrectedImage, resGroundTruthImage, argFileID);
 	
 	fprintf("\nEND: fun_k4a_calibration\n");
 	return;

@@ -37,7 +37,7 @@ function [ resCorrectedImage ] = fun_correct_measurements(...
             size(argDepthImage, 1), size(argMeanLinearModelMatrix, 1));
 	%}
 	else
-		fprintf("going to correct depth data");
+		fprintf("Going to correct depth data");
 	end
 	
 	fprintf(argFileID, "\n\n==============================\n==============================");

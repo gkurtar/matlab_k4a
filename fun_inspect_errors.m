@@ -115,6 +115,10 @@ function fun_inspect_errors(argDepthImage, argGroundTruthImage, argFileID)
 	fprintf ("\nMin diff is %f max_diff is %f ", minVal, maxVal);
 	fprintf ("\nDepth Residual Stats are:\n\tmax_error %f, mse %f, rmse %f, std_dev: %f", maxErrorVal, MSE, RMSE, SDEV);
 
+	fprintf (argFileID, "\n\nMin diff is %f Max diff is %f ", minVal, maxVal);
+	fprintf (argFileID, "\n\nDepth Values Comparison Stats:");
+	fprintf (argFileID, "\n\nMax_error: %f\nMSE: %f\nRMSE: %f\nSTD DEV: %f", maxErrorVal, MSE, RMSE, SDEV);
+
 	figure;
 	fprintf("\nFind diff values and plot them: \n");
 	scatter(seqGroundTruthValues, seqDiffValues, '+');
