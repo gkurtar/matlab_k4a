@@ -112,7 +112,8 @@
 		fprintf("\nCorrect an image with the parameters\n");
 		fun_k4a_calibration(irCamParams, matMeanLinearModels, depthDataMatrixSize, roi_vector,...
 			DEPTH_DATA_TO_CORRECT, depthDataToCorrectPlaneDistance, fileID);
-			
+		
+		fprintf(fileID, "\n\nEND\n");
 		fclose(fileID);
 
 		return;
