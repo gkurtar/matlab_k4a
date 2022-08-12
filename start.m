@@ -89,7 +89,7 @@
 
 	fileID = fopen("results.txt", 'w');
 	
-	local_test_flag = true;
+	local_test_flag = false;
 	
 	if (local_test_flag)
 		
@@ -120,13 +120,15 @@
 		fprintf("\nSelected %d IR calibration Images\n", numel(seqIrImages));
 		disp(seqIrImages);
 		
-		prompt = {'Enter RGB calibration image square size (cm):',...
-				'Enter IR calibration image square size (cm):',...
-				'Enter depth image distances (cm):',...
-				'Enter depth data size:'};
+		prompt = {'Enter RGB calibration image square size (mm):',...
+				'Enter IR calibration image square size (mm):',...
+				'Enter depth image distances (mm):',...
+				'Enter depth data size:',...
+				'Enter ROI vector positions :'};
+				
 		dlgtitle = 'Please enter input parameters!';
 		dims = [1 45; 1 45; 1 45; 1 45; 1 45];
-		definput = {'25', '25', '50 100 150', '480 640', '300 335 225 270'};
+		definput = {'35', '35', '500 750 1000', '576 640', '300 335 225 270'};
 		answer = inputdlg(prompt, dlgtitle, dims, definput);
 		
 		rgbSqSize = str2num(answer{1});
@@ -153,9 +155,9 @@
 		seqAllPointClouds = {};
 		for i = 1 : numel(seqDistances)
 			fprintf("\nDistances: %d , \n", seqDistances(i));	
-			strTitle = sprintf("Select multiple point cloud data files for %d cm distance!", seqDistances(i));
-			seqPointClouds = fun_ui_get_files(strTitle, 3);
-			fprintf("\nSelected %d point cloud files for distance %d cm\n", numel(seqPointClouds), seqDistances(i));
+			strTitle = sprintf("Select multiple point cloud data files for %d mm distance!", seqDistances(i));
+			seqPointClouds = fun_ui_get_files("C:\", strTitle, 3);
+			fprintf("\nSelected %d point cloud files for distance %d mm\n", numel(seqPointClouds), seqDistances(i));
 			disp(seqPointClouds);
 			seqAllPointClouds{i} = seqPointClouds;
 		end
@@ -164,7 +166,7 @@
 		disp(seqAllPointClouds);
 
 		%Select point cloud files for correction from disk and store in an array
-		depthDataFileToBeCorrected = fun_ui_get_files("Select depth data file to correct!", 0);
+		depthDataFileToBeCorrected = fun_ui_get_files("C:\", "Select depth data file to correct!", 0);
 		disp(depthDataFileToBeCorrected);
 		
 		prompt = {'Enter plane distance for which depth data to be corrected and analysed:'};
@@ -174,7 +176,7 @@
 		answer = inputdlg(prompt, dlgtitle, dims, definput);
 		
 		depthDataToCorrectPlaneDistance	= str2num(answer{1});
-		depthDataToCorrectPlaneDistance = uint16(depthDataToCorrectPlaneDistance);
+		%depthDataToCorrectPlaneDistance = uint16(depthDataToCorrectPlaneDistance);
 		
     end
 

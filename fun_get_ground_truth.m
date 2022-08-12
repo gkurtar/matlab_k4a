@@ -10,7 +10,7 @@
 %    argFileID            -> file handle
 %
 % Output Values:
-%    resGroundTruth       -> Ground Truth
+%    resGroundTruth       -> Ground Truth Depth Data in matrix form
 %
 %*******************************************************************************************
 function [ resGroundTruth ] = fun_get_ground_truth(argDepthDataFilePath, argHeight, argWidth, argDistance, argFileID)
@@ -23,12 +23,12 @@ function [ resGroundTruth ] = fun_get_ground_truth(argDepthDataFilePath, argHeig
 	
 	pointPositions = filloutliers(pointPositions, 'previous'); %'nearest','mean');	
     ptCloud = pointCloud(pointPositions);
- 
+
 	fprintf(argFileID, "\n\n==============================\n==============================");
 	fprintf(argFileID, "\n\nGoing to generate ground truth data for the depth data provided");
 	fprintf(argFileID, "\nFile path is %s, size is (%d x %d) and the plane distance is %d.", ...
 		argDepthDataFilePath, argWidth, argHeight, argDistance);
-	
+
 % {   
     figure;   
     pcshow(ptCloud, 'VerticalAxis', 'X', 'VerticalAxisDir', 'Down' );
@@ -41,9 +41,10 @@ function [ resGroundTruth ] = fun_get_ground_truth(argDepthDataFilePath, argHeig
     %roi_x_min = 240; roi_x_max = 390;
     %roi_y_min = 190; roi_y_max = 297;
 	
-	roi_x_min = 0; roi_x_max = argWidth;
-    roi_y_min = 0; roi_y_max = argHeight;
-	
+	roi_x_min = 0;
+	roi_x_max = argWidth;
+    roi_y_min = 0;
+	roi_y_max = argHeight;
     roi_z_min = argDistance - 4 ;%(argDistance / 100);
     roi_z_max = argDistance + 4; % (argDistance / 100);
     
@@ -55,7 +56,6 @@ function [ resGroundTruth ] = fun_get_ground_truth(argDepthDataFilePath, argHeig
     pointCloudNearPlane = select(ptCloud, inlierIndices);
 	%[fittedPlaneModel] = pcfitplane(ptCloud, 1, [0 0 1]);
 
-	
     x_plmdl = fittedPlaneModel.Parameters(1);
     y_plmdl = fittedPlaneModel.Parameters(2);
     z_plmdl = fittedPlaneModel.Parameters(3);
@@ -135,13 +135,11 @@ function [ resGroundTruth ] = fun_get_ground_truth(argDepthDataFilePath, argHeig
 
 			REAL_TO_FITTED_DIFF(i, j) = diffBtwRealDepthAndFitted;
 
-
 			resGroundTruthPc(rowIndex, 1) = i;
 			resGroundTruthPc(rowIndex, 2) = j;
 			resGroundTruthPc(rowIndex, 3) = cast(FITTED_DATA(i, j), "uint16");
 
 			resGroundTruth(i, j) = cast(FITTED_DATA(i, j), "uint16");
-			
 		end
 	end
 
