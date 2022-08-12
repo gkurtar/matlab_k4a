@@ -97,28 +97,28 @@
 		%[matMeanLinearModels, matStdevLinearModels] = fun_find_depth_camera_params(...
 		%		distances, DEPTH_PC_SAMPLE_DATA, depthDataMatrixSize(1), depthDataMatrixSize(2), [320, 350, 220, 240]);
 		
-		seq_rgb_images = RGB_FILES;
-		seq_ir_images = IR_FILES;
+		seqRgbImages = RGB_FILES;
+		seqIrImages = IR_FILES;
 		
-		rgb_sq_size = 35;
-		ir_sq_size = 35;
-		seq_distances = [500, 750, 1000, 1250, 1500, 1750, 2000];
-		depth_data_matrix_size =  [576, 640];
-		depth_data_to_correct = 'c:\tmp\cal\depth\sample_225.txt';
+		rgbSqSize = 35;
+		irSqSize = 35;
+		seqDistances = [500, 750, 1000, 1250, 1500, 1750, 2000];
+		depthDataMatrixSize =  [576, 640];
+		depthDataFileToBeCorrected = 'c:\tmp\cal\depth\sample_225.txt';
 		depthDataToCorrectPlaneDistance = 2250;
-		seq_all_point_clouds = DEPTH_PC_SAMPLE_DATA;
-		roi_vector = [300, 335, 225, 270]; % [320, 350, 220, 240];
+		seqAllPointClouds = DEPTH_PC_SAMPLE_DATA;
+		roiVector = [300, 335, 225, 270]; % [320, 350, 220, 240];
 
 	else
 		%Select RGB IMAGES from disk and store in an image array
-		seq_rgb_images = fun_ui_get_files("C:\", "Select multiple RGB images for RGB Camera Calibration!", 3);
-		fprintf("\nSelected %d RGB calibration Images\n", numel(seq_rgb_images));
-		disp(seq_rgb_images);
+		seqRgbImages = fun_ui_get_files("C:\", "Select multiple RGB images for RGB Camera Calibration!", 3);
+		fprintf("\nSelected %d RGB calibration Images\n", numel(seqRgbImages));
+		disp(seqRgbImages);
 
 		%Select IR IMAGES from disk and store in an image array
-		seq_ir_images = fun_ui_get_files("C:\", "Select multiple IR images for IR Camera Calibration!", 3);
-		fprintf("\nSelected %d IR calibration Images\n", numel(seq_ir_images));
-		disp(seq_ir_images);
+		seqIrImages = fun_ui_get_files("C:\", "Select multiple IR images for IR Camera Calibration!", 3);
+		fprintf("\nSelected %d IR calibration Images\n", numel(seqIrImages));
+		disp(seqIrImages);
 		
 		prompt = {'Enter RGB calibration image square size (cm):',...
 				'Enter IR calibration image square size (cm):',...
@@ -129,44 +129,43 @@
 		definput = {'25', '25', '50 100 150', '480 640', '300 335 225 270'};
 		answer = inputdlg(prompt, dlgtitle, dims, definput);
 		
-		rgb_sq_size	= str2num(answer{1});
-		rgb_sq_size = uint16(rgb_sq_size);
+		rgbSqSize = str2num(answer{1});
+		rgbSqSize = uint16(rgbSqSize);
 		
-		ir_sq_size	= str2num(answer{2});
-		ir_sq_size = uint16(ir_sq_size);
+		irSqSize = str2num(answer{2});
+		irSqSize = uint16(irSqSize);
 		
-		seq_distances = str2num(answer{3});
-		disp(seq_distances);
+		seqDistances = str2num(answer{3});
+		disp(seqDistances);
 		
-		depth_data_matrix_size = str2num(answer{4});
-		disp(depth_data_matrix_size);
+		depthDataMatrixSize = str2num(answer{4});
+		disp(depthDataMatrixSize);
 		
-		roi_vector = str2num(answer{5});
-		disp(roi_vector);
+		roiVector = str2num(answer{5});
+		disp(roiVector);
 		
-		fprintf("\nCalibration image square sizes are IR: %d and RGB: %d, ",...
-			ir_sq_size, rgb_sq_size);
-		frmt=['Distances: ' repmat(' %4d', 1, numel(seq_distances)) '\n'];
-		fprintf(frmt, seq_distances);
+		fprintf("\nCalibration image square sizes are IR: %d and RGB: %d, ", irSqSize, rgbSqSize);
+		frmt=['Distances: ' repmat(' %4d', 1, numel(seqDistances)) '\n'];
+		fprintf(frmt, seqDistances);
 		
 		%Select point clouds for each distance from disk and store in the corresponding array
 		%%point clouds are going to be used for detecting parameters of probability based evaluation
-		seq_all_point_clouds = {};
-		for i = 1 : numel(seq_distances)
-			fprintf("\nDistances: %d , \n", seq_distances(i));	
-			strTitle = sprintf("Select multiple point cloud data files for %d cm distance!", seq_distances(i));
-			seq_point_clouds = fun_ui_get_files(strTitle, 3);
-			fprintf("\nSelected %d point cloud files for distance %d cm\n", numel(seq_point_clouds), seq_distances(i));
-			disp(seq_point_clouds);
-			seq_all_point_clouds{i} = seq_point_clouds;
+		seqAllPointClouds = {};
+		for i = 1 : numel(seqDistances)
+			fprintf("\nDistances: %d , \n", seqDistances(i));	
+			strTitle = sprintf("Select multiple point cloud data files for %d cm distance!", seqDistances(i));
+			seqPointClouds = fun_ui_get_files(strTitle, 3);
+			fprintf("\nSelected %d point cloud files for distance %d cm\n", numel(seqPointClouds), seqDistances(i));
+			disp(seqPointClouds);
+			seqAllPointClouds{i} = seqPointClouds;
 		end
 		
-		fprintf("\nSelected %d point cloud files\n", numel(seq_all_point_clouds));
-		disp(seq_all_point_clouds);
+		fprintf("\nSelected %d point cloud files\n", numel(seqAllPointClouds));
+		disp(seqAllPointClouds);
 
 		%Select point cloud files for correction from disk and store in an array
-		depth_data_to_correct = fun_ui_get_files("Select depth data file to correct!", 0);
-		disp(depth_data_to_correct);
+		depthDataFileToBeCorrected = fun_ui_get_files("Select depth data file to correct!", 0);
+		disp(depthDataFileToBeCorrected);
 		
 		prompt = {'Enter plane distance for which depth data to be corrected and analysed:'};
 		dlgtitle = 'Please enter input parameters!';
@@ -181,24 +180,23 @@
 
 	fprintf("\nStarting RGB camera calibration\n");
 	fprintf(fileID, "\n\nSTARTED\n\nRGB camera parameters:\n");
-	[rgbCamParams] = fun_detect_camera_params(seq_rgb_images, rgb_sq_size, fileID);
+	[rgbCamParams] = fun_detect_camera_params(seqRgbImages, rgbSqSize, fileID);
 
 	fprintf("\nStarting IR camera calibration\n");
 	fprintf(fileID, "\n\nIR camera parameters:\n");
-	[irCamParams] = fun_detect_camera_params(seq_ir_images, ir_sq_size, fileID);
+	[irCamParams] = fun_detect_camera_params(seqIrImages, irSqSize, fileID);
 
 	fprintf("\nProcessing Depth Images to find depth cam params\n");
 	[matMeanLinearModels, matStdevLinearModels] = fun_find_depth_camera_params(...
-					seq_distances, seq_all_point_clouds, depth_data_matrix_size(1),...
-					depth_data_matrix_size(2), roi_vector, fileID);
+					seqDistances, seqAllPointClouds, depthDataMatrixSize(1),...
+					depthDataMatrixSize(2), roiVector, fileID);
 	
 	fprintf("\nCorrect an image with the parameters\n");
-	fun_k4a_calibration(irCamParams, matMeanLinearModels, depth_data_matrix_size, roi_vector,...
-		depth_data_to_correct, depthDataToCorrectPlaneDistance, fileID);
+	fun_k4a_calibration(irCamParams, matMeanLinearModels, depthDataMatrixSize, roiVector,...
+		depthDataFileToBeCorrected, depthDataToCorrectPlaneDistance, fileID);
 	
 	fprintf(fileID, "\n\nEND\n");
 	fclose(fileID);
-
 
 	fprintf("\nEND: k4a depth camera calibration script\n");
 	
