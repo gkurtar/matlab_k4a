@@ -1,12 +1,14 @@
 
 % ***********************************************************
 % MAIN OPERATION SCRIPT
-% K4A Depth Camera Calibration and error analysis is done
+% K4A Depth Camera Calibration and error analysis is done by this script
 % 10 Haziran 2020
 %
-% reads input files and store them in related data structures.
-% calls fun_k4a_calibration after this step to determine error related types.
-% returned objects from this function are written to the disk and shown in various figures 
+% Various input files are selected which are used to determine RGB, IR and Depth Camera parameters.
+% After estimating these camera paramters, fun_k4a_calibration is called to correct a depth data
+% and to determine various error stats values.
+% Some of the returned objects from these functions and some logs are written to the disk and
+% shown in various figures 
 % 
 % **********************************************************
 % **********************************************************
