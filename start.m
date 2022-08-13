@@ -6,9 +6,8 @@
 %
 % Various input files are selected which are used to determine RGB, IR and Depth Camera parameters.
 % After estimating these camera paramters, fun_k4a_calibration is called to correct a depth data
-% and to determine various error stats values.
-% Some of the returned objects from these functions and some logs are written to the disk and
-% shown in various figures 
+% and to determine various error stats. Some of the returned objects from these functions and
+% some logs are written to a file named "results.txt" and shown in various figures.
 % 
 % **********************************************************
 % **********************************************************
