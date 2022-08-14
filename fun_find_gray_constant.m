@@ -74,7 +74,7 @@ function [ resGrayFactors ] = fun_find_gray_constant(argGrayMeasurements)
 	surf(gray_percentages, distances, resGrayFactors);
 	
 	xlabel('Darkness (%Black)');
-	ylabel('Distance (mm)');
+	ylabel('Distance (cm)');
 	zlabel('F');
 	
     fprintf("\nEND: fun_find_gray_constant\n");
