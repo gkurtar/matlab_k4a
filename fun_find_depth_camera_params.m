@@ -12,8 +12,8 @@
 % INPUT:
 %   argDistances			        -> an array of distance values in cm
 %	argSeqOfDepthDataFilePathArray	-> a cell array where each element is an array consisting of Depth data file paths
-%   argHeight                       -> Depth Image Height
-%   argWidth                        -> Depth Image Width
+%   argImageHeight                  -> Depth Image Height
+%   argImageWidth                   -> Depth Image Width
 %	argRoiVector                    -> Roi Vector which consists of X min, X max, Y min and Y max.
 %   argFileID	                    -> file handle
 %

@@ -121,8 +121,8 @@ function [ resCorrectedImage ] = fun_correct_measurements(...
 				predicted_value = predict(mean_lm, org_depth);
 				resCorrectedImage(i, j) = org_depth + int32(predicted_value);
 				
-				fprintf("Row: %d, Col: %d, Org depth: %d, predicted val: %d, Corrected: %d\n",...
-					i, j, org_depth, predicted_value, resCorrectedImage(i, j)	);
+				%fprintf("Row: %d, Col: %d, Org depth: %d, predicted val: %d, Corrected: %d\n",...
+				%	i, j, org_depth, predicted_value, resCorrectedImage(i, j)	);
 				
 				% logging is done here
 				if (mod(i, 10) == 0 && mod(j, 10) == 0)

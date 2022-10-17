@@ -125,7 +125,7 @@ function fun_inspect_errors(argDepthImage, argGroundTruthImage, argFileID)
 	ylabel("Error (mm)");
 	xlim([0, max(seqMeasuredDepthValues) * 1.25]);
 	ylim([-2 * maxErrorVal, 2 * maxErrorVal]);
-	title('Errors based on the distance.');
+	title('Errors based on the distance');
 	ax = gca;
 	ax.XAxisLocation = "origin";
 	ax.YAxisLocation = "origin";

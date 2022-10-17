@@ -18,7 +18,6 @@
 
 function [ resCorrectedImage ] = fun_undistort_depth_data(argDepthData, argRowCount, argColCount, argCameraParams)
 
-	RESULT_PATH = "c:\tmp\cal\";
 	fprintf("\nBEGIN: fun_undistort_depth_data\n");
 
 	figure;
@@ -28,20 +27,15 @@ function [ resCorrectedImage ] = fun_undistort_depth_data(argDepthData, argRowCo
 	hold off;
 	
 	figure;
-	%size(imgResult.CData)
-	%fprintf("\nresult_img %s %d", ...
-	%    imgResult.Type, imgResult.CData(12, 34));
 	title('Corrected Depth Data');
 	hold on;
 	imgTemp = undistortImage(imgResult.CData, argCameraParams);
 	imgUndistortedDepthData = imshow(imgTemp, []);
 	hold off;
 
-	%fprintf("\nresult_img %s %d", ...
-	%    imgUndistortedDepthData.Type, imgUndistortedDepthData.CData(12, 34));
-
-	%fileID = fopen('ud_depth.txt', 'w');
-	fileID = fopen(strcat(RESULT_PATH, "ud_depth.txt"), 'w');
+	fileID = fopen('undistorted_depth_data.txt', 'w');
+	%RESULT_PATH = "c:\work\article\data\cal\";
+	%fileID = fopen(strcat(RESULT_PATH, "ud_depth.txt"), 'w');
 	
 	resCorrectedImage = zeros(argRowCount, argColCount);
 	for i=1:argRowCount
