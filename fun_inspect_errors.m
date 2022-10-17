@@ -100,7 +100,6 @@ function fun_inspect_errors(argDepthImage, argGroundTruthImage, argFileID)
 			seqMeasuredDepthValues(1, index) = argDepthImage(j, k);
 		end
 	end
-		
 	%end
 	
 	%compute for real to fitted diff matrix
@@ -122,10 +121,11 @@ function fun_inspect_errors(argDepthImage, argGroundTruthImage, argFileID)
 	figure;
 	fprintf("\nFind diff values and plot them: \n");
 	scatter(seqGroundTruthValues, seqDiffValues, '+');
-	xlabel("Distance");
-	ylabel("Error");
+	xlabel("Distance (mm)");
+	ylabel("Error (mm)");
 	xlim([0, max(seqMeasuredDepthValues) * 1.25]);
 	ylim([-2 * maxErrorVal, 2 * maxErrorVal]);
+	title('Errors based on the distance.');
 	ax = gca;
 	ax.XAxisLocation = "origin";
 	ax.YAxisLocation = "origin";

@@ -22,7 +22,7 @@ function [ resCorrectedImage ] = fun_undistort_depth_data(argDepthData, argRowCo
 	fprintf("\nBEGIN: fun_undistort_depth_data\n");
 
 	figure;
-	title('Original');
+	title('Original Depth Data');
 	hold on;
 	imgResult = imshow(argDepthData, []);
 	hold off;
@@ -31,7 +31,7 @@ function [ resCorrectedImage ] = fun_undistort_depth_data(argDepthData, argRowCo
 	%size(imgResult.CData)
 	%fprintf("\nresult_img %s %d", ...
 	%    imgResult.Type, imgResult.CData(12, 34));
-	title('Corrected');
+	title('Corrected Depth Data');
 	hold on;
 	imgTemp = undistortImage(imgResult.CData, argCameraParams);
 	imgUndistortedDepthData = imshow(imgTemp, []);

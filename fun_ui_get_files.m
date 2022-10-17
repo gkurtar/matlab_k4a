@@ -1,5 +1,5 @@
 % ******************************************************************
-% fun_getfiles
+% fun_ui_get_files
 %
 % By invoking this function the user can select multiple files via file selection dialog box of the operation system.
 % First argument of the method is used as the title of the file selection dialog window whereas second one is used

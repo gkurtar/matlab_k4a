@@ -143,7 +143,6 @@ function [ resGroundTruth ] = fun_get_ground_truth(argDepthDataFilePath, argHeig
 		end
 	end
 
-	% {
 	figure;
 	pcshow(resGroundTruthPc, 'VerticalAxis', 'X', 'VerticalAxisDir', 'Down' );
 	xlabel('X(px)');
@@ -153,9 +152,11 @@ function [ resGroundTruth ] = fun_get_ground_truth(argDepthDataFilePath, argHeig
 	
 	figure;
 	imagesc(REAL_TO_FITTED_DIFF);
-	title('diff');
-	% }
-	
+	xlabel('X(px)');
+	ylabel('Y(px)');
+	colorbar('southoutside');
+	title('Residuals (mm), Fitted Data minus Real Data');
+
     fprintf("\nEND: fun_get_ground_truth\n");
 	return;
 end
