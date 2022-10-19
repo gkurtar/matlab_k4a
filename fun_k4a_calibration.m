@@ -64,7 +64,18 @@ function [ resCorrectedImage, resGroundTruthImage ] = fun_k4a_calibration(...
 	
 	%analyse errors
 	fprintf("\nAnalysing errors\n");
-	fun_inspect_errors(resCorrectedImage, resGroundTruthImage, argFileID);
+	
+	fidOrgVsGt = fopen('diffOrgvsGt.txt', 'w');
+	fprintf(argFileID, "\n\n==============================\n==============================");
+	fprintf(argFileID, "\n\nGoing to compare measurements between Original depth data and Ground Truth data");
+	fun_inspect_errors(depthData, resGroundTruthImage, argFileID, fidOrgVsGt);
+	fclose(fidOrgVsGt);
+	
+	fidCorrectedVsGt = fopen('diffCorrectedvsGt.txt', 'w');
+	fprintf(argFileID, "\n\n==============================\n==============================");
+	fprintf(argFileID, "\n\nGoing to compare measurements between Corrected depth data and Ground Truth data");
+	fun_inspect_errors(resCorrectedImage, resGroundTruthImage, argFileID, fidCorrectedVsGt);
+	fclose(fidCorrectedVsGt);
 	
 	fprintf("\nEND: fun_k4a_calibration\n");
 	return;

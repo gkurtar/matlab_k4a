@@ -6,12 +6,12 @@
 % Also finds statistics for the depth measurement errors such as rmse and stdev and prints them.
 % 
 % INPUT:
-%   argSeqOfDepthImageMatrices		 -> a cell array where each element is a 2D array of measured depth values 
-%   argSeqOfGroundTruthImageMatrices -> a cell array where each element is a 2D array of ground truth values of the corresponding measurements 
-%   argFileID                        -> file handle
+%   argDepthImage		 -> a 2D array of measured depth values 
+%   argGroundTruthImage  -> a 2D array of ground truth values of the corresponding measurements 
+%   argFileID            -> file handle
 %
 % ******************************************************************
-function fun_inspect_errors(argDepthImage, argGroundTruthImage, argFileID)
+function fun_inspect_errors(argDepthImage, argGroundTruthImage, argFileID, argDiffFileId)
 
 	fprintf("\nBEGIN: fun_inspect_errors\n");
 	
@@ -68,7 +68,7 @@ function fun_inspect_errors(argDepthImage, argGroundTruthImage, argFileID)
 	rowCount = szMatData(1);
 	colCount = szMatData(2);
 
-	fprintf("rows: %d, cols: %d", rowCount, colCount);
+	%fprintf("rows: %d, cols: %d", rowCount, colCount);
 	
 	%seqDiffValues = zeros(1, szMatData(1) * szMatData(2) * numel(argSeqOfDepthImageMatrices));
 	%seqGroundTruthValues = zeros(1, szMatData(1) * szMatData(2) * numel(argSeqOfDepthImageMatrices));
@@ -88,16 +88,26 @@ function fun_inspect_errors(argDepthImage, argGroundTruthImage, argFileID)
 	for (j = 1 : rowCount)
 		for (k = 1 : colCount)
 			index = (j - 1) * colCount + k;
+			seqDiffValues(1, index) = 0;
+			
+			fprintf(argDiffFileId, "Row: %d, Col: %d, depth: %d, gt: %d, diff: %d\n",...
+					j, k, argDepthImage(j, k), argGroundTruthImage(j, k), ...
+					argDepthImage(j, k) - argGroundTruthImage(j, k) 	);
+			
 			if (argDepthImage(j, k) == argGroundTruthImage(j, k))
 				continue;
 			elseif (isequal(0, argDepthImage(j, k)) || isequal(0, argGroundTruthImage(j, k)) )
 				continue;
-			elseif (argDepthImage(j, k) / argGroundTruthImage(j, k) < 0.8 || argDepthImage(j, k) / argGroundTruthImage(j, k) > 1.2 )
+			%elseif (argDepthImage(j, k) / argGroundTruthImage(j, k) < 0.5 || argDepthImage(j, k) / argGroundTruthImage(j, k) > 1.8 )
+			%	continue;
+			elseif ( abs( argDepthImage(j, k) - argGroundTruthImage(j, k) ) >  250)
 				continue;
 			end
 			seqDiffValues(1, index) = argDepthImage(j, k) - argGroundTruthImage(j, k);
 			seqGroundTruthValues(1, index) = argGroundTruthImage(j, k);
 			seqMeasuredDepthValues(1, index) = argDepthImage(j, k);
+			
+			
 		end
 	end
 	%end
@@ -114,9 +124,9 @@ function fun_inspect_errors(argDepthImage, argGroundTruthImage, argFileID)
 	fprintf ("\nMin diff is %f max_diff is %f ", minVal, maxVal);
 	fprintf ("\nDepth Residual Stats are:\n\tmax_error %f, mse %f, rmse %f, std_dev: %f", maxErrorVal, MSE, RMSE, SDEV);
 
-	fprintf (argFileID, "\n\nMin diff is %f Max diff is %f ", minVal, maxVal);
-	fprintf (argFileID, "\n\nDepth Values Comparison Stats:");
-	fprintf (argFileID, "\n\nMax_error: %f\nMSE: %f\nRMSE: %f\nSTD DEV: %f", maxErrorVal, MSE, RMSE, SDEV);
+	fprintf (argFileID, "\nMin diff is %f Max diff is %f ", minVal, maxVal);
+	fprintf (argFileID, "\nDepth Values Comparison Stats:");
+	fprintf (argFileID, "\nMax_error: %f\nMSE: %f\nRMSE: %f\nSTD DEV: %f", maxErrorVal, MSE, RMSE, SDEV);
 
 	figure;
 	fprintf("\nFind diff values and plot them: \n");
