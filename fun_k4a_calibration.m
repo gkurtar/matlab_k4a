@@ -64,19 +64,28 @@ function [ resCorrectedImage, resGroundTruthImage ] = fun_k4a_calibration(...
 	
 	%analyse errors
 	fprintf("\nAnalysing errors\n");
+
 	
-	fidOrgVsGt = fopen('diffOrgvsGt.txt', 'w');
 	fprintf(argFileID, "\n\n==============================\n==============================");
 	fprintf(argFileID, "\n\nGoing to compare measurements between Original depth data and Ground Truth data");
-	fun_inspect_errors(depthData, resGroundTruthImage, argFileID, fidOrgVsGt);
-	fclose(fidOrgVsGt);
+	orgDataDiff = fun_inspect_errors(depthData, resGroundTruthImage, argRoiVector, argFileID);
 	
-	fidCorrectedVsGt = fopen('diffCorrectedvsGt.txt', 'w');
 	fprintf(argFileID, "\n\n==============================\n==============================");
 	fprintf(argFileID, "\n\nGoing to compare measurements between Corrected depth data and Ground Truth data");
-	fun_inspect_errors(resCorrectedImage, resGroundTruthImage, argFileID, fidCorrectedVsGt);
-	fclose(fidCorrectedVsGt);
+	correctedDataDiff = fun_inspect_errors(resCorrectedImage, resGroundTruthImage, argRoiVector, argFileID);
 	
+	fidDiff = fopen('diffData.txt', 'w');
+	for (i = 1 : argDepthDataSize(1))
+		for (j = 1 : argDepthDataSize(2))
+
+			fprintf(fidDiff, "Row: %4d, Col: %4d, org: %5d, corrected:%5d, gt: %5d, diffOrg: %5d, diffCorr:%5d\n",...
+					i, j, depthData(i, j), resCorrectedImage(i, j), resGroundTruthImage(i, j),...
+					orgDataDiff(i, j),...
+					correctedDataDiff(i, j)	);
+		end
+	end
+	fclose(fidDiff);
+
 	fprintf("\nEND: fun_k4a_calibration\n");
 	return;
 end

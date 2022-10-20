@@ -7,11 +7,15 @@
 % 
 % INPUT:
 %   argDepthImage		 -> a 2D array of measured depth values 
-%   argGroundTruthImage  -> a 2D array of ground truth values of the corresponding measurements 
+%   argGroundTruthImage  -> a 2D array of ground truth values of the corresponding measurements
+%   argRoiVector         -> ROI vector 
 %   argFileID            -> file handle
 %
+% OUTPUT:
+%   resDiffData          -> Diff between Depth Data argument and Ground Truth Data
+%
 % ******************************************************************
-function fun_inspect_errors(argDepthImage, argGroundTruthImage, argFileID, argDiffFileId)
+function [ resDiffData ] = fun_inspect_errors(argDepthImage, argGroundTruthImage, argRoiVector, argFileID)
 
 	fprintf("\nBEGIN: fun_inspect_errors\n");
 	
@@ -46,7 +50,7 @@ function fun_inspect_errors(argDepthImage, argGroundTruthImage, argFileID, argDi
 	%}
 	
 	if (~ismatrix(argDepthImage) || ~ismatrix(argGroundTruthImage))
-		error("Each cell-array element should be a matrix.");
+		error("Each element should be a matrix.");
 	end
 	
 	szDepth = size(argDepthImage);
@@ -67,6 +71,11 @@ function fun_inspect_errors(argDepthImage, argGroundTruthImage, argFileID, argDi
 	szMatData = size(argDepthImage);
 	rowCount = szMatData(1);
 	colCount = szMatData(2);
+	
+	roi_x_min = argRoiVector(1);
+	roi_x_max = argRoiVector(2);
+	roi_y_min = argRoiVector(3);
+	roi_y_max = argRoiVector(4);
 
 	%fprintf("rows: %d, cols: %d", rowCount, colCount);
 	
@@ -82,17 +91,23 @@ function fun_inspect_errors(argDepthImage, argGroundTruthImage, argFileID, argDi
 	%for i = 1 : numel(argSeqOfDepthImageMatrices)
 	%	matDepthImage = argSeqOfDepthImageMatrices{i};
 	%	matGroundTruth = argSeqOfGroundTruthImageMatrices{i};
-		
 	%	baseIndex = (i - 1) * rowCount * colCount;
+	
+	resDiffData = zeros(rowCount, colCount); %diff between depth data and ground truth
 		
 	for (j = 1 : rowCount)
 		for (k = 1 : colCount)
+
 			index = (j - 1) * colCount + k;
 			seqDiffValues(1, index) = 0;
+
+			%fprintf(argDiffFileId, "Row: %d, Col: %d, depth: %d, gt: %d, diff: %d\n",...
+			%		j, k, argDepthImage(j, k), argGroundTruthImage(j, k), ...
+			%		argDepthImage(j, k) - argGroundTruthImage(j, k) 	);
 			
-			fprintf(argDiffFileId, "Row: %d, Col: %d, depth: %d, gt: %d, diff: %d\n",...
-					j, k, argDepthImage(j, k), argGroundTruthImage(j, k), ...
-					argDepthImage(j, k) - argGroundTruthImage(j, k) 	);
+			if (k < roi_x_min || k > roi_x_max || j < roi_y_min || j > roi_y_max )
+				continue;
+			end;
 			
 			if (argDepthImage(j, k) == argGroundTruthImage(j, k))
 				continue;
@@ -103,10 +118,12 @@ function fun_inspect_errors(argDepthImage, argGroundTruthImage, argFileID, argDi
 			elseif ( abs( argDepthImage(j, k) - argGroundTruthImage(j, k) ) >  250)
 				continue;
 			end
+			
+			resDiffData(j, k) = argDepthImage(j, k) - argGroundTruthImage(j, k);
+			
 			seqDiffValues(1, index) = argDepthImage(j, k) - argGroundTruthImage(j, k);
 			seqGroundTruthValues(1, index) = argGroundTruthImage(j, k);
 			seqMeasuredDepthValues(1, index) = argDepthImage(j, k);
-			
 			
 		end
 	end
@@ -139,6 +156,13 @@ function fun_inspect_errors(argDepthImage, argGroundTruthImage, argFileID, argDi
 	ax = gca;
 	ax.XAxisLocation = "origin";
 	ax.YAxisLocation = "origin";
+	
+	figure;
+	imagesc(resDiffData);
+	xlabel('X(px)');
+	ylabel('Y(px)');
+	colorbar('southoutside');
+	title('Residuals (mm), Depth Data minus GT Data');
 
 	fprintf("\nEND: fun_inspect_errors\n");
 	return;
