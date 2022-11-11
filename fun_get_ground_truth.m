@@ -45,8 +45,8 @@ function [ resGroundTruth ] = fun_get_ground_truth(argDepthDataFilePath, argHeig
 	roi_x_max = argWidth;
     roi_y_min = 0;
 	roi_y_max = argHeight;
-    roi_z_min = argDistance - 10 ;%(argDistance / 100);
-    roi_z_max = argDistance + 10; % (argDistance / 100);
+    roi_z_min = argDistance - 70 ;%(argDistance / 100);
+    roi_z_max = argDistance + 70; % (argDistance / 100);
     
     roi_vector = [roi_x_min, roi_x_max; roi_y_min, roi_y_max; roi_z_min, roi_z_max];
 
