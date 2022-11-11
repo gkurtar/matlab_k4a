@@ -7,3 +7,4 @@ fun_k4a_calibration.m.bak
 results.txt
 undistorted_depth_data.txt
 start.m.bak
+diffCorrectedvsGt.txt
