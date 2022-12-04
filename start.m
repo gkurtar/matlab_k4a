@@ -13,18 +13,20 @@
 
 	fprintf("\nBEGIN: k4a depth camera calibration script\n");
  
-	RGB_FILE_NAME = 'rgb';
+	RGB_FILE_NAME = 'data';
 	RGB_FILE_SUFFIX = 'png';
 	RGB_FILES_DIR = 'C:\work\article\data\cal\rgb';
-	RGB_FILE_COUNT = 3;
+	RGB_FILE_COUNT = 15;
 	
-	IR_FILE_NAME = 'ir';
+	IR_FILE_NAME = 'data';
 	IR_FILE_SUFFIX = 'png';
 	IR_FILES_DIR = 'C:\work\article\data\cal\ir';
-	IR_FILE_COUNT = 3;
+	IR_FILE_COUNT = 15;
 	
-	DEPTH_PC_FILE_NAMES = {'pc_50', 'pc_75', 'pc_100', 'pc_125', 'pc_150', 'pc_175', 'pc_200'};
+	%DEPTH_PC_FILE_NAMES = {'pc_50', 'pc_75', 'pc_100', 'pc_125', 'pc_150', 'pc_175', 'pc_200'};
 							%'pc_175', 'pc_200', 'pc_225', 'pc_250', 'pc_275', 'pc_300', 'pc_325', 'pc_350' };
+	DEPTH_PC_FILE_NAMES = {'Depth_50', 'Depth_75', 'Depth_100', 'Depth_125', 'Depth_150', 'Depth_175', 'Depth_200' ...
+							'Depth_225', 'Depth_250', 'Depth_275', 'Depth_300', 'Depth_325', 'Depth_350' };
 	DEPTH_PC_FILE_SUFFIX = 'txt';
 	DEPTH_PC_FILES_DIR = 'C:\work\article\data\cal\depth';
 	DEPTH_PC_FILE_COUNT = 10;
@@ -50,21 +52,24 @@
 		
 		for i = 1 : numel(DEPTH_PC_FILE_NAMES)
 			fname = DEPTH_PC_FILE_NAMES{i};
-			for j = 1 : numOfFiles
+			for j = 1 : DEPTH_PC_FILE_COUNT
 				file_url = sprintf('%s\\%s_%d.%s', DEPTH_PC_FILES_DIR, fname, j, DEPTH_PC_FILE_SUFFIX);
 				seqDepthImages{j} = file_url;
 			end
 			DEPTH_PC_SAMPLE_DATA{i} = seqDepthImages;
 		end
 		
-		rgbSqSize = 35;
-		irSqSize = 35;
+		rgbSqSize = 44;
+		irSqSize = 44;
 		seqDistances = [500, 750, 1000, 1250, 1500, 1750, 2000];
 		depthDataMatrixSize =  [576, 640];
-		depthDataFileToBeCorrected = 'C:\work\article\data\cal\depth\sample_225.txt';
-		depthDataToCorrectPlaneDistance = 2250;
+		%depthDataFileToBeCorrected = 'C:\work\article\data\cal\depth\sample_225.txt';
+		%depthDataToCorrectPlaneDistance = 2250;
+		depthDataFileToBeCorrected = 'C:\work\article\data\cal\depth\Sample_160.txt';
+		depthDataToCorrectPlaneDistance = 1600;
 		seqAllPointClouds = DEPTH_PC_SAMPLE_DATA;
-		roiVector = [300, 335, 225, 270]; % [320, 350, 220, 240];
+		%roiVector = [300, 335, 225, 270]; % [320, 350, 220, 240];
+		roiVector = [280, 370, 225, 290];
 
 	else
 		%Select RGB IMAGES from disk and store in an image array
