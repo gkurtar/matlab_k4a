@@ -12,78 +12,50 @@
 % **********************************************************
 
 	fprintf("\nBEGIN: k4a depth camera calibration script\n");
-
-	%constants
-	RGB_FILES = {'C:\work\article\data\cal\rgb\rgb1.png'; 'C:\work\article\data\cal\rgb\rgb2.png'; 'C:\work\article\data\cal\rgb\rgb3.png'};
+ 
+	RGB_FILE_NAME = 'rgb';
+	RGB_FILE_SUFFIX = 'png';
+	RGB_FILES_DIR = 'C:\work\article\data\cal\rgb';
+	RGB_FILE_COUNT = 3;
 	
-	IR_FILES = {'C:\work\article\data\cal\ir\ir1.png'; 'C:\work\article\data\cal\ir\ir2.png'; 'C:\work\article\data\cal\ir\ir3.png'};
+	IR_FILE_NAME = 'ir';
+	IR_FILE_SUFFIX = 'png';
+	IR_FILES_DIR = 'C:\work\article\data\cal\ir';
+	IR_FILE_COUNT = 3;
 	
-	%{
-	DEPTH_PC_SAMPLE_DATA = {{'c:\tmp\CAL\depth\pc_1_50.txt', 'c:\tmp\CAL\depth\pc_2_50.txt', 'c:\tmp\CAL\depth\pc_3_50.txt'}, ...
-				{'c:\tmp\CAL\depth\pc_1_75.txt', 'c:\tmp\CAL\depth\pc_2_75.txt', 'c:\tmp\CAL\depth\pc_3_75.txt'}, ...
-				{'c:\tmp\CAL\depth\pc_1_100.txt', 'c:\tmp\CAL\depth\pc_2_100.txt', 'c:\tmp\CAL\depth\pc_3_100.txt'}, ...
-				{'c:\tmp\CAL\depth\pc_1_125.txt', 'c:\tmp\CAL\depth\pc_2_125.txt', 'c:\tmp\CAL\depth\pc_3_125.txt'}, ...
-				{'c:\tmp\CAL\depth\pc_1_150.txt', 'c:\tmp\CAL\depth\pc_2_150.txt', 'c:\tmp\CAL\depth\pc_3_150.txt'} };
-	%}
-	%{
-	% rois for 5 agust data
-	roi = 170,  74  361 x 248 ==>  50
-	roi = 218, 132  249 x 187 ==>  75
-	roi = 239, 163  200 x 143 ==> 100
-	roi = 239, 189  154 x 106 ==> 125
-	roi = 285, 203  132 x  94 ==> 150
-	roi = 294, 212  110 x  76 ==> 175
-	roi = 275, 223   95 x  65 ==> 200
-	common rectangle: 300, 225  35 x 45
-	%}
-				
-	DEPTH_PC_SAMPLE_DATA = {...
-	{'C:\work\article\data\cal\depth\pc_50_1.txt', 'C:\work\article\data\cal\depth\pc_50_2.txt', 'C:\work\article\data\cal\depth\pc_50_3.txt', 'C:\work\article\data\cal\depth\pc_50_4.txt', ...
-	 'C:\work\article\data\cal\depth\pc_50_5.txt', 'C:\work\article\data\cal\depth\pc_50_6.txt', 'C:\work\article\data\cal\depth\pc_50_7.txt', 'C:\work\article\data\cal\depth\pc_50_8.txt', ...
-	 'C:\work\article\data\cal\depth\pc_50_9.txt', 'C:\work\article\data\cal\depth\pc_50_10.txt' ...
-	 }, ...
-	 
-	 
-	 {'C:\work\article\data\cal\depth\pc_75_1.txt', 'C:\work\article\data\cal\depth\pc_75_2.txt','C:\work\article\data\cal\depth\pc_75_3.txt', 'C:\work\article\data\cal\depth\pc_75_4.txt', ...
-	 'C:\work\article\data\cal\depth\pc_75_5.txt', 'C:\work\article\data\cal\depth\pc_75_6.txt', 'C:\work\article\data\cal\depth\pc_75_7.txt', 'C:\work\article\data\cal\depth\pc_75_8.txt', ...
-	 'C:\work\article\data\cal\depth\pc_75_9.txt', 'C:\work\article\data\cal\depth\pc_75_10.txt' ...
-	 }, ...
-	 
-	 {'C:\work\article\data\cal\depth\pc_100_1.txt','C:\work\article\data\cal\depth\pc_100_2.txt','C:\work\article\data\cal\depth\pc_100_3.txt',...
-	 'C:\work\article\data\cal\depth\pc_100_4.txt','C:\work\article\data\cal\depth\pc_100_5.txt', 'C:\work\article\data\cal\depth\pc_100_6.txt',...
-	 'C:\work\article\data\cal\depth\pc_100_7.txt', 'C:\work\article\data\cal\depth\pc_100_8.txt','C:\work\article\data\cal\depth\pc_100_9.txt','C:\work\article\data\cal\depth\pc_100_10.txt' ...
-	 }, ...
-	 
-	 {'C:\work\article\data\cal\depth\pc_125_1.txt','C:\work\article\data\cal\depth\pc_125_2.txt','C:\work\article\data\cal\depth\pc_125_3.txt',...
-	 'C:\work\article\data\cal\depth\pc_125_4.txt','C:\work\article\data\cal\depth\pc_125_5.txt','C:\work\article\data\cal\depth\pc_125_6.txt',...
-	 'C:\work\article\data\cal\depth\pc_125_7.txt', 'C:\work\article\data\cal\depth\pc_125_8.txt','C:\work\article\data\cal\depth\pc_125_9.txt',...
-	 'C:\work\article\data\cal\depth\pc_125_10.txt' ...
-	 },
-	 
-	 {'C:\work\article\data\cal\depth\pc_150_1.txt','C:\work\article\data\cal\depth\pc_150_2.txt','C:\work\article\data\cal\depth\pc_150_3.txt',...
-	 'C:\work\article\data\cal\depth\pc_150_4.txt','C:\work\article\data\cal\depth\pc_150_5.txt','C:\work\article\data\cal\depth\pc_150_6.txt',...
-	 'C:\work\article\data\cal\depth\pc_150_7.txt', 'C:\work\article\data\cal\depth\pc_150_8.txt','C:\work\article\data\cal\depth\pc_150_9.txt','C:\work\article\data\cal\depth\pc_150_10.txt' ...
-	 }, ...
-	 
-	 {'C:\work\article\data\cal\depth\pc_175_1.txt','C:\work\article\data\cal\depth\pc_175_2.txt','C:\work\article\data\cal\depth\pc_175_3.txt',...
-	 'C:\work\article\data\cal\depth\pc_175_4.txt','C:\work\article\data\cal\depth\pc_175_5.txt','C:\work\article\data\cal\depth\pc_175_6.txt',...
-	 'C:\work\article\data\cal\depth\pc_175_7.txt', 'C:\work\article\data\cal\depth\pc_175_8.txt','C:\work\article\data\cal\depth\pc_175_9.txt','C:\work\article\data\cal\depth\pc_175_10.txt' ...
-	 }, ...
-	 
-	 {'C:\work\article\data\cal\depth\pc_200_1.txt','C:\work\article\data\cal\depth\pc_200_2.txt','C:\work\article\data\cal\depth\pc_200_3.txt',...
-	 'C:\work\article\data\cal\depth\pc_200_4.txt','C:\work\article\data\cal\depth\pc_200_5.txt','C:\work\article\data\cal\depth\pc_200_6.txt',...
-	 'C:\work\article\data\cal\depth\pc_200_7.txt', 'C:\work\article\data\cal\depth\pc_200_8.txt','C:\work\article\data\cal\depth\pc_200_9.txt','C:\work\article\data\cal\depth\pc_200_10.txt' ...
-	 } ...
-	 
-	 };
+	DEPTH_PC_FILE_NAMES = {'pc_50', 'pc_75', 'pc_100', 'pc_125', 'pc_150', 'pc_175', 'pc_200'};
+							%'pc_175', 'pc_200', 'pc_225', 'pc_250', 'pc_275', 'pc_300', 'pc_325', 'pc_350' };
+	DEPTH_PC_FILE_SUFFIX = 'txt';
+	DEPTH_PC_FILES_DIR = 'C:\work\article\data\cal\depth';
+	DEPTH_PC_FILE_COUNT = 10;
 
 	fileID = fopen("results.txt", 'w');
 	local_test_flag = true;
 	
+	seqRgbImages = {};
+	seqIrImages = {};
+	
 	if (local_test_flag)
 
-		seqRgbImages = RGB_FILES;
-		seqIrImages = IR_FILES;
+		for i = 1 : RGB_FILE_COUNT
+			file_url = sprintf('%s\\%s%d.%s', RGB_FILES_DIR, RGB_FILE_NAME, i, RGB_FILE_SUFFIX);
+			%fprintf("file name is %s\n", file_url);
+			seqRgbImages{i} = file_url;
+		end
+		
+		for i = 1 : IR_FILE_COUNT
+			file_url = sprintf('%s\\%s%d.%s', IR_FILES_DIR, IR_FILE_NAME, i, IR_FILE_SUFFIX);
+			seqIrImages{i} = file_url;
+		end
+		
+		for i = 1 : numel(DEPTH_PC_FILE_NAMES)
+			fname = DEPTH_PC_FILE_NAMES{i};
+			for j = 1 : numOfFiles
+				file_url = sprintf('%s\\%s_%d.%s', DEPTH_PC_FILES_DIR, fname, j, DEPTH_PC_FILE_SUFFIX);
+				seqDepthImages{j} = file_url;
+			end
+			DEPTH_PC_SAMPLE_DATA{i} = seqDepthImages;
+		end
 		
 		rgbSqSize = 35;
 		irSqSize = 35;
