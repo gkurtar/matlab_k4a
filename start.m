@@ -61,7 +61,8 @@
 		
 		rgbSqSize = 44;
 		irSqSize = 44;
-		seqDistances = [500, 750, 1000, 1250, 1500, 1750, 2000];
+		seqDistances = [500, 750, 1000, 1250, 1500, 1750, 2000, 2250, 2500, 2750, 3000, 3250, 3500];
+		%seqDistances = [500, 750, 1000, 1250, 1500, 1750, 2000];
 		depthDataMatrixSize =  [576, 640];
 		%depthDataFileToBeCorrected = 'C:\work\article\data\cal\depth\sample_225.txt';
 		%depthDataToCorrectPlaneDistance = 2250;

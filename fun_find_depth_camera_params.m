@@ -204,7 +204,8 @@ function [ matMeanLinearModels, matStdevLinearModels ] = fun_find_depth_camera_p
 			if (length(meanValsTmp) == 0)
 			    matMeanLinearModels{i, j} = zero_linear_model;
 			else
-				mdlMeanLM = fitlm (distancesMeanTmp, meanValsTmp);
+				mdlMeanLM = fitlm (distancesMeanTmp, meanValsTmp, 'linear');
+				%mdlMeanLM = fitlm (distancesMeanTmp, meanValsTmp, 'quadratic');
 				matMeanLinearModels{i, j} = mdlMeanLM;
 				%matEvalPixels(i, j) = matEvalPixels(i, j) + 1;
 			end;
@@ -212,12 +213,34 @@ function [ matMeanLinearModels, matStdevLinearModels ] = fun_find_depth_camera_p
 			if (length(stdevValsTmp) == 0)
 				matStdevLinearModels{i, j} = zero_linear_model;
 			else
-				mdlStdDevLM = fitlm (distancesStdevTmp, stdevValsTmp);
+				mdlStdDevLM = fitlm (distancesStdevTmp, stdevValsTmp, 'linear');
+				%mdlStdDevLM = fitlm (distancesStdevTmp, stdevValsTmp, 'quadratic');
 				matStdevLinearModels{i, j} = mdlStdDevLM;
 			end;
 
 			% {
 			% logging is done here
+			if (i == argImageHeight / 2 && j == argImageWidth / 2)
+				
+				%figure;
+				%plotregression(distancesMeanTmp, meanValsTmp, 'Regression');
+				
+				figure;
+				plot(mdlMeanLM);
+				title('Linear model of Mean Values');
+				xlabel('Distance');
+				ylabel('Mean');
+				
+				%figure;
+				%plotregression(distancesStdevTmp, stdevValsTmp, 'Regression');
+				
+				figure;
+				plot(mdlStdDevLM);
+				title('Linear model of Std Dev Values');
+				xlabel('Distance');
+				ylabel('Std Dev');
+			end
+			
 			if (mod(i, 20) == 0 && mod(j, 20) == 0 )
 				
 				fprintf ("Iterating: %d, %d\nMean Vals:", i, j);
@@ -225,7 +248,7 @@ function [ matMeanLinearModels, matStdevLinearModels ] = fun_find_depth_camera_p
 				disp(matMeanLinearModels{i, j});
 				
 				fprintf (argFileID, "Iterating: %d, %d\nMean Vals:\t", i, j);
-				fprintf (argFileID, "%g", meanVals);
+				fprintf (argFileID, "%g ", meanVals);
 				strPdLm = evalc('disp(matMeanLinearModels{i, j})');
 				fprintf (argFileID, "\nLinear Model: %s\n", strPdLm);
 			end;

@@ -57,5 +57,5 @@ function [resMatDepthData] = fun_read_point_cloud_data(argFilePath, argRowCount,
 		end
 	end
 
-	fprintf("\nEND: fun_read_point_cloud_data\n");
+	fprintf("END: fun_read_point_cloud_data\n");
 end
