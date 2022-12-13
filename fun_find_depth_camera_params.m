@@ -61,8 +61,8 @@ function [ matMeanLinearModels, matStdevLinearModels ] = fun_find_depth_camera_p
 	tic;
 	fprintf("\nGoing to evaluate prob dist objects for each pixel of each distance\n");
 	
-	avgValueDepthImage = zeros(argHeight, argWidth);
-	avgValueDepthImagePc = zeros(argHeight * argWidth, 3);
+	avgValueDepthImage = zeros(argImageHeight, argImageWidth);
+	avgValueDepthImagePc = zeros(argImageHeight * argImageWidth, 3);
 
 	for i = 1 : numel(argDistances)
 		fprintf("\nIterating %d, dist is %d\n", i, argDistances(i));
@@ -104,6 +104,7 @@ function [ matMeanLinearModels, matStdevLinearModels ] = fun_find_depth_camera_p
 		%actual_value_for_pixel = argDistances(i);
 
 		% ver 4, is evaluated here
+		%{
 		for m = 1 : argImageHeight
 			for n = 1 : argImageWidth
 			
@@ -126,14 +127,17 @@ function [ matMeanLinearModels, matStdevLinearModels ] = fun_find_depth_camera_p
 			end;
 		end;
 		
-		resGroundTruthImage = fun_get_ground_truth_2(avgValueDepthImagePc, argImageHeight, argImageWidth, argDistances(i), argFileID);
+		
+		resAverageValuesFittedImage = fun_get_ground_truth_2(...
+			avgValueDepthImagePc, argImageHeight, argImageWidth, argDistances(i), argFileID);
+		%}
 
 
 		for m = 1 : argImageHeight		
 			for n = 1 : argImageWidth
 				
 				% ver 4
-				actual_value_for_pixel = resGroundTruthImage(m, n);
+				%actual_value_for_pixel = resAverageValuesFittedImage(m, n);
 			
 				if (n < roi_x_min || n > roi_x_max ...
 					|| m < roi_y_min || m > roi_y_max )
@@ -152,8 +156,8 @@ function [ matMeanLinearModels, matStdevLinearModels ] = fun_find_depth_camera_p
 				
 				% ver 3
 				%actual value could be evaluated by averaging values of vectorTmp
-				%vectorTmpUpdated = filloutliers(vectorTmp, "linear");
-				%actual_value_for_pixel = mean(vectorTmpUpdated);
+				vectorTmpUpdated = filloutliers(vectorTmp, "linear");
+				actual_value_for_pixel = round(mean(vectorTmpUpdated));
 
 				if (all(vectorTmp == 0)) %if all values are eq to zero
 					matProbDistObjects{m, n} = zero_pd_obj;

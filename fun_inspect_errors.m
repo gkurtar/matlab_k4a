@@ -145,6 +145,7 @@ function [ resDiffData ] = fun_inspect_errors(argDepthImage, argGroundTruthImage
 	fprintf (argFileID, "\nDepth Values Comparison Stats:");
 	fprintf (argFileID, "\nMax_error: %f\nMSE: %f\nRMSE: %f\nSTD DEV: %f", maxErrorVal, MSE, RMSE, SDEV);
 
+%{
 	figure;
 	fprintf("\nFind diff values and plot them: \n");
 	scatter(seqGroundTruthValues, seqDiffValues, '+');
@@ -156,6 +157,7 @@ function [ resDiffData ] = fun_inspect_errors(argDepthImage, argGroundTruthImage
 	ax = gca;
 	ax.XAxisLocation = "origin";
 	ax.YAxisLocation = "origin";
+%}	
 	
 	figure;
 	imagesc(resDiffData);

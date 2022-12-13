@@ -13,12 +13,12 @@
 %    resGroundTruth       -> Ground Truth Depth Data in matrix form
 %
 %*******************************************************************************************
-function [ resGroundTruth ] = fun_get_ground_truth(pointPositions, argHeight, argWidth, argDistance, argFileID)
+function [ resGroundTruth ] = fun_get_ground_truth_2(pointPositions, argHeight, argWidth, argDistance, argFileID)
 
 	fprintf("\nBEGIN: fun_get_ground_truth\n");
 	
-	%resGroundTruth = zeros(argHeight, argWidth);
-    %resGroundTruthPc = zeros(argHeight * argWidth, 3);
+	resGroundTruth = zeros(argHeight, argWidth);
+    resGroundTruthPc = zeros(argHeight * argWidth, 3);
     %pointPositions = importdata(fullfile(argDepthDataFilePath));
 	
 	pointPositions = filloutliers(pointPositions, 'previous'); %'nearest','mean');	
@@ -26,17 +26,17 @@ function [ resGroundTruth ] = fun_get_ground_truth(pointPositions, argHeight, ar
 
 	fprintf(argFileID, "\n\n==============================\n==============================");
 	fprintf(argFileID, "\n\nGoing to generate ground truth data for the depth data provided");
-	fprintf(argFileID, "\nFile path is %s, size is (%d x %d) and the plane distance is %d.", ...
-		argDepthDataFilePath, argWidth, argHeight, argDistance);
+	%fprintf(argFileID, "\nFile path is %s, size is (%d x %d) and the plane distance is %d.", ...
+	%	argDepthDataFilePath, argWidth, argHeight, argDistance);
 
-% {   
+%{   
     figure;   
     pcshow(ptCloud, 'VerticalAxis', 'X', 'VerticalAxisDir', 'Down' );
 	xlabel('X(px)');
 	ylabel('Y(px)');
 	zlabel('Z(mm)');
 	title('Original Point Cloud');
-% }
+%}
 
     %roi_x_min = 240; roi_x_max = 390;
     %roi_y_min = 190; roi_y_max = 297;
@@ -45,8 +45,8 @@ function [ resGroundTruth ] = fun_get_ground_truth(pointPositions, argHeight, ar
 	roi_x_max = argWidth;
     roi_y_min = 0;
 	roi_y_max = argHeight;
-    roi_z_min = argDistance - 10 ;%(argDistance / 100);
-    roi_z_max = argDistance + 10; % (argDistance / 100);
+    roi_z_min = argDistance - 50 ;%(argDistance / 100);
+    roi_z_max = argDistance + 50; % (argDistance / 100);
     
     roi_vector = [roi_x_min, roi_x_max; roi_y_min, roi_y_max; roi_z_min, roi_z_max];
 
@@ -74,14 +74,14 @@ function [ resGroundTruth ] = fun_get_ground_truth(pointPositions, argHeight, ar
 	fprintf(argFileID, "\nFitted Plane Model parameters are found as: ");
 	fprintf (argFileID, "%f ", fittedPlaneModel.Parameters);
 	
-	% {
+	%{
 	figure;
 	pcshow(pointCloudNearPlane);
 	title('Optimum fitted plane');
 	hold on;
 	plot(fittedPlaneModel);
 	hold off;
-	% }
+	%}
 	
 	%--------------------------------------------------------------------------
 	%------------------ FIT PLANE ------------------------
@@ -143,6 +143,7 @@ function [ resGroundTruth ] = fun_get_ground_truth(pointPositions, argHeight, ar
 		end
 	end
 
+	%{
 	figure;
 	pcshow(resGroundTruthPc, 'VerticalAxis', 'X', 'VerticalAxisDir', 'Down' );
 	xlabel('X(px)');
@@ -156,6 +157,7 @@ function [ resGroundTruth ] = fun_get_ground_truth(pointPositions, argHeight, ar
 	ylabel('Y(px)');
 	colorbar('southoutside');
 	title('Residuals (mm), Fitted Data minus Real Data');
+	%}
 
     fprintf("\nEND: fun_get_ground_truth\n");
 	return;
