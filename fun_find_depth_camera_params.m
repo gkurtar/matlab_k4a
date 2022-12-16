@@ -23,12 +23,13 @@
 %
 % **********************************************************
 
-function [ matMeanLinearModels, matStdevLinearModels ] = fun_find_depth_camera_params(...
-	argDistances, argSeqOfDepthDataFilePathArray, argImageHeight, argImageWidth, argRoiVector, argFileID)
+%function [ matMeanLinearModels, matStdevLinearModels ] = fun_find_depth_camera_params(...
+%	argDistances, argSeqOfDepthDataFilePathArray, argImageHeight, argImageWidth, argRoiVector, argFileID)
 
 % ver 2	
-%function [ matMeanLinearModels, matStdevLinearModels ] = fun_find_depth_camera_params(...
-%	argDistances, argSeqOfDepthDataFilePathArray, argseqAverageDepthImageFilePath, argImageHeight, argImageWidth, argRoiVector, argFileID)
+function [ matMeanLinearModels, matStdevLinearModels ] = fun_find_depth_camera_params(...
+	argDistances, argSeqOfDepthDataFilePathArray, argseqAverageDepthImageFilePath,...
+	argImageHeight, argImageWidth, argRoiVector, argFileID)
 
 	fprintf("\nBEGIN: fun_find_depth_camera_params\n");
 	seqProbDistObjectMatrices = cell(1, numel(argDistances));
@@ -100,14 +101,13 @@ function [ matMeanLinearModels, matStdevLinearModels ] = fun_find_depth_camera_p
 		%			Ground truth image could be evalauted based on these values and actual value is found from this image
 		%
 
-		% ver 2
+		% ver 1
 		%actual_value_for_pixel = argDistances(i);
 
 		% ver 4, is evaluated here
 		%{
 		for m = 1 : argImageHeight
 			for n = 1 : argImageWidth
-			
 				rowIndex = (m - 1) * argImageWidth + n;
 				
 				%reset vectorTmp 
@@ -127,18 +127,24 @@ function [ matMeanLinearModels, matStdevLinearModels ] = fun_find_depth_camera_p
 			end;
 		end;
 		
-		
 		resAverageValuesFittedImage = fun_get_ground_truth_2(...
 			avgValueDepthImagePc, argImageHeight, argImageWidth, argDistances(i), argFileID);
 		%}
 
+		%averageDepthImageFilePath = argseqAverageDepthImageFilePath{i};
+		%resAverageValuesFittedImage = fun_get_ground_truth(...
+		%	averageDepthImageFilePath, argImageHeight, argImageWidth, argDistances(i), argFileID);
 
+		actual_value_for_pixel = argDistances(i);
+		
 		for m = 1 : argImageHeight		
 			for n = 1 : argImageWidth
 				
-				% ver 4
+				% ------------------------------------------------------
+				% ver 4, ver 2
 				%actual_value_for_pixel = resAverageValuesFittedImage(m, n);
-			
+				% ------------------------------------------------------
+				
 				if (n < roi_x_min || n > roi_x_max ...
 					|| m < roi_y_min || m > roi_y_max )
 					matProbDistObjects{m, n} = zero_pd_obj;
@@ -156,8 +162,8 @@ function [ matMeanLinearModels, matStdevLinearModels ] = fun_find_depth_camera_p
 				
 				% ver 3
 				%actual value could be evaluated by averaging values of vectorTmp
-				vectorTmpUpdated = filloutliers(vectorTmp, "linear");
-				actual_value_for_pixel = round(mean(vectorTmpUpdated));
+				%vectorTmpUpdated = filloutliers(vectorTmp, "linear");
+				%actual_value_for_pixel = round(mean(vectorTmpUpdated));
 
 				if (all(vectorTmp == 0)) %if all values are eq to zero
 					matProbDistObjects{m, n} = zero_pd_obj;
@@ -255,7 +261,8 @@ function [ matMeanLinearModels, matStdevLinearModels ] = fun_find_depth_camera_p
 			if (length(meanValsTmp) == 0)
 			    matMeanLinearModels{i, j} = zero_linear_model;
 			else
-				mdlMeanLM = fitlm (distancesMeanTmp, meanValsTmp);
+				%mdlMeanLM = fitlm (distancesMeanTmp, meanValsTmp);
+				mdlMeanLM = fitlm (distancesMeanTmp, meanValsTmp, 'quadratic');
 				matMeanLinearModels{i, j} = mdlMeanLM;
 				%matEvalPixels(i, j) = matEvalPixels(i, j) + 1;
 			end;
@@ -263,7 +270,8 @@ function [ matMeanLinearModels, matStdevLinearModels ] = fun_find_depth_camera_p
 			if (length(stdevValsTmp) == 0)
 				matStdevLinearModels{i, j} = zero_linear_model;
 			else
-				mdlStdDevLM = fitlm (distancesStdevTmp, stdevValsTmp);
+				%mdlStdDevLM = fitlm (distancesStdevTmp, stdevValsTmp);
+				mdlStdDevLM = fitlm (distancesStdevTmp, stdevValsTmp, 'quadratic');
 				matStdevLinearModels{i, j} = mdlStdDevLM;
 			end;
 
@@ -279,11 +287,26 @@ function [ matMeanLinearModels, matStdevLinearModels ] = fun_find_depth_camera_p
 				fprintf (argFileID, "%g", meanVals);
 				strPdLm = evalc('disp(matMeanLinearModels{i, j})');
 				fprintf (argFileID, "\nLinear Model: %s\n", strPdLm);
+				
+				
 			end;
 			% }
-
 		end
 	end
+	
+	figure;
+	plot(mdlMeanLM);
+	title('Linear model of Mean Values');
+	xlabel('Distance');
+	ylabel('Mean');
+	
+	%%figure;
+	%%plotregression(distancesStdevTmp, stdevValsTmp, 'Regression');
+	%figure;
+	%plot(mdlStdDevLM);
+	%title('Linear model of Std Dev Values');
+	%xlabel('Distance');
+	%ylabel('Std Dev');
 	
 	toc;
 	fprintf("Linear models are evaluated \n");
