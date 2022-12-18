@@ -29,13 +29,15 @@ function [ resGroundTruth ] = fun_get_ground_truth(argDepthDataFilePath, argHeig
 	fprintf(argFileID, "\nFile path is %s, size is (%d x %d) and the plane distance is %d.", ...
 		argDepthDataFilePath, argWidth, argHeight, argDistance);
 
-% {   
-    figure;   
+% { 
+	[fPath, fName, fExt] = fileparts(argDepthDataFilePath);
+    strTitle = sprintf("Point Cloud for %s", fName); 
+	figure;   
     pcshow(ptCloud, 'VerticalAxis', 'X', 'VerticalAxisDir', 'Down' );
 	xlabel('X(px)');
 	ylabel('Y(px)');
 	zlabel('Z(mm)');
-	title('Original Point Cloud');
+	title(strTitle);
 % }
 
     %roi_x_min = 240; roi_x_max = 390;

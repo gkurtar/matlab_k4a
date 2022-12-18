@@ -61,7 +61,7 @@ function [ resDiffData ] = fun_inspect_errors(argDepthImage, argGroundTruthImage
 	end
 
 	fprintf(argFileID, "\n\n==============================\n==============================");
-	fprintf(argFileID, "\n\nGoing to compare depth data argument and corresponding ground truth data");
+	fprintf(argFileID, "\n\nGoing to compare depth data argument and corresponding ground truth data\n");
 
 	%{
 	szMatData = size(argSeqOfDepthImageMatrices{1});
@@ -124,6 +124,12 @@ function [ resDiffData ] = fun_inspect_errors(argDepthImage, argGroundTruthImage
 			seqDiffValues(1, index) = argDepthImage(j, k) - argGroundTruthImage(j, k);
 			seqGroundTruthValues(1, index) = argGroundTruthImage(j, k);
 			seqMeasuredDepthValues(1, index) = argDepthImage(j, k);
+			
+			% logging is done here
+			%if (mod(j, 10) == 0 && mod(k, 10) == 0)
+			%	fprintf(argFileID, "Row: %d, Col: %d, check: %d, gt: %f, diff: %d\n",...
+			%		j, k, argDepthImage(j, k), argGroundTruthImage(j, k), resDiffData(j, k));
+			%end
 			
 		end
 	end

@@ -101,8 +101,7 @@ function [ matMeanLinearModels, matStdevLinearModels ] = fun_find_depth_camera_p
 		%			Ground truth image could be evalauted based on these values and actual value is found from this image
 		%
 
-		% ver 1
-		%actual_value_for_pixel = argDistances(i);
+		
 
 		% ver 4, is evaluated here
 		%{
@@ -131,18 +130,21 @@ function [ matMeanLinearModels, matStdevLinearModels ] = fun_find_depth_camera_p
 			avgValueDepthImagePc, argImageHeight, argImageWidth, argDistances(i), argFileID);
 		%}
 
-		%averageDepthImageFilePath = argseqAverageDepthImageFilePath{i};
-		%resAverageValuesFittedImage = fun_get_ground_truth(...
-		%	averageDepthImageFilePath, argImageHeight, argImageWidth, argDistances(i), argFileID);
+		averageDepthImageFilePath = argseqAverageDepthImageFilePath{i};
+		resAverageValuesFittedImage = fun_get_ground_truth(...
+			averageDepthImageFilePath, argImageHeight, argImageWidth, argDistances(i), argFileID);
 
-		actual_value_for_pixel = argDistances(i);
+		% -------------------------------------------------
+		% ver 1
+		%actual_value_for_pixel = argDistances(i);
+		% -------------------------------------------------
 		
 		for m = 1 : argImageHeight		
 			for n = 1 : argImageWidth
 				
 				% ------------------------------------------------------
 				% ver 4, ver 2
-				%actual_value_for_pixel = resAverageValuesFittedImage(m, n);
+				actual_value_for_pixel = resAverageValuesFittedImage(m, n);
 				% ------------------------------------------------------
 				
 				if (n < roi_x_min || n > roi_x_max ...
@@ -284,10 +286,9 @@ function [ matMeanLinearModels, matStdevLinearModels ] = fun_find_depth_camera_p
 				disp(matMeanLinearModels{i, j});
 				
 				fprintf (argFileID, "Iterating: %d, %d\nMean Vals:\t", i, j);
-				fprintf (argFileID, "%g", meanVals);
+				fprintf (argFileID, "%g ", meanVals);
 				strPdLm = evalc('disp(matMeanLinearModels{i, j})');
 				fprintf (argFileID, "\nLinear Model: %s\n", strPdLm);
-				
 				
 			end;
 			% }

@@ -1,7 +1,7 @@
 %*******************************************************************************************
 %
 %*******************************************************************************************
-function [ resCorrespondingPc ] = fun_matpcshow(argDepthData, argHeight, argWidth, argTitle)
+function [ resCorrespondingPc ] = fun_pcshow_mat(argDepthData, argHeight, argWidth, argTitle)
 
 	fprintf("\nBEGIN: fun_matpcshow\n");
 	

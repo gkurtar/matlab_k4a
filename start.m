@@ -23,10 +23,10 @@
 	IR_FILES_DIR = 'C:\work\article\data\cal\ir';
 	IR_FILE_COUNT = 15;
 	
-	%DEPTH_PC_FILE_NAMES = {'pc_50', 'pc_75', 'pc_100', 'pc_125', 'pc_150', 'pc_175', 'pc_200'};
-							%'pc_175', 'pc_200', 'pc_225', 'pc_250', 'pc_275', 'pc_300', 'pc_325', 'pc_350' };
+	%DEPTH_PC_FILE_NAMES = {'Depth_50', 'Depth_75', 'Depth_100', 'Depth_125', 'Depth_150', 'Depth_175', 'Depth_200' ...
+	%						'Depth_225', 'Depth_250', 'Depth_275', 'Depth_300', 'Depth_325', 'Depth_350' };
 	DEPTH_PC_FILE_NAMES = {'Depth_50', 'Depth_75', 'Depth_100', 'Depth_125', 'Depth_150', 'Depth_175', 'Depth_200' ...
-							'Depth_225', 'Depth_250', 'Depth_275', 'Depth_300', 'Depth_325', 'Depth_350' };
+							'Depth_225', 'Depth_250'};
 	DEPTH_PC_FILE_SUFFIX = 'txt';
 	DEPTH_PC_FILES_DIR = 'C:\work\article\data\cal\depth';
 	DEPTH_PC_FILE_COUNT = 10;
@@ -36,6 +36,8 @@
 	
 	seqRgbImages = {};
 	seqIrImages = {};
+	seqAvgDepthDataFilePaths = {};
+	DEPTH_PC_SAMPLE_DATA = {};
 	
 	if (local_test_flag)
 
@@ -49,20 +51,26 @@
 			file_url = sprintf('%s\\%s%d.%s', IR_FILES_DIR, IR_FILE_NAME, i, IR_FILE_SUFFIX);
 			seqIrImages{i} = file_url;
 		end
-		
+
+
 		for i = 1 : numel(DEPTH_PC_FILE_NAMES)
 			fname = DEPTH_PC_FILE_NAMES{i};
+			
 			for j = 1 : DEPTH_PC_FILE_COUNT
 				file_url = sprintf('%s\\%s_%d.%s', DEPTH_PC_FILES_DIR, fname, j, DEPTH_PC_FILE_SUFFIX);
 				seqDepthImages{j} = file_url;
 			end
 			DEPTH_PC_SAMPLE_DATA{i} = seqDepthImages;
+			
+			file_url = sprintf('%s\\%s_Avg.%s', DEPTH_PC_FILES_DIR, fname, DEPTH_PC_FILE_SUFFIX);
+			fprintf("avg file %s \n", file_url);
+			seqAvgDepthDataFilePaths{i} = file_url;
 		end
-		
+
 		rgbSqSize = 44;
 		irSqSize = 44;
-		seqDistances = [500, 750, 1000, 1250, 1500, 1750, 2000, 2250, 2500, 2750, 3000, 3250, 3500];
-		%seqDistances = [500, 750, 1000, 1250, 1500, 1750, 2000];
+		%seqDistances = [500, 750, 1000, 1250, 1500, 1750, 2000, 2250, 2500, 2750, 3000, 3250, 3500];
+		seqDistances = [500, 750, 1000, 1250, 1500, 1750, 2000, 2250, 2500];
 		depthDataMatrixSize =  [576, 640];
 		%depthDataFileToBeCorrected = 'C:\work\article\data\cal\depth\sample_225.txt';
 		%depthDataToCorrectPlaneDistance = 2250;
@@ -140,7 +148,6 @@
 		
 		depthDataToCorrectPlaneDistance	= str2num(answer{1});
 		%depthDataToCorrectPlaneDistance = uint16(depthDataToCorrectPlaneDistance);
-		
     end
 
 	fprintf("\nStarting RGB camera calibration\n");
@@ -152,9 +159,14 @@
 	[irCamParams] = fun_detect_camera_params(seqIrImages, irSqSize, fileID);
 
 	fprintf("\nProcessing Depth Images to find depth cam params\n");
+	
+	%[matMeanLinearModels, matStdevLinearModels] = fun_find_depth_camera_params(...
+	%				seqDistances, seqAllPointClouds, depthDataMatrixSize(1),...
+	%				depthDataMatrixSize(2), roiVector, fileID);
+					
 	[matMeanLinearModels, matStdevLinearModels] = fun_find_depth_camera_params(...
-					seqDistances, seqAllPointClouds, depthDataMatrixSize(1),...
-					depthDataMatrixSize(2), roiVector, fileID);
+		seqDistances, seqAllPointClouds, seqAvgDepthDataFilePaths, depthDataMatrixSize(1),...
+		depthDataMatrixSize(2), roiVector, fileID);
 	
 	fprintf("\nCorrect an image with the parameters\n");
 	fun_k4a_calibration(irCamParams, matMeanLinearModels, depthDataMatrixSize, roiVector,...

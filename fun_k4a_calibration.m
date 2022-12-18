@@ -74,9 +74,15 @@ function [ resCorrectedImage, resGroundTruthImage ] = fun_k4a_calibration(...
 	fprintf(argFileID, "\n\nGoing to compare measurements between Corrected depth data and Ground Truth data");
 	correctedDataDiff = fun_inspect_errors(resCorrectedImage, resGroundTruthImage, argRoiVector, argFileID);
 	
+
 	fidDiff = fopen('diffData.txt', 'w');
-	for (i = 1 : argDepthDataSize(1))
-		for (j = 1 : argDepthDataSize(2))
+	for (i = 1 : argDepthDataSize(1)) % height, rows
+		for (j = 1 : argDepthDataSize(2)) % width, cols
+		
+			if (j < argRoiVector(1) || j > argRoiVector(2) ...
+				|| i < argRoiVector(3) || i > argRoiVector(4) )
+				continue;
+			end;
 
 			fprintf(fidDiff, "Row: %4d, Col: %4d, org: %5d, corrected:%5d, gt: %5d, diffOrg: %5d, diffCorr:%5d\n",...
 					i, j, depthData(i, j), resCorrectedImage(i, j), resGroundTruthImage(i, j),...
