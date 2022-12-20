@@ -170,7 +170,7 @@ function [ resDiffData ] = fun_inspect_errors(argDepthImage, argGroundTruthImage
 	xlabel('X(px)');
 	ylabel('Y(px)');
 	colorbar('southoutside');
-	title('Residuals (mm), Depth Data minus GT Data');
+	title('Residuals (mm)');
 
 	fprintf("\nEND: fun_inspect_errors\n");
 	return;

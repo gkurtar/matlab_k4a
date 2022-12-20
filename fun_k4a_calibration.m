@@ -60,7 +60,7 @@ function [ resCorrectedImage, resGroundTruthImage ] = fun_k4a_calibration(...
 	
 	%find ground truth data
 	resGroundTruthImage = fun_get_ground_truth(...
-		argDepthDataFilePath, argDepthDataSize(1), argDepthDataSize(2), argPlaneDistance, argFileID);
+		argDepthDataFilePath, argDepthDataSize(1), argDepthDataSize(2), argPlaneDistance, true, argFileID);
 	
 	%analyse errors
 	fprintf("\nAnalysing errors\n");

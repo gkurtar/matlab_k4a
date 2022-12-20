@@ -132,7 +132,7 @@ function [ matMeanLinearModels, matStdevLinearModels ] = fun_find_depth_camera_p
 
 		averageDepthImageFilePath = argseqAverageDepthImageFilePath{i};
 		resAverageValuesFittedImage = fun_get_ground_truth(...
-			averageDepthImageFilePath, argImageHeight, argImageWidth, argDistances(i), argFileID);
+			averageDepthImageFilePath, argImageHeight, argImageWidth, argDistances(i), false, argFileID);
 
 		% -------------------------------------------------
 		% ver 1

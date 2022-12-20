@@ -13,7 +13,7 @@
 %    resGroundTruth       -> Ground Truth Depth Data in matrix form
 %
 %*******************************************************************************************
-function [ resGroundTruth ] = fun_get_ground_truth(argDepthDataFilePath, argHeight, argWidth, argDistance, argFileID)
+function [ resGroundTruth ] = fun_get_ground_truth(argDepthDataFilePath, argHeight, argWidth, argDistance, argDisplayFlag, argFileID)
 
 	fprintf("\nBEGIN: fun_get_ground_truth\n");
 	
@@ -30,14 +30,17 @@ function [ resGroundTruth ] = fun_get_ground_truth(argDepthDataFilePath, argHeig
 		argDepthDataFilePath, argWidth, argHeight, argDistance);
 
 % { 
-	[fPath, fName, fExt] = fileparts(argDepthDataFilePath);
-    strTitle = sprintf("Point Cloud for %s", fName); 
-	figure;   
-    pcshow(ptCloud, 'VerticalAxis', 'X', 'VerticalAxisDir', 'Down' );
-	xlabel('X(px)');
-	ylabel('Y(px)');
-	zlabel('Z(mm)');
-	title(strTitle);
+	if (argDisplayFlag)
+		[fPath, fName, fExt] = fileparts(argDepthDataFilePath);
+		%strTitle = sprintf("Point Cloud for %s", fName);
+		strTitle = fName; 
+		figure;   
+		pcshow(ptCloud, 'VerticalAxis', 'X', 'VerticalAxisDir', 'Down' );
+		xlabel('X(px)');
+		ylabel('Y(px)');
+		zlabel('Z(mm)');
+		title(strTitle);
+	end
 % }
 
     %roi_x_min = 240; roi_x_max = 390;
@@ -145,7 +148,8 @@ function [ resGroundTruth ] = fun_get_ground_truth(argDepthDataFilePath, argHeig
 		end
 	end
 
-%{
+% {
+	if (argDisplayFlag)
 	figure;
 	pcshow(resGroundTruthPc, 'VerticalAxis', 'X', 'VerticalAxisDir', 'Down' );
 	xlabel('X(px)');
@@ -159,7 +163,8 @@ function [ resGroundTruth ] = fun_get_ground_truth(argDepthDataFilePath, argHeig
 	ylabel('Y(px)');
 	colorbar('southoutside');
 	title('Residuals (mm), Fitted Data minus Real Data');
-%}
+	end
+% }
 
     fprintf("\nEND: fun_get_ground_truth\n");
 	return;

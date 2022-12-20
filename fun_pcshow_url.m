@@ -2,7 +2,7 @@
 %
 %*******************************************************************************************
 function [ resCorrespondingPc ] = fun_pcshow_url(argDepthDataFileURL, argTitle)
-	fprintf("\nBEGIN: fun_matpcshow\n");
+	fprintf("\nBEGIN: fun_pcshow_url\n");
 	
 	if exist(argDepthDataFileURL, 'file') ~= 2
 		error(sprintf("input file %s does not exist\n", argDepthDataFileURL));
@@ -15,13 +15,17 @@ function [ resCorrespondingPc ] = fun_pcshow_url(argDepthDataFileURL, argTitle)
      
     figure;
 	hold on;
-    pcshow(ptCloud, 'VerticalAxis', 'X');
+    %pcshow(ptCloud, 'VerticalAxis', 'X');
+	pcshow(ptCloud, 'VerticalAxis', 'X', 'VerticalAxisDir', 'Down' );
 	xlabel('X(px)');
 	ylabel('Y(px)');
 	zlabel('Z(mm)');
+	ad= false;
+	if (ad)
 	title(argTitle);
+	end
 	hold off;
 	
-    fprintf("\nEND: fun_matpcshow\n");
+    fprintf("\nEND: fun_pcshow_url\n");
 	return;
 end
