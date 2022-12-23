@@ -79,14 +79,8 @@ function [ resGroundTruth ] = fun_get_ground_truth(argDepthDataFilePath, argHeig
 	fprintf(argFileID, "\nFitted Plane Model parameters are found as: ");
 	fprintf (argFileID, "%f ", fittedPlaneModel.Parameters);
 	
-	%{
-	figure;
-	pcshow(pointCloudNearPlane);
-	title('Optimum fitted plane');
-	hold on;
-	plot(fittedPlaneModel);
-	hold off;
-	%}
+	% {
+	% }
 	
 	%--------------------------------------------------------------------------
 	%------------------ FIT PLANE ------------------------
@@ -150,6 +144,14 @@ function [ resGroundTruth ] = fun_get_ground_truth(argDepthDataFilePath, argHeig
 
 % {
 	if (argDisplayFlag)
+	
+	figure;
+	pcshow(pointCloudNearPlane);
+	title('Optimum fitted plane');
+	hold on;
+	plot(fittedPlaneModel);
+	hold off;
+	
 	figure;
 	pcshow(resGroundTruthPc, 'VerticalAxis', 'X', 'VerticalAxisDir', 'Down' );
 	xlabel('X(px)');

@@ -121,7 +121,8 @@ function [ resDiffData ] = fun_inspect_errors(argDepthImage, argGroundTruthImage
 			
 			resDiffData(j, k) = argDepthImage(j, k) - argGroundTruthImage(j, k);
 			
-			seqDiffValues(1, index) = argDepthImage(j, k) - argGroundTruthImage(j, k);
+			%seqDiffValues(1, index) = argDepthImage(j, k) - argGroundTruthImage(j, k);
+			seqDiffValues(1, index) = abs( argDepthImage(j, k) - argGroundTruthImage(j, k) );
 			seqGroundTruthValues(1, index) = argGroundTruthImage(j, k);
 			seqMeasuredDepthValues(1, index) = argDepthImage(j, k);
 			
@@ -138,7 +139,8 @@ function [ resDiffData ] = fun_inspect_errors(argDepthImage, argGroundTruthImage
 	%compute for real to fitted diff matrix
 	minVal = min(seqDiffValues);
 	maxVal = max(seqDiffValues);
-	maxErrorVal = max(abs(minVal), abs(maxVal));
+	%maxErrorVal = max(abs(minVal), abs(maxVal));
+	maxErrorVal = max(minVal, maxVal);
 	SQE = seqDiffValues.^2;
 	MSE = mean(SQE(:));
 	RMSE = sqrt(MSE);
