@@ -83,24 +83,30 @@ function [ resDiffData ] = fun_inspect_errors(argDepthImage, argGroundTruthImage
 	%seqGroundTruthValues = zeros(1, szMatData(1) * szMatData(2) * numel(argSeqOfDepthImageMatrices));
 	%seqMeasuredDepthValues = zeros(1, szMatData(1) * szMatData(2) * numel(argSeqOfDepthImageMatrices));
 	
-	seqDiffValues = zeros(1, szMatData(1) * szMatData(2));
-	seqGroundTruthValues = zeros(1, szMatData(1) * szMatData(2));
-	seqMeasuredDepthValues = zeros(1, szMatData(1) * szMatData(2));
-	index = 0;
-	
 	%for i = 1 : numel(argSeqOfDepthImageMatrices)
 	%	matDepthImage = argSeqOfDepthImageMatrices{i};
 	%	matGroundTruth = argSeqOfGroundTruthImageMatrices{i};
 	%	baseIndex = (i - 1) * rowCount * colCount;
 	
+	%seqDiffValues = zeros(1, szMatData(1) * szMatData(2));
+	%seqGroundTruthValues = zeros(1, szMatData(1) * szMatData(2));
+	%seqMeasuredDepthValues = zeros(1, szMatData(1) * szMatData(2));
+	
+	seqDiffValues = zeros(1, (roi_x_max - roi_x_min + 1) * (roi_y_max - roi_y_min + 1));
+	seqGroundTruthValues = zeros(1, (roi_x_max - roi_x_min + 1) * (roi_y_max - roi_y_min + 1));
+	seqMeasuredDepthValues = zeros(1, (roi_x_max - roi_x_min + 1) * (roi_y_max - roi_y_min + 1));
+	
+	index = 0;
+	evalIndex = 0;
+	
 	resDiffData = zeros(rowCount, colCount); %diff between depth data and ground truth
-		
+	
 	for (j = 1 : rowCount)
 		for (k = 1 : colCount)
 
-			index = (j - 1) * colCount + k;
-			seqDiffValues(1, index) = 0;
-
+			%index = (j - 1) * colCount + k;
+			%seqDiffValues(1, index) = 0;
+			
 			%fprintf(argDiffFileId, "Row: %d, Col: %d, depth: %d, gt: %d, diff: %d\n",...
 			%		j, k, argDepthImage(j, k), argGroundTruthImage(j, k), ...
 			%		argDepthImage(j, k) - argGroundTruthImage(j, k) 	);
@@ -109,29 +115,34 @@ function [ resDiffData ] = fun_inspect_errors(argDepthImage, argGroundTruthImage
 				continue;
 			end;
 			
+			evalIndex = evalIndex + 1;
+			
 			if (argDepthImage(j, k) == argGroundTruthImage(j, k))
 				continue;
 			elseif (isequal(0, argDepthImage(j, k)) || isequal(0, argGroundTruthImage(j, k)) )
 				continue;
 			%elseif (argDepthImage(j, k) / argGroundTruthImage(j, k) < 0.5 || argDepthImage(j, k) / argGroundTruthImage(j, k) > 1.8 )
-			%	continue;
 			elseif ( abs( argDepthImage(j, k) - argGroundTruthImage(j, k) ) >  250)
 				continue;
 			end
 			
 			resDiffData(j, k) = argDepthImage(j, k) - argGroundTruthImage(j, k);
 			
-			%seqDiffValues(1, index) = argDepthImage(j, k) - argGroundTruthImage(j, k);
-			seqDiffValues(1, index) = abs( argDepthImage(j, k) - argGroundTruthImage(j, k) );
-			seqGroundTruthValues(1, index) = argGroundTruthImage(j, k);
-			seqMeasuredDepthValues(1, index) = argDepthImage(j, k);
+			%%seqDiffValues(1, index) = argDepthImage(j, k) - argGroundTruthImage(j, k);
+			%seqDiffValues(1, index) = abs( argDepthImage(j, k) - argGroundTruthImage(j, k) );
+			%seqGroundTruthValues(1, index) = argGroundTruthImage(j, k);
+			%seqMeasuredDepthValues(1, index) = argDepthImage(j, k);
 			
+			seqDiffValues(1, evalIndex) = abs( argDepthImage(j, k) - argGroundTruthImage(j, k) );
+			seqGroundTruthValues(1, evalIndex) = argGroundTruthImage(j, k);
+			seqMeasuredDepthValues(1, evalIndex) = argDepthImage(j, k);
+			
+
 			% logging is done here
 			%if (mod(j, 10) == 0 && mod(k, 10) == 0)
 			%	fprintf(argFileID, "Row: %d, Col: %d, check: %d, gt: %f, diff: %d\n",...
 			%		j, k, argDepthImage(j, k), argGroundTruthImage(j, k), resDiffData(j, k));
 			%end
-			
 		end
 	end
 	%end
@@ -141,17 +152,18 @@ function [ resDiffData ] = fun_inspect_errors(argDepthImage, argGroundTruthImage
 	maxVal = max(seqDiffValues);
 	%maxErrorVal = max(abs(minVal), abs(maxVal));
 	maxErrorVal = max(minVal, maxVal);
+	MEANVAL = mean(seqDiffValues);
 	SQE = seqDiffValues.^2;
 	MSE = mean(SQE(:));
 	RMSE = sqrt(MSE);
 	SDEV = std(seqDiffValues(:));
 	
-	fprintf ("\nMin diff is %f max_diff is %f ", minVal, maxVal);
+	fprintf ("\nMin diff is %f max_diff is %f, diff vector size %d, measured %d ", minVal, maxVal, length(seqDiffValues), evalIndex);
 	fprintf ("\nDepth Residual Stats are:\n\tmax_error %f, mse %f, rmse %f, std_dev: %f", maxErrorVal, MSE, RMSE, SDEV);
 
 	fprintf (argFileID, "\nMin diff is %f Max diff is %f ", minVal, maxVal);
 	fprintf (argFileID, "\nDepth Values Comparison Stats:");
-	fprintf (argFileID, "\nMax_error: %f\nMSE: %f\nRMSE: %f\nSTD DEV: %f", maxErrorVal, MSE, RMSE, SDEV);
+	fprintf (argFileID, "\nMax_error: %f\n MEAN: %f\nMSE: %f\nRMSE: %f\nSTD DEV: %f", maxErrorVal, MEANVAL, MSE, RMSE, SDEV);
 
 %{
 	figure;
