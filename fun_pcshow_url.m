@@ -20,10 +20,7 @@ function [ resCorrespondingPc ] = fun_pcshow_url(argDepthDataFileURL, argTitle)
 	xlabel('X(px)');
 	ylabel('Y(px)');
 	zlabel('Z(mm)');
-	ad= false;
-	if (ad)
 	title(argTitle);
-	end
 	hold off;
 	
     fprintf("\nEND: fun_pcshow_url\n");

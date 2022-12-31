@@ -52,7 +52,7 @@ function [ resGroundTruth ] = fun_get_ground_truth(argDepthDataFilePath, argHeig
 	roi_y_max = argHeight;
     roi_z_min = argDistance - 70 ;%(argDistance / 100);
     roi_z_max = argDistance + 70; % (argDistance / 100);
-    
+
     roi_vector = [roi_x_min, roi_x_max; roi_y_min, roi_y_max; roi_z_min, roi_z_max];
 
     sampleIndicesOfROI = findPointsInROI(ptCloud, roi_vector);
@@ -112,7 +112,7 @@ function [ resGroundTruth ] = fun_get_ground_truth(argDepthDataFilePath, argHeig
 			
 			if (i >= roi_y_min && i <= roi_y_max ...
 				&& j >= roi_x_min && j <= roi_x_max ...
-				&& orgDepthVal < argDistance + argDistance / 100 && orgDepthVal > argDistance - argDistance / 100)
+				&& orgDepthVal < argDistance + (argDistance / 100) && orgDepthVal > argDistance - (argDistance / 100))
 			 
 				FITTED_DATA(i, j) = (x_plmdl * j + y_plmdl * i + delta_val_plmdl ) / z_plmdl;
 				FITTED_DATA(i, j) = abs(FITTED_DATA(i, j));

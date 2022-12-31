@@ -76,9 +76,12 @@
 		%depthDataToCorrectPlaneDistance = 2250;
 		depthDataFileToBeCorrected = 'C:\work\article\data\cal\depth\Sample_160.txt';
 		depthDataToCorrectPlaneDistance = 1600;
+		%depthDataFileToBeCorrected = 'C:\work\article\data\cal\depth\Sample_350.txt';
+		%depthDataToCorrectPlaneDistance = 3500;
+		
 		seqAllPointClouds = DEPTH_PC_SAMPLE_DATA;
 		%roiVector = [300, 335, 225, 270]; % [320, 350, 220, 240];
-		roiVector = [280, 370, 225, 290];
+		roiVector = [280, 370, 225, 290]; % x1, x2, y1, y2 => x is width, y is height
 
 	else
 		%Select RGB IMAGES from disk and store in an image array
