@@ -131,8 +131,8 @@ function [ matMeanLinearModels, matStdevLinearModels ] = fun_find_depth_camera_p
 		%}
 
 		averageDepthImageFilePath = argseqAverageDepthImageFilePath{i};
-		resAverageValuesFittedImage = fun_get_ground_truth(...
-			averageDepthImageFilePath, argImageHeight, argImageWidth, argDistances(i), false, argFileID);
+		resAverageValuesFittedImage = fun_get_ground_truth_3(...
+			averageDepthImageFilePath, argImageHeight, argImageWidth, argRoiVector, argDistances(i), false, argFileID);
 
 		% -------------------------------------------------
 		% ver 1
@@ -161,6 +161,8 @@ function [ matMeanLinearModels, matStdevLinearModels ] = fun_find_depth_camera_p
 					vectorTmp(k) = matDepthData(m, n);
 				end
 				%vectorTmp now contains measured values for the corresponding pixel.
+				
+				%vectorTmp = rmoutliers(vectorTmp);
 				
 				% ver 3
 				%actual value could be evaluated by averaging values of vectorTmp
@@ -224,6 +226,9 @@ function [ matMeanLinearModels, matStdevLinearModels ] = fun_find_depth_camera_p
 				matMeanLinearModels{i, j} = zero_linear_model;
 				continue;
 			end;
+			
+			meanVals = zeros(1, length(argDistances));
+			stdevVals = zeros(1, length(argDistances));
 
 			seqPdObjects = cell(1, numel(seqProbDistObjectMatrices));
 			for p = 1 : numel(seqProbDistObjectMatrices)
@@ -257,9 +262,55 @@ function [ matMeanLinearModels, matStdevLinearModels ] = fun_find_depth_camera_p
 					distancesStdevTmp(t) = argDistances(p);
 					t = t + 1;
 				end;
-				
 			end
 			
+
+			if (length(meanValsTmp) == 0)
+			    matMeanLinearModels{i, j} = zero_linear_model;
+			else
+				meanValsTmpUpdated = [];
+				distancesMeanTmpUpdated = [];
+				%meanValsTmp = rmoutliers(meanValsTmp);
+				%meanValsTmpUpdated = rmoutliers(meanValsTmp, "OutlierLocations", detect);
+				%distancesMeanTmpUpdated = rmoutliers(distancesMeanTmp, "OutlierLocations", detect);
+				%meanValsTmp = abs(meanValsTmp);
+				detect = isoutlier(abs(meanValsTmp));
+				idxGeneral = 1;
+				for idxForOutlierDetection = 1 : length(meanValsTmp)
+					if (detect(idxForOutlierDetection) ~= 1)
+						meanValsTmpUpdated(idxGeneral) = meanValsTmp(idxForOutlierDetection);
+						distancesMeanTmpUpdated(idxGeneral) = distancesMeanTmp(idxForOutlierDetection);
+						idxGeneral = idxGeneral + 1;
+					end
+				end
+			
+				%mdlMeanLM = fitlm (distancesMeanTmp, meanValsTmp);
+				mdlMeanLM = fitlm (distancesMeanTmpUpdated, meanValsTmpUpdated, 'quadratic');
+				matMeanLinearModels{i, j} = mdlMeanLM;
+			end;
+			
+
+			if (length(stdevValsTmp) == 0)
+				matStdevLinearModels{i, j} = zero_linear_model;
+			else
+				stdevValsTmpUpdated = [];
+				distancesStdevTmpUpdated = [];
+				detect = isoutlier(stdevValsTmp);
+				idxGeneral = 1;
+				for idxForOutlierDetection = 1 : length(stdevValsTmp)
+					if (detect(idxForOutlierDetection) ~= 1)
+						stdevValsTmpUpdated(idxGeneral) = stdevValsTmp(idxForOutlierDetection);
+						distancesStdevTmpUpdated(idxGeneral) = distancesStdevTmp(idxForOutlierDetection);
+						idxGeneral = idxGeneral + 1;
+					end
+				end
+
+				%mdlStdDevLM = fitlm (distancesStdevTmp, stdevValsTmp);
+				mdlStdDevLM = fitlm (distancesStdevTmpUpdated, stdevValsTmpUpdated, 'quadratic');
+				matStdevLinearModels{i, j} = mdlStdDevLM;
+			end;
+			
+			%{
 			if (length(meanValsTmp) == 0)
 			    matMeanLinearModels{i, j} = zero_linear_model;
 			else
@@ -276,6 +327,7 @@ function [ matMeanLinearModels, matStdevLinearModels ] = fun_find_depth_camera_p
 				mdlStdDevLM = fitlm (distancesStdevTmp, stdevValsTmp, 'quadratic');
 				matStdevLinearModels{i, j} = mdlStdDevLM;
 			end;
+			%}
 
 			% {
 			% logging is done here
@@ -287,28 +339,33 @@ function [ matMeanLinearModels, matStdevLinearModels ] = fun_find_depth_camera_p
 				
 				fprintf (argFileID, "Iterating: %d, %d\nMean Vals:\t", i, j);
 				fprintf (argFileID, "%g ", meanVals);
+				fprintf (argFileID, "\n\tMean Values Updated:%g ", meanValsTmpUpdated);
+				
 				strPdLm = evalc('disp(matMeanLinearModels{i, j})');
 				fprintf (argFileID, "\nLinear Model: %s\n", strPdLm);
-				
 			end;
+			
+			if (i == roi_y_min + (roi_y_max - roi_y_min) / 2 ...
+				&& j == roi_x_min + (roi_x_max - roi_x_min) / 2)
+				figure;
+				plot(mdlMeanLM);
+				title(sprintf("Linear model of Mean Values"));
+				xlabel('Distance');
+				ylabel('Mean');
+				
+				%%figure;
+				%%plotregression(distancesStdevTmp, stdevValsTmp, 'Regression');
+				%figure;
+				%plot(mdlStdDevLM);
+				%title('Linear model of Std Dev Values');
+				%xlabel('Distance');
+				%ylabel('Std Dev');
+			end			
 			% }
 		end
 	end
 	
-	figure;
-	plot(mdlMeanLM);
-	title('Linear model of Mean Values');
-	xlabel('Distance');
-	ylabel('Mean');
-	
-	%%figure;
-	%%plotregression(distancesStdevTmp, stdevValsTmp, 'Regression');
-	%figure;
-	%plot(mdlStdDevLM);
-	%title('Linear model of Std Dev Values');
-	%xlabel('Distance');
-	%ylabel('Std Dev');
-	
+
 	toc;
 	fprintf("Linear models are evaluated \n");
 

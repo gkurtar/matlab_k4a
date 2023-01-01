@@ -14,7 +14,7 @@
 %
 %*******************************************************************************************
 
-function [ resGroundTruth ] = fun_get_ground_truth(argDepthDataFilePath, argHeight, argWidth, argDistance, argDisplayFlag, argFileID)
+function [ resGroundTruth ] = fun_get_ground_truth(argDepthDataFilePath, argHeight, argWidth, argRoiVector, argDistance, argDisplayFlag, argFileID)
 
 	fprintf("\nBEGIN: fun_get_ground_truth\n");
 	
@@ -47,22 +47,28 @@ function [ resGroundTruth ] = fun_get_ground_truth(argDepthDataFilePath, argHeig
     %roi_x_min = 240; roi_x_max = 390;
     %roi_y_min = 190; roi_y_max = 297;
 	
-	roiVector = [280, 370, 225, 290]; % x1, x2, y1, y2 => x is width, y is height
 	%roiVector = [0, argWidth, 0, argHeight]; % x1, x2, y1, y2 => x is width, y is height
-	
-	roi_x_min = roiVector(1);
-	roi_x_max = roiVector(2);
-    roi_y_min = roiVector(3);
-	roi_y_max = roiVector(4);
+	%roiVector = [280, 370, 225, 290]; % x1, x2, y1, y2 => x is width, y is height
+	%roiVector = [285, 365, 230, 290]; % x1, x2, y1, y2 => x is width, y is height
+
+	%roi_x_min = roiVector(1);
+	%roi_x_max = roiVector(2);
+    %roi_y_min = roiVector(3);
+	%roi_y_max = roiVector(4);
     %roi_z_min = argDistance - 200 ;%(argDistance / 100);
     %roi_z_max = argDistance + 200; % (argDistance / 100);
-	roi_z_min = argDistance - round( argDistance / 100);
-    roi_z_max = argDistance + round( argDistance / 100);
 	
+	% argRoiVector is x1, x2, y1, y2 => x is width, y is height
+	roi_x_min = argRoiVector(1);
+	roi_x_max = argRoiVector(2);
+	roi_y_min = argRoiVector(3);
+	roi_y_max = argRoiVector(4);
+	roi_z_min = argDistance - round( argDistance / 50);
+    roi_z_max = argDistance + round( argDistance / 50);
 	
-    roi_vector = [roi_x_min, roi_x_max; roi_y_min, roi_y_max; roi_z_min, roi_z_max];
+    roi_vector_3d = [roi_x_min, roi_x_max; roi_y_min, roi_y_max; roi_z_min, roi_z_max];
 
-    sampleIndicesOfROI = findPointsInROI(ptCloud, roi_vector);
+    sampleIndicesOfROI = findPointsInROI(ptCloud, roi_vector_3d);
 
     [fittedPlaneModel, inlierIndices, outlierIndices] = pcfitplane(ptCloud, 1, 'SampleIndices', sampleIndicesOfROI);
     pointCloudNearPlane = select(ptCloud, inlierIndices);
@@ -79,6 +85,9 @@ function [ resGroundTruth ] = fun_get_ground_truth(argDepthDataFilePath, argHeig
     z_plmdl = 1;
     delta_val_plmdl = argDistance * -1;
 	%}
+	
+	fprintf ("\nROIs are z min: %f z max: %f\n\t", roi_z_min, roi_z_max);
+    fprintf ("%f ", fittedPlaneModel.Parameters);
 	
     fprintf ("\nOrg Data fitted plane model parameters are\n\t");
     fprintf ("%f ", fittedPlaneModel.Parameters);
@@ -188,10 +197,10 @@ function [ resGroundTruth ] = fun_get_ground_truth(argDepthDataFilePath, argHeig
 	ylabel('Y(px)');
 	colorbar('southoutside');
 	title('Residuals (mm), Fitted Data minus Real Data');
-	end
+	
 % }
 
-	fidTemp = fopen("c:\tmp\sil2.txt", 'w');
+	fidTemp = fopen("c:\tmp\sil3.txt", 'w');
 	for i = 1:argHeight
 		for j = 1:argWidth
 			if (i >= roi_y_min && i <= roi_y_max && j >= roi_x_min && j <= roi_x_max)
@@ -204,6 +213,8 @@ function [ resGroundTruth ] = fun_get_ground_truth(argDepthDataFilePath, argHeig
 		end
 	end
 	
+	
+	
 	MER = mean( abs(seqDiffValues));
 	SQE = seqDiffValues.^2;
 	MSE = mean(SQE(:));
@@ -214,6 +225,8 @@ function [ resGroundTruth ] = fun_get_ground_truth(argDepthDataFilePath, argHeig
 	fclose(fidTemp);
 	
 	fprintf ("\nStats are:\n\t mean %f, mse %f, rmse %f, std_dev: %f", MER, MSE, RMSE, SDEV);
+
+	end
 
     fprintf("\nEND: fun_get_ground_truth\n");
 	return;
