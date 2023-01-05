@@ -136,7 +136,7 @@ function [ matMeanLinearModels, matStdevLinearModels ] = fun_find_depth_camera_p
 
 		% -------------------------------------------------
 		% ver 1
-		%actual_value_for_pixel = argDistances(i);
+		actual_value_for_pixel = argDistances(i);
 		% -------------------------------------------------
 		
 		for m = 1 : argImageHeight		
@@ -144,7 +144,7 @@ function [ matMeanLinearModels, matStdevLinearModels ] = fun_find_depth_camera_p
 				
 				% ------------------------------------------------------
 				% ver 4, ver 2
-				actual_value_for_pixel = resAverageValuesFittedImage(m, n);
+				%actual_value_for_pixel = resAverageValuesFittedImage(m, n);
 				% ------------------------------------------------------
 				
 				if (n < roi_x_min || n > roi_x_max ...
@@ -183,7 +183,8 @@ function [ matMeanLinearModels, matStdevLinearModels ] = fun_find_depth_camera_p
 						b = vectorTmp(vectorTmp ~= 0);
 						
 						if (length(b) > 1)
-							vectorTmp = vectorTmp - actual_value_for_pixel;
+							%vectorTmp = vectorTmp - actual_value_for_pixel;
+							b = b - actual_value_for_pixel;
 						
 							pdobj = fitdist(b.', 'Normal');
 							matProbDistObjects{m, n} = pdobj;
@@ -331,7 +332,7 @@ function [ matMeanLinearModels, matStdevLinearModels ] = fun_find_depth_camera_p
 
 			% {
 			% logging is done here
-			if (mod(i, 20) == 0 && mod(j, 20) == 0 )
+			if (mod(i, 10) == 0 && mod(j, 10) == 0 )
 				
 				fprintf ("Iterating: %d, %d\nMean Vals:", i, j);
 				disp(meanVals);
@@ -339,14 +340,15 @@ function [ matMeanLinearModels, matStdevLinearModels ] = fun_find_depth_camera_p
 				
 				fprintf (argFileID, "Iterating: %d, %d\nMean Vals:\t", i, j);
 				fprintf (argFileID, "%g ", meanVals);
-				fprintf (argFileID, "\n\tMean Values Updated:%g ", meanValsTmpUpdated);
+				fprintf (argFileID, "\nMean Values Updated: ");
+				fprintf (argFileID, "%g ", meanValsTmpUpdated);
 				
 				strPdLm = evalc('disp(matMeanLinearModels{i, j})');
 				fprintf (argFileID, "\nLinear Model: %s\n", strPdLm);
 			end;
 			
-			if (i == roi_y_min + (roi_y_max - roi_y_min) / 2 ...
-				&& j == roi_x_min + (roi_x_max - roi_x_min) / 2)
+			if (i == roi_y_min + int32( (roi_y_max - roi_y_min) / 2) ...
+				&& j == roi_x_min + int32((roi_x_max - roi_x_min) / 2))
 				figure;
 				plot(mdlMeanLM);
 				title(sprintf("Linear model of Mean Values"));
@@ -364,7 +366,6 @@ function [ matMeanLinearModels, matStdevLinearModels ] = fun_find_depth_camera_p
 			% }
 		end
 	end
-	
 
 	toc;
 	fprintf("Linear models are evaluated \n");

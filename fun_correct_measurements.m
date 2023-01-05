@@ -126,7 +126,7 @@ function [ resCorrectedImage ] = fun_correct_measurements(...
 				%	i, j, org_depth, predicted_value, resCorrectedImage(i, j)	);
 				
 				% logging is done here
-				if (mod(i, 10) == 0 && mod(j, 10) == 0)
+				if (mod(i, 5) == 0 && mod(j, 5) == 0)
 					fprintf(argFileID, "Row: %d, Col: %d, org depth: %d, predicted value: %f, corrected: %d\n",...
 						i, j, org_depth, predicted_value, resCorrectedImage(i, j));
 				end

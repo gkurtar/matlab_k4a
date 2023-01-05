@@ -159,12 +159,12 @@ function [ resDiffData ] = fun_inspect_errors(argDepthImage, argGroundTruthImage
 	SDEV = std(seqDiffValues(:));
 	
 	fprintf ("\nMin diff is %f max_diff is %f, diff vector size %d, measured %d ", minVal, maxVal, length(seqDiffValues), evalIndex);
-	fprintf ("\nDepth Residual Stats are:\n\tMax_error: %f\n MEAN: %f\nMSE: %f\nRMSE: %f\nSTD DEV: %f", ...
+	fprintf ("\nDepth Residual Stats are:\n\tMax_error: %f\tMEAN: %f\tMSE: %f\tRMSE: %f\tSTD DEV: %f", ...
 		maxErrorVal, MEANVAL, MSE, RMSE, SDEV);
 	
 	fprintf (argFileID, "\nMin diff is %f Max diff is %f ", minVal, maxVal);
 	fprintf (argFileID, "\nDepth Values Comparison Stats:");
-	fprintf (argFileID, "\nMax_error: %f\n MEAN: %f\nMSE: %f\nRMSE: %f\nSTD DEV: %f", maxErrorVal, MEANVAL, MSE, RMSE, SDEV);
+	fprintf (argFileID, "\nMax_error: %f\nMEAN: %f\nMSE: %f\nRMSE: %f\nSTD DEV: %f", maxErrorVal, MEANVAL, MSE, RMSE, SDEV);
 
 %{
 	figure;
@@ -180,12 +180,14 @@ function [ resDiffData ] = fun_inspect_errors(argDepthImage, argGroundTruthImage
 	ax.YAxisLocation = "origin";
 %}	
 	
+	% {
 	figure;
 	imagesc(resDiffData);
 	xlabel('X(px)');
 	ylabel('Y(px)');
 	colorbar('southoutside');
 	title('Residuals (mm)');
+	% }
 
 	fprintf("\nEND: fun_inspect_errors\n");
 	return;

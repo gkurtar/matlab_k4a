@@ -30,7 +30,6 @@ function [ resGroundTruth ] = fun_get_ground_truth(argDepthDataFilePath, argHeig
 	fprintf(argFileID, "\nFile path is %s, size is (%d x %d) and the plane distance is %d.", ...
 		argDepthDataFilePath, argWidth, argHeight, argDistance);
 
-% { 
 	if (argDisplayFlag)
 		[fPath, fName, fExt] = fileparts(argDepthDataFilePath);
 		%strTitle = sprintf("Point Cloud for %s", fName);
@@ -42,7 +41,6 @@ function [ resGroundTruth ] = fun_get_ground_truth(argDepthDataFilePath, argHeig
 		zlabel('Z(mm)');
 		title(strTitle);
 	end
-% }
 
     %roi_x_min = 240; roi_x_max = 390;
     %roi_y_min = 190; roi_y_max = 297;
@@ -63,12 +61,16 @@ function [ resGroundTruth ] = fun_get_ground_truth(argDepthDataFilePath, argHeig
 	roi_x_max = argRoiVector(2);
 	roi_y_min = argRoiVector(3);
 	roi_y_max = argRoiVector(4);
+	%roi_z_min = argDistance - 70; %  argDistance - round( argDistance / 50);
+    %roi_z_max = argDistance + 70; % argDistance + round( argDistance / 50);
 	roi_z_min = argDistance - round( argDistance / 50);
     roi_z_max = argDistance + round( argDistance / 50);
 	
     roi_vector_3d = [roi_x_min, roi_x_max; roi_y_min, roi_y_max; roi_z_min, roi_z_max];
 
     sampleIndicesOfROI = findPointsInROI(ptCloud, roi_vector_3d);
+	
+	ptCloudSelected = select(ptCloud, sampleIndicesOfROI);
 
     [fittedPlaneModel, inlierIndices, outlierIndices] = pcfitplane(ptCloud, 1, 'SampleIndices', sampleIndicesOfROI);
     pointCloudNearPlane = select(ptCloud, inlierIndices);
@@ -79,12 +81,15 @@ function [ resGroundTruth ] = fun_get_ground_truth(argDepthDataFilePath, argHeig
     z_plmdl = fittedPlaneModel.Parameters(3);
     delta_val_plmdl = fittedPlaneModel.Parameters(4);
 	
+
 	%{
 	x_plmdl = 0;
     y_plmdl = 0;
     z_plmdl = 1;
     delta_val_plmdl = argDistance * -1;
 	%}
+	
+	fprintf ("\nFound total of %d points in ROI.", length(sampleIndicesOfROI));
 	
 	fprintf ("\nROIs are z min: %f z max: %f\n\t", roi_z_min, roi_z_max);
     fprintf ("%f ", fittedPlaneModel.Parameters);
@@ -93,7 +98,17 @@ function [ resGroundTruth ] = fun_get_ground_truth(argDepthDataFilePath, argHeig
     fprintf ("%f ", fittedPlaneModel.Parameters);
 	
 	fprintf(argFileID, "\nFitted Plane Model parameters are found as: ");
-	fprintf (argFileID, "%f ", fittedPlaneModel.Parameters);
+	fprintf (argFileID, "%f ", fittedPlaneModel.Parameters);	
+
+	% {
+	if (argDisplayFlag)
+		figure
+		pcshow(ptCloud.Location,[0.5 0.5 0.5])
+		hold on
+		pcshow(ptCloudSelected.Location,'r');
+		legend('Point Cloud','Points within ROI','Location','southoutside','Color',[1 1 1])
+		hold off
+	end
 	
 	%{
 	figure;
@@ -197,7 +212,6 @@ function [ resGroundTruth ] = fun_get_ground_truth(argDepthDataFilePath, argHeig
 	ylabel('Y(px)');
 	colorbar('southoutside');
 	title('Residuals (mm), Fitted Data minus Real Data');
-	
 % }
 
 	fidTemp = fopen("c:\tmp\sil3.txt", 'w');
@@ -212,8 +226,7 @@ function [ resGroundTruth ] = fun_get_ground_truth(argDepthDataFilePath, argHeig
 			end
 		end
 	end
-	
-	
+
 	
 	MER = mean( abs(seqDiffValues));
 	SQE = seqDiffValues.^2;

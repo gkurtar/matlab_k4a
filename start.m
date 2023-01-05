@@ -70,20 +70,23 @@
 		rgbSqSize = 44;
 		irSqSize = 44;
 		%seqDistances = [500, 750, 1000, 1250, 1500, 1750, 2000, 2250, 2500, 2750, 3000, 3250, 3500];
-		seqDistances = [500, 750, 1000, 1250, 1500, 1750, 2000, 2250, 2500, 2750, 3000, 3250, 3500];
+		seqDistances = [500, 750, 1000, 1250, 1500, 1750, 2000, 2250, 2500, 2730, 2980, 3230, 3470];
 		depthDataMatrixSize =  [576, 640];
 		%depthDataFileToBeCorrected = 'C:\work\article\data\cal\depth\sample_225.txt';
 		%depthDataToCorrectPlaneDistance = 2250;
-		depthDataFileToBeCorrected = 'C:\work\article\data\cal\depth\Sample_160.txt';
-		depthDataToCorrectPlaneDistance = 1600;
+		%depthDataFileToBeCorrected = 'C:\work\article\data\cal\depth\Sample_160.txt';
+		%depthDataToCorrectPlaneDistance = 1600;
 		%depthDataFileToBeCorrected = 'C:\work\article\data\cal\depth\Sample_350.txt';
 		%depthDataToCorrectPlaneDistance = 3500;
+		depthDataFileToBeCorrected = 'C:\work\article\data\cal\depth\Sample_160.txt';
+		depthDataToCorrectPlaneDistance = 1600;
 		
 		seqAllPointClouds = DEPTH_PC_SAMPLE_DATA;
 		%roiVector = [300, 335, 225, 270]; % [320, 350, 220, 240];
-		%roiVector = [280, 370, 225, 290]; % x1, x2, y1, y2 => x is width, y is height
+		%roiVector = [280, 370, 225, 290]; % x1, x2, y1, y2 => x is width, y is height, => data gtu blak bg olcumler icin ROI
+		%roiVector = [285, 365, 230, 290]; % x1, x2, y1, y2 => x is width, y is height => data gtu black bg olcumler icin ROI
 		
-		roiVector = [285, 365, 230, 290]; % x1, x2, y1, y2 => x is width, y is height
+		roiVector = [295, 350, 240, 280]; % roiVector = [295, 375, 240, 285]
 
 	else
 		%Select RGB IMAGES from disk and store in an image array
