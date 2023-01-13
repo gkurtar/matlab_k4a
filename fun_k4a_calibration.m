@@ -68,11 +68,13 @@ function [ resCorrectedImage, resGroundTruthImage ] = fun_k4a_calibration(...
 	
 	fprintf(argFileID, "\n\n==============================\n==============================");
 	fprintf(argFileID, "\n\nGoing to compare measurements between Original depth data and Ground Truth data");
-	orgDataDiff = fun_inspect_errors(depthData, resGroundTruthImage, argRoiVector, argFileID);
+	fprintf("\nGoing to compare measurements between Original depth data and Ground Truth data");
+	[orgDataDiff, orgDataDiffComparedWithDistance] = fun_inspect_errors_2(depthData, resGroundTruthImage, argPlaneDistance, argRoiVector, argFileID);
 	
 	fprintf(argFileID, "\n\n==============================\n==============================");
 	fprintf(argFileID, "\n\nGoing to compare measurements between Corrected depth data and Ground Truth data");
-	correctedDataDiff = fun_inspect_errors(resCorrectedImage, resGroundTruthImage, argRoiVector, argFileID);
+	fprintf("\nGoing to compare measurements between Corrected depth data and Ground Truth data");
+	[correctedDataDiff, correctedDataDiffComparedWithDistance]  = fun_inspect_errors_2(resCorrectedImage, resGroundTruthImage, argPlaneDistance, argRoiVector, argFileID);
 	
 
 	fidDiff = fopen('diffData.txt', 'w');
@@ -84,10 +86,10 @@ function [ resCorrectedImage, resGroundTruthImage ] = fun_k4a_calibration(...
 				continue;
 			end;
 
-			fprintf(fidDiff, "Row: %4d, Col: %4d, org: %5d, corrected:%5d, gt: %5d, diffOrg: %5d, diffCorr:%5d\n",...
+			fprintf(fidDiff, "Row: %3d, Col: %3d, org: %4d, corr:%4d, gt: %4d, diffOrg: %4d, diffCorr:%4d, diffOrgCwd: %4d, diffCorrCwd: %4d\n",...
 					i, j, depthData(i, j), resCorrectedImage(i, j), resGroundTruthImage(i, j),...
-					orgDataDiff(i, j),...
-					correctedDataDiff(i, j)	);
+					orgDataDiff(i, j), correctedDataDiff(i, j), ...
+					orgDataDiffComparedWithDistance(i, j), correctedDataDiffComparedWithDistance(i, j) );
 		end
 	end
 	fclose(fidDiff);

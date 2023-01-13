@@ -26,7 +26,7 @@
 	%DEPTH_PC_FILE_NAMES = {'Depth_50', 'Depth_75', 'Depth_100', 'Depth_125', 'Depth_150', 'Depth_175', 'Depth_200' ...
 	%						'Depth_225', 'Depth_250', 'Depth_275', 'Depth_300', 'Depth_325', 'Depth_350' };
 	DEPTH_PC_FILE_NAMES = {'Depth_50', 'Depth_75', 'Depth_100', 'Depth_125', 'Depth_150', 'Depth_175', 'Depth_200' ...
-							'Depth_225', 'Depth_250', 'Depth_275', 'Depth_300', 'Depth_325', 'Depth_350' };
+							'Depth_225', 'Depth_250', 'Depth_275', 'Depth_300', 'Depth_325', 'Depth_350', 'Depth_375' };
 	DEPTH_PC_FILE_SUFFIX = 'txt';
 	DEPTH_PC_FILES_DIR = 'C:\work\article\data\cal\depth';
 	DEPTH_PC_FILE_COUNT = 10;
@@ -70,16 +70,16 @@
 		rgbSqSize = 44;
 		irSqSize = 44;
 		%seqDistances = [500, 750, 1000, 1250, 1500, 1750, 2000, 2250, 2500, 2750, 3000, 3250, 3500];
-		seqDistances = [500, 750, 1000, 1250, 1500, 1750, 2000, 2250, 2500, 2730, 2980, 3230, 3470];
+		seqDistances = [503, 750, 1000, 1250, 1500, 1750, 1990, 2240, 2485, 2735, 2980, 3220, 3450, 3690];
 		depthDataMatrixSize =  [576, 640];
 		%depthDataFileToBeCorrected = 'C:\work\article\data\cal\depth\sample_225.txt';
 		%depthDataToCorrectPlaneDistance = 2250;
 		%depthDataFileToBeCorrected = 'C:\work\article\data\cal\depth\Sample_160.txt';
 		%depthDataToCorrectPlaneDistance = 1600;
-		%depthDataFileToBeCorrected = 'C:\work\article\data\cal\depth\Sample_350.txt';
-		%depthDataToCorrectPlaneDistance = 3500;
-		depthDataFileToBeCorrected = 'C:\work\article\data\cal\depth\Sample_160.txt';
-		depthDataToCorrectPlaneDistance = 1600;
+		%depthDataFileToBeCorrected = 'C:\work\article\data\cal\depth\Sample_320.txt';
+		%depthDataToCorrectPlaneDistance = 3180;
+		depthDataFileToBeCorrected = 'C:\work\article\data\cal\depth\Depth_50_Avg.txt';
+		depthDataToCorrectPlaneDistance = 503;
 		
 		seqAllPointClouds = DEPTH_PC_SAMPLE_DATA;
 		%roiVector = [300, 335, 225, 270]; % [320, 350, 220, 240];
