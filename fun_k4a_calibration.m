@@ -52,11 +52,19 @@ function [ resCorrectedImage, resGroundTruthImage ] = fun_k4a_calibration(...
 		argDepthDataFilePath, argDepthDataSize(2), argDepthDataSize(1), argPlaneDistance);
 	
 	depthData = fun_read_point_cloud_data(argDepthDataFilePath, argDepthDataSize(1), argDepthDataSize(2));
+	tic;
 	undistortedDepthData = fun_undistort_depth_data(depthData, argDepthDataSize(1), argDepthDataSize(2), argIrCamParams);
+	toc;
+	
+	fprintf("\nundistort time is just evaluated\n");
 
+	tic;
 	%correct measurements
 	resCorrectedImage = fun_correct_measurements(...
 		undistortedDepthData, argDepthDataSize(1), argDepthDataSize(2), argMatMeanLinearModels, argRoiVector, argFileID);
+	
+	toc;
+	fprintf("\ndepth data correction is just evaluated\n");
 	
 	%find ground truth data
 	resGroundTruthImage = fun_get_ground_truth_3(...
